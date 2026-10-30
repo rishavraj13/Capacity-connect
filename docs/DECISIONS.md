@@ -63,3 +63,18 @@
 - **Context:** Protection against brute-force credential stuffing and registration spam is necessary for public production facing portals.
 - **Decision:** Rate limiting and request throttling on `/signup/` and `/login/` endpoints are explicitly deferred from Phase B1 to Phase B7 (Security & Hardening).
 - **Consequences:** B1 remains focused on foundational authentication mechanics and role access control; security throttling will be systematically layered in during Phase B7.
+
+## ADR 012: Production Security Baseline & HSTS Duration
+- **Context:** Production deployment requires SSL redirection, secure cookies, and HTTP Strict Transport Security (HSTS). Enabling long HSTS prematurely without verified HTTPS can cause irreversible browser access lockouts.
+- **Decision:** In `config/settings/prod.py`, enforce `DEBUG = False`, `SECRET_KEY` with no default (fails loudly if missing), `SECURE_SSL_REDIRECT = True`, `SESSION_COOKIE_SECURE = True`, `CSRF_COOKIE_SECURE = True`, `SECURE_CONTENT_TYPE_NOSNIFF = True`, and start `SECURE_HSTS_SECONDS = 3600` with `SECURE_HSTS_INCLUDE_SUBDOMAINS = False`. Once HTTPS certificate installation is verified in production, `SECURE_HSTS_SECONDS` must be raised to `31536000` (1 year).
+- **Consequences:** Eliminates critical deployment warnings while providing a safe rollout window for SSL certificate validation.
+
+## ADR 013: Database-Level Lowercase Email Uniqueness Constraint
+- **Context:** Brief mandates case-insensitive email uniqueness. Application-level normalization and form validation alone do not prevent race conditions or direct DB insertions.
+- **Decision:** Added `models.UniqueConstraint(Lower("email"), name="unique_lower_email")` to `User.Meta` via migration `0002_user_unique_lower_email.py`, maintaining form-level validation and manager normalization.
+- **Consequences:** Guarantees database-level integrity rejecting duplicate emails differing only by casing (e.g., rejecting `A@x.com` when `a@x.com` exists).
+
+## ADR 014: Secure Redirection for Next Parameter
+- **Context:** The login view supports a `next` query/POST parameter to return users to requested protected pages after authentication. Unsanitized redirection can introduce open-redirect vulnerabilities.
+- **Decision:** Validate `next` URLs using `django.utils.http.url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()})`. If `next` points to an untrusted external host, it is discarded and the user is redirected to their default role landing page.
+- **Consequences:** Preserves seamless post-login navigation while mitigating phishing and open-redirect vectors.

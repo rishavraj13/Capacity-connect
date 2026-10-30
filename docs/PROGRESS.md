@@ -6,10 +6,23 @@
 |---|---|---|---|
 | **B0** | Foundations (layout, custom User, settings, tooling, base tests) | Merged & Tagged `b0-approved` | Yes |
 | **B0.1** | Foundations Fix Round (Django 5.2 LTS, Ruff rules, Coverage config, ADRs) | Approved | Yes |
-| **B1** | Accounts (Signup, Approval Gate, Login/Logout, Roles, Admin Management) | Complete | Yes |
+| **B1** | Accounts (Signup, Approval Gate, Login/Logout, Roles, Admin Management) | Fix Round B1.1 Complete | Yes |
 | **B2** | Course & Competency Management | Not Started | No |
 | **B3** | Assessment Engine | Not Started | No |
 | **B4** | Verification & Certification | Not Started | No |
+
+## Phase B1.1 Fix Round Changelog
+
+- Saved and committed verbatim implementation brief in `docs/IMPLEMENTATION_BRIEF.md`.
+- Hardened `config/settings/prod.py`: env-driven `DEBUG=False`, `SECRET_KEY` with no default, `SECURE_SSL_REDIRECT=True`, `SESSION_COOKIE_SECURE=True`, `CSRF_COOKIE_SECURE=True`, `SECURE_HSTS_SECONDS=3600`, `SECURE_HSTS_INCLUDE_SUBDOMAINS=False`, and `SECURE_CONTENT_TYPE_NOSNIFF=True`.
+- Implemented database-level case-insensitive email uniqueness via `models.UniqueConstraint(Lower("email"), name="unique_lower_email")` in migration `0002_user_unique_lower_email.py` and added test verifying database rejection of `A@x.com` when `a@x.com` exists.
+- Implemented single 54-combination parametrized permission matrix table in `apps/accounts/tests/test_permissions.py` covering all 6 actors across all 9 protected endpoints.
+- Added tests asserting 405 Method Not Allowed on GET requests for state-changing endpoints (`logout`, `admin_approve_user`, `admin_reject_user`, `admin_change_role`).
+- Implemented and tested `next` URL validation in `login_view` using `url_has_allowed_host_and_scheme` to discard untrusted external targets.
+- Added strict login leak tests asserting identical generic error messages for unapproved, inactive, and nonexistent accounts upon wrong password entry.
+- Added test proving an account rejected/deactivated while holding an active session loses portal access on the immediate next request.
+- Performed AST-based function audit proving all 95 functions across `apps/` and `config/` are $\le 25$ lines.
+- Recorded ADRs 012-014 in `docs/DECISIONS.md`.
 
 ## Phase B1 Changelog
 
