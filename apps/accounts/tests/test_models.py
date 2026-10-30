@@ -4,8 +4,8 @@ import pytest
 from django.db import IntegrityError
 
 from apps.accounts.constants import UserRole
-from apps.accounts.factories import UserFactory
 from apps.accounts.models import User
+from apps.accounts.tests.factories import UserFactory
 
 
 @pytest.mark.django_db
