@@ -2,6 +2,7 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.functions import Lower
 
 from apps.accounts.constants import UserRole
 from apps.accounts.managers import UserManager
@@ -38,6 +39,12 @@ class User(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
         ordering = ["-date_joined"]
+        constraints = [
+            models.UniqueConstraint(
+                Lower("email"),
+                name="unique_lower_email",
+            ),
+        ]
 
     def __str__(self) -> str:
         """Return human-readable representation with username and email."""

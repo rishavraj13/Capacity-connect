@@ -6,6 +6,7 @@ from django.contrib.auth import logout as auth_logout
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from apps.accounts.constants import (
     ADMIN_USER_PAGE_SIZE,
@@ -51,6 +52,11 @@ def login_view(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             user: User = form.get_user()
             auth_login(request, user)
+            next_url: str | None = request.POST.get("next") or request.GET.get("next")
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url, allowed_hosts={request.get_host()}
+            ):
+                return redirect(next_url)
             return redirect(get_role_home_url(user.role))
     else:
         form = LoginForm(request)

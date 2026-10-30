@@ -7,6 +7,9 @@
     <h2>Portal Login</h2>
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
+        {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% endif %}
         {% for field in form %}
             {% include "includes/form_field.html" with field=field %}
         {% endfor %}
