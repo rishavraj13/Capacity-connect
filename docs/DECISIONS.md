@@ -48,3 +48,18 @@
   - `coverage==7.17.0`: Test code coverage measurement and reporting tool.
   - `ruff==0.17.3`: High-performance linter and code formatter.
 - **Consequences:** Repeatable, zero-conflict environment verified via `pip check`.
+
+## ADR 009: Account Rejection Implemented via is_active=False
+- **Context:** Brief mandates user approval gating without adding unauthorized database fields beyond Section 4 schema specifications.
+- **Decision:** Rejection of user accounts deactivates the user record by setting `is_active=False` rather than creating a dedicated rejection field.
+- **Consequences:** Conforms strictly to schema limits, leverages standard Django authentication safeguards preventing disabled user logins, and renders a generic disabled notification on login attempt.
+
+## ADR 010: Stable Role Landing Page URL Identifiers
+- **Context:** Upon successful login, users must be redirected to role-specific landing destinations (`/trainee/`, `/trainer/`, `/admin-panel/`).
+- **Decision:** Establish stable URL patterns named `trainee_home`, `trainer_home`, and `admin_panel`. Future phases will build out functional content for these views without modifying their URL routes or reversing names.
+- **Consequences:** Post-login redirection logic and role permission matrices remain immutable across Phase B2 through B7 evolutions.
+
+## ADR 011: Deferral of Authentication Throttling to Phase B7
+- **Context:** Protection against brute-force credential stuffing and registration spam is necessary for public production facing portals.
+- **Decision:** Rate limiting and request throttling on `/signup/` and `/login/` endpoints are explicitly deferred from Phase B1 to Phase B7 (Security & Hardening).
+- **Consequences:** B1 remains focused on foundational authentication mechanics and role access control; security throttling will be systematically layered in during Phase B7.
