@@ -8,3 +8,19 @@ class CapacityConnectError(Exception):
         """Initialize domain exception with a descriptive message."""
         super().__init__(message)
         self.message = message
+
+
+class UserManagementError(CapacityConnectError):
+    """Base domain exception for user management and administration errors."""
+
+
+class SelfModificationError(UserManagementError):
+    """Raised when an admin attempts self-rejection or self-demotion."""
+
+
+class LastAdminProtectionError(UserManagementError):
+    """Raised when an action would remove the last active administrator."""
+
+
+class InvalidRoleError(UserManagementError):
+    """Raised when an invalid or unauthorized role transition occurs."""
