@@ -60,3 +60,16 @@ def test_create_superuser_without_email_raises_value_error() -> None:
             email="",
             password="Password123!",
         )
+
+
+@pytest.mark.django_db
+def test_create_user_success() -> None:
+    """Verify create_user succeeds with valid credentials and sets trainee role."""
+    user = User.objects.create_user(
+        username="trainee_user",
+        email="trainee@example.com",
+        password="ValidPassword123!",
+    )
+    assert user.role == UserRole.TRAINEE
+    assert user.is_approved is False
+    assert str(user) == "trainee_user (trainee@example.com)"

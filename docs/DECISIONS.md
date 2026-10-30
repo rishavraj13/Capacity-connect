@@ -15,7 +15,36 @@
 - **Decision:** Implement an abstract `TimeStampedModel` in `apps.core.models` using `created_at` (`auto_now_add=True`) and `updated_at` (`auto_now=True`).
 - **Consequences:** Standardizes timestamp handling across future apps without redundant column definitions.
 
-## ADR 004: Strict Code Quality & Limits
+## ADR 004: Strict Code Quality & Mechanical Enforcement
 - **Context:** Project brief enforces strict quality constraints: max 25 lines per function, max 250 lines per module, type hints on all functions, one-line docstrings stating why, no magic strings.
-- **Decision:** Use Ruff for automated linting and formatting. Define enums (`UserRole`) for string constants.
-- **Consequences:** Clean, maintainable, self-documenting code base.
+- **Decision:** Configure Ruff in `pyproject.toml` with `C901` (max-complexity 8), `PLR0913` (max-args 4), `PLR0915` (max-statements 20), `T20` (ban print), `E722` (ban bare except), and `ERA001` (ban commented-out code).
+- **Consequences:** Eliminates manual style debates, prevents complexity drift, and automates enforcement.
+
+## ADR 005: Django 5.2.18 LTS Pin for Python 3.14 Compatibility
+- **Context:** Django 5.1 reached end-of-life on 3 Dec 2025 and did not officially support Python 3.14.
+- **Decision:** Upgrade the framework pin from Django 5.1 to the latest Django 5.2 LTS release (`Django==5.2.18`, exceeding the 5.2.8 minimum requirement).
+- **Consequences:** Full official upstream support for Python 3.14 runtime, long-term security maintenance, and zero broken requirements under `pip check`.
+
+## ADR 006: User Admin Registration
+- **Context:** Although not strictly enumerated in the raw B0 deliverable list, administrative visibility into custom user attributes is necessary for operator workflows.
+- **Decision:** Register `apps.accounts.models.User` in `apps.accounts.admin.UserAdmin` inheriting from `django.contrib.auth.admin.UserAdmin`, exposing `role` and `is_approved` in list displays, filters, and fieldsets.
+- **Consequences:** Portal administrators can immediately view, filter, and modify approval status and user roles.
+
+## ADR 007: Python Version Used
+- **Context:** System runtime requires modern language features and predictable execution.
+- **Decision:** The project targets and runs under **Python 3.14** (`3.14.6` on host), supported by Django 5.2.18 LTS.
+- **Consequences:** Up-to-date syntax, performance optimizations, and forward compatibility.
+
+## ADR 008: Dependency Pins and Rationale
+- **Context:** All dependencies must be deterministically pinned with clear justification to prevent supply-chain drift and build breaks.
+- **Decision:**
+  - `Django==5.2.18`: Core web framework pinned to latest 5.2 LTS with official Python 3.14 support.
+  - `django-environ==0.14.0`: Robust 12-factor application configuration parsing `.env` files.
+  - `Pillow==13.0.0`: Required imaging library for user profile avatars and portal assets.
+  - `reportlab==5.1.0`: PDF generation library for training certificates and grade reports.
+  - `pytest==9.2.0`: Standard test runner framework.
+  - `pytest-django==4.14.0`: Pytest integration plugin for Django settings and test database lifecycle.
+  - `factory-boy==3.3.3`: Model factory generator for reliable unit test fixtures.
+  - `coverage==7.17.0`: Test code coverage measurement and reporting tool.
+  - `ruff==0.17.3`: High-performance linter and code formatter.
+- **Consequences:** Repeatable, zero-conflict environment verified via `pip check`.
