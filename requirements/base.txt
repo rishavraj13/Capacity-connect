@@ -1,0 +1,4 @@
+Django==5.1.15
+django-environ==0.14.0
+Pillow==13.0.0
+reportlab==5.1.0
