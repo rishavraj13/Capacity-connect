@@ -9,6 +9,7 @@ from apps.accounts.constants import (
     UserRole,
 )
 from apps.accounts.models import User
+from apps.accounts.services import reject_user
 from apps.accounts.tests.factories import UserFactory
 
 
@@ -182,3 +183,64 @@ def test_login_view_get_renders_login_template(client: Client) -> None:
     """Verify GET request to login renders the login page with 200 status."""
     response = client.get(reverse("login"))
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "url_name, has_arg",
+    [
+        ("logout", False),
+        ("admin_approve_user", True),
+        ("admin_reject_user", True),
+        ("admin_change_role", True),
+    ],
+)
+def test_state_changing_get_rejected_with_405(
+    client: Client,
+    url_name: str,
+    has_arg: bool,
+) -> None:
+    """Verify state-changing endpoints reject GET with 405 Method Not Allowed."""
+    admin = UserFactory(active_admin=True)
+    target = UserFactory(pending_trainee=True)
+    client.force_login(admin)
+    url = reverse(url_name, args=[target.id]) if has_arg else reverse(url_name)
+    assert client.get(url).status_code == 405
+
+
+@pytest.mark.django_db
+def test_login_next_parameter_handling(client: Client) -> None:
+    """Verify login redirects to valid internal next URL and ignores external URLs."""
+    pwd = "ValidPassword123!"
+    trainee = UserFactory(approved_trainee=True, password=pwd)
+
+    # 1. Valid internal next URL
+    res_valid = client.post(
+        f"{reverse('login')}?next=/trainee/",
+        data={"username": trainee.username, "password": pwd},
+    )
+    assert res_valid.status_code == 302
+    assert res_valid.url == "/trainee/"
+
+    # 2. Unsafe external next URL is ignored, fallback to role home
+    res_external = client.post(
+        f"{reverse('login')}?next=https://evil.com/phishing",
+        data={"username": trainee.username, "password": pwd},
+    )
+    assert res_external.status_code == 302
+    assert res_external.url == reverse("trainee_home")
+
+
+@pytest.mark.django_db
+def test_rejected_user_with_active_session_loses_access(client: Client) -> None:
+    """Verify user deactivated while holding an active session loses access."""
+    admin = UserFactory(active_admin=True)
+    trainee = UserFactory(approved_trainee=True)
+    client.force_login(trainee)
+
+    assert client.get(reverse("trainee_home")).status_code == 200
+    reject_user(trainee, admin)
+
+    res = client.get(reverse("trainee_home"))
+    assert res.status_code == 302
+    assert reverse("login") in res.url

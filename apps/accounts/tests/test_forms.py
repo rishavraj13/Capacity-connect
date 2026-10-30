@@ -114,6 +114,26 @@ def test_login_form_approved_user_succeeds() -> None:
     assert form.is_valid()
 
 
+def _get_login_errors(username: str, password: str) -> list[str]:
+    """Return non-field error list from bound LoginForm."""
+    form = LoginForm(data={"username": username, "password": password})
+    return form.errors.get("__all__", [])
+
+
+@pytest.mark.django_db
+def test_login_form_status_leak_prevention() -> None:
+    """Verify wrong passwords for unapproved/inactive users yield identical errors."""
+    pwd = "ValidPass123!"
+    UserFactory(username="unapp_u", pending_trainee=True, password=pwd)
+    UserFactory(username="inact_u", rejected_user=True, password=pwd)
+
+    unknown_err = _get_login_errors("ghost", "x")
+    assert _get_login_errors("unapp_u", "x") == unknown_err == [MSG_INVALID_CREDENTIALS]
+    assert _get_login_errors("inact_u", "x") == unknown_err == [MSG_INVALID_CREDENTIALS]
+    assert _get_login_errors("unapp_u", pwd) == [MSG_AWAITING_APPROVAL]
+    assert _get_login_errors("inact_u", pwd) == [MSG_ACCOUNT_DISABLED]
+
+
 def test_role_change_form_validation() -> None:
     """Verify RoleChangeForm accepts valid roles and rejects unrecognized options."""
     assert RoleChangeForm(data={"role": UserRole.TRAINER}).is_valid()

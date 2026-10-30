@@ -73,3 +73,17 @@ def test_create_user_success() -> None:
     assert user.role == UserRole.TRAINEE
     assert user.is_approved is False
     assert str(user) == "trainee_user (trainee@example.com)"
+
+
+@pytest.mark.django_db
+def test_case_insensitive_email_uniqueness_at_database_level() -> None:
+    """Verify DB constraint unique_lower_email rejects A@x.com when a@x.com exists."""
+    User.objects.create(
+        username="user_lower",
+        email="a@x.com",
+    )
+    with pytest.raises(IntegrityError):
+        User.objects.create(
+            username="user_upper",
+            email="A@x.com",
+        )

@@ -9,77 +9,104 @@ from django.urls import reverse
 from django.views.generic import View
 
 from apps.accounts.constants import UserRole
+from apps.accounts.models import User
 from apps.accounts.permissions import RoleRequiredMixin
 from apps.accounts.tests.factories import UserFactory
 
-PROTECTED_URLS: list[tuple[str, list[str]]] = [
-    ("trainee_home", [UserRole.TRAINEE]),
-    ("trainer_home", [UserRole.TRAINER]),
-    ("admin_panel", [UserRole.ADMIN]),
-    ("admin_user_list", [UserRole.ADMIN]),
-    ("admin_pending_list", [UserRole.ADMIN]),
+PERMISSION_MATRIX: list[tuple[str, str, str, int]] = [
+    ("anonymous", "trainee_home", "GET", 302),
+    ("approved_trainee", "trainee_home", "GET", 200),
+    ("approved_trainer", "trainee_home", "GET", 403),
+    ("approved_admin", "trainee_home", "GET", 403),
+    ("unapproved_user", "trainee_home", "GET", 403),
+    ("rejected_user", "trainee_home", "GET", 302),
+    ("anonymous", "trainer_home", "GET", 302),
+    ("approved_trainee", "trainer_home", "GET", 403),
+    ("approved_trainer", "trainer_home", "GET", 200),
+    ("approved_admin", "trainer_home", "GET", 403),
+    ("unapproved_user", "trainer_home", "GET", 403),
+    ("rejected_user", "trainer_home", "GET", 302),
+    ("anonymous", "admin_panel", "GET", 302),
+    ("approved_trainee", "admin_panel", "GET", 403),
+    ("approved_trainer", "admin_panel", "GET", 403),
+    ("approved_admin", "admin_panel", "GET", 200),
+    ("unapproved_user", "admin_panel", "GET", 403),
+    ("rejected_user", "admin_panel", "GET", 302),
+    ("anonymous", "admin_user_list", "GET", 302),
+    ("approved_trainee", "admin_user_list", "GET", 403),
+    ("approved_trainer", "admin_user_list", "GET", 403),
+    ("approved_admin", "admin_user_list", "GET", 200),
+    ("unapproved_user", "admin_user_list", "GET", 403),
+    ("rejected_user", "admin_user_list", "GET", 302),
+    ("anonymous", "admin_pending_list", "GET", 302),
+    ("approved_trainee", "admin_pending_list", "GET", 403),
+    ("approved_trainer", "admin_pending_list", "GET", 403),
+    ("approved_admin", "admin_pending_list", "GET", 200),
+    ("unapproved_user", "admin_pending_list", "GET", 403),
+    ("rejected_user", "admin_pending_list", "GET", 302),
+    ("anonymous", "admin_approve_user", "POST", 302),
+    ("approved_trainee", "admin_approve_user", "POST", 403),
+    ("approved_trainer", "admin_approve_user", "POST", 403),
+    ("approved_admin", "admin_approve_user", "POST", 302),
+    ("unapproved_user", "admin_approve_user", "POST", 403),
+    ("rejected_user", "admin_approve_user", "POST", 302),
+    ("anonymous", "admin_reject_user", "POST", 302),
+    ("approved_trainee", "admin_reject_user", "POST", 403),
+    ("approved_trainer", "admin_reject_user", "POST", 403),
+    ("approved_admin", "admin_reject_user", "POST", 302),
+    ("unapproved_user", "admin_reject_user", "POST", 403),
+    ("rejected_user", "admin_reject_user", "POST", 302),
+    ("anonymous", "admin_change_role", "POST", 302),
+    ("approved_trainee", "admin_change_role", "POST", 403),
+    ("approved_trainer", "admin_change_role", "POST", 403),
+    ("approved_admin", "admin_change_role", "POST", 302),
+    ("unapproved_user", "admin_change_role", "POST", 403),
+    ("rejected_user", "admin_change_role", "POST", 302),
+    ("anonymous", "logout", "POST", 302),
+    ("approved_trainee", "logout", "POST", 302),
+    ("approved_trainer", "logout", "POST", 302),
+    ("approved_admin", "logout", "POST", 302),
+    ("unapproved_user", "logout", "POST", 302),
+    ("rejected_user", "logout", "POST", 302),
 ]
 
 
-@pytest.mark.django_db
-@pytest.mark.parametrize("url_name, allowed_roles", PROTECTED_URLS)
-def test_anonymous_redirected_to_login(
-    client: Client,
-    url_name: str,
-    allowed_roles: list[str],
-) -> None:
-    """Verify anonymous access redirects to login endpoint."""
-    url: str = reverse(url_name)
-    response = client.get(url)
-    assert response.status_code == 302
-    assert "/login/" in response.url
+def _get_actor_user(actor: str) -> User | None:
+    """Return initialized user instance for declared matrix actor."""
+    if actor == "approved_trainee":
+        return UserFactory(approved_trainee=True)
+    if actor == "approved_trainer":
+        return UserFactory(approved_trainer=True)
+    if actor == "approved_admin":
+        return UserFactory(active_admin=True)
+    if actor == "unapproved_user":
+        return UserFactory(pending_trainee=True)
+    if actor == "rejected_user":
+        return UserFactory(rejected_user=True)
+    return None
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("url_name, allowed_roles", PROTECTED_URLS)
-def test_approved_user_authorized_role_permitted(
+@pytest.mark.parametrize("matrix_entry", PERMISSION_MATRIX)
+def test_permission_matrix(
     client: Client,
-    url_name: str,
-    allowed_roles: list[str],
+    matrix_entry: tuple[str, str, str, int],
 ) -> None:
-    """Verify approved user with authorized role can access protected endpoint."""
-    role: str = allowed_roles[0]
-    user = UserFactory(role=role, is_approved=True, is_active=True)
-    client.force_login(user)
-    response = client.get(reverse(url_name))
-    assert response.status_code == 200
+    """Verify access permission matrix matches brief specifications."""
+    actor, url_name, method, expected_status = matrix_entry
+    target = UserFactory(pending_trainee=True)
+    UserFactory(active_admin=True)
+    user = _get_actor_user(actor)
+    if user:
+        client.force_login(user)
 
+    state_urls = {"admin_approve_user", "admin_reject_user", "admin_change_role"}
+    args = [target.id] if url_name in state_urls else []
+    url = reverse(url_name, args=args)
+    data = {"role": UserRole.TRAINER} if url_name == "admin_change_role" else {}
 
-@pytest.mark.django_db
-@pytest.mark.parametrize("url_name, allowed_roles", PROTECTED_URLS)
-def test_unapproved_user_access_forbidden(
-    client: Client,
-    url_name: str,
-    allowed_roles: list[str],
-) -> None:
-    """Verify unapproved user of matching role receives 403 Forbidden."""
-    role: str = allowed_roles[0]
-    user = UserFactory(role=role, is_approved=False, is_active=True)
-    client.force_login(user)
-    response = client.get(reverse(url_name))
-    assert response.status_code == 403
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize("url_name, allowed_roles", PROTECTED_URLS)
-def test_wrong_role_access_forbidden(
-    client: Client,
-    url_name: str,
-    allowed_roles: list[str],
-) -> None:
-    """Verify approved user with unauthorized role receives 403 Forbidden."""
-    forbidden_role: str = next(
-        role for role in UserRole.values if role not in allowed_roles
-    )
-    user = UserFactory(role=forbidden_role, is_approved=True, is_active=True)
-    client.force_login(user)
-    response = client.get(reverse(url_name))
-    assert response.status_code == 403
+    res = client.get(url) if method == "GET" else client.post(url, data=data)
+    assert res.status_code == expected_status
 
 
 class DummyCBV(RoleRequiredMixin, View):
