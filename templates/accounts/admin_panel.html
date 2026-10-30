@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Dashboard - Capacity Connect{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Administrator Control Panel</h2>
+    <p>Welcome, {{ user.first_name|default:user.username }}.</p>
+    <nav aria-label="Administrator Sub Navigation">
+        <ul>
+            <li><a href="{% url 'admin_user_list' %}">Manage All Users</a></li>
+            <li><a href="{% url 'admin_pending_list' %}">Review Pending Approvals</a></li>
+        </ul>
+    </nav>
+</section>
+{% endblock %}

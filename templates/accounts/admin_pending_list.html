@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Approvals - Capacity Connect{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Pending User Approvals</h2>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Full Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Requested Role</th>
+                <th scope="col">Registration Date</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pending_user in pending_users %}
+                <tr>
+                    <td>{{ pending_user.username }}</td>
+                    <td>{{ pending_user.get_full_name|default:"—" }}</td>
+                    <td>{{ pending_user.email }}</td>
+                    <td>{{ pending_user.role }}</td>
+                    <td>{{ pending_user.date_joined|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'admin_approve_user' pending_user.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'admin_pending_list' %}">
+                            <button type="submit" id="pending-approve-{{ pending_user.id }}">Approve</button>
+                        </form>
+                        <form method="post" action="{% url 'admin_reject_user' pending_user.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'admin_pending_list' %}">
+                            <button type="submit" id="pending-reject-{{ pending_user.id }}">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No applications currently awaiting administrator approval.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

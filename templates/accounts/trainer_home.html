@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Trainer Dashboard - Capacity Connect{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Trainer Dashboard</h2>
+    <p>Welcome, {{ user.first_name|default:user.username }}. Your trainer account is active and approved.</p>
+</section>
+{% endblock %}

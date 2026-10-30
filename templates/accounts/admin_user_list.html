@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Capacity Connect{% endblock %}
+
+{% block content %}
+<section>
+    <h2>User Management</h2>
+
+    <form method="get" action="{% url 'admin_user_list' %}">
+        <label for="filter-role">Role:</label>
+        <select name="role" id="filter-role">
+            <option value="all" {% if selected_role == "all" %}selected{% endif %}>All Roles</option>
+            {% for role_val, role_lbl in role_choices %}
+                <option value="{{ role_val }}" {% if selected_role == role_val %}selected{% endif %}>{{ role_lbl }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="filter-status">Status:</label>
+        <select name="status" id="filter-status">
+            <option value="all" {% if selected_status == "all" %}selected{% endif %}>All Statuses</option>
+            <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active / Approved</option>
+            <option value="pending" {% if selected_status == "pending" %}selected{% endif %}>Pending Approval</option>
+            <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Disabled / Rejected</option>
+        </select>
+
+        <button type="submit" id="filter-submit">Apply Filters</button>
+    </form>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Approved</th>
+                <th scope="col">Active</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for target_user in page_obj %}
+                <tr>
+                    <td>{{ target_user.username }}</td>
+                    <td>{{ target_user.email }}</td>
+                    <td>{{ target_user.role }}</td>
+                    <td>{{ target_user.is_approved|yesno:"Yes,No" }}</td>
+                    <td>{{ target_user.is_active|yesno:"Active,Disabled" }}</td>
+                    <td>
+                        {% if not target_user.is_approved and target_user.is_active %}
+                            <form method="post" action="{% url 'admin_approve_user' target_user.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button type="submit" id="approve-btn-{{ target_user.id }}">Approve</button>
+                            </form>
+                        {% endif %}
+
+                        {% if target_user.is_active %}
+                            <form method="post" action="{% url 'admin_reject_user' target_user.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button type="submit" id="reject-btn-{{ target_user.id }}">Reject / Disable</button>
+                            </form>
+                        {% endif %}
+
+                        <form method="post" action="{% url 'admin_change_role' target_user.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <label for="change-role-{{ target_user.id }}">Role:</label>
+                            <select name="role" id="change-role-{{ target_user.id }}">
+                                {% for role_val, role_lbl in role_choices %}
+                                    <option value="{{ role_val }}" {% if target_user.role == role_val %}selected{% endif %}>{{ role_lbl }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" id="change-role-btn-{{ target_user.id }}">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">No users found matching current filters.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Pagination Navigation">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&role={{ selected_role }}&status={{ selected_status }}" id="pagination-prev">Previous</a>
+        {% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&role={{ selected_role }}&status={{ selected_status }}" id="pagination-next">Next</a>
+        {% endif %}
+    </nav>
+</section>
+{% endblock %}

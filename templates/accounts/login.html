@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Capacity Connect{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Portal Login</h2>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% for field in form %}
+            {% include "includes/form_field.html" with field=field %}
+        {% endfor %}
+        <div>
+            <button type="submit" id="submit-login">Log In</button>
+        </div>
+    </form>
+    <p>Need an account? <a href="{% url 'signup' %}">Sign up here</a>.</p>
+</section>
+{% endblock %}

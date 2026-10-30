@@ -1,0 +1,9 @@
+{% if messages %}
+    <section aria-label="Notifications" id="system-messages">
+        <ul>
+            {% for message in messages %}
+                <li class="message message-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endif %}
