@@ -1,0 +1,104 @@
+"""Base settings shared across all execution environments."""
+
+from pathlib import Path
+
+import environ
+
+BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
+)
+env_file_path: Path = BASE_DIR / ".env"
+if env_file_path.is_file():
+    environ.Env.read_env(env_file_path)
+
+SECRET_KEY: str = env("SECRET_KEY")
+DEBUG: bool = env("DEBUG")
+ALLOWED_HOSTS: list[str] = env("ALLOWED_HOSTS")
+
+DJANGO_APPS: list[str] = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+]
+
+THIRD_PARTY_APPS: list[str] = []
+
+LOCAL_APPS: list[str] = [
+    "apps.core",
+    "apps.accounts",
+]
+
+INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+MIDDLEWARE: list[str] = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+ROOT_URLCONF: str = "config.urls"
+
+TEMPLATES: list[dict] = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION: str = "config.wsgi.application"
+ASGI_APPLICATION: str = "config.asgi.application"
+
+DATABASES: dict = {
+    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+}
+
+AUTH_PASSWORD_VALIDATORS: list[dict[str, str]] = [
+    {
+        "NAME": (
+            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        ),
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+AUTH_USER_MODEL: str = "accounts.User"
+
+LANGUAGE_CODE: str = "en-us"
+TIME_ZONE: str = "Asia/Kolkata"
+USE_I18N: bool = True
+USE_TZ: bool = True
+
+STATIC_URL: str = "static/"
+STATIC_ROOT: Path = BASE_DIR / "staticfiles"
+
+MEDIA_URL: str = "media/"
+MEDIA_ROOT: Path = BASE_DIR / "media"
+
+DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
