@@ -157,3 +157,10 @@
 - Fix: The custom Admin authentication form and AdminSite permission check require active approved ADMIN plus Django staff eligibility; generic denial logging and shared throttling remain in place.
 - Test: test_unapproved_or_demoted_staff_cannot_authenticate_or_open_admin (both cases failed first).
 - Commit: feat: harden B7 security deployment and operational workflows.
+
+## BUG 023: Forced non-debug demo seeding accepted public credentials
+- Symptom: --force with DEBUG=False seeded the documented public development password without an explicit DEMO_PASSWORD.
+- Root cause: The environment guard checked force/debug status but not whether a production credential was explicitly supplied.
+- Fix: Require a nonempty DEMO_PASSWORD environment value before non-debug seed execution, including reruns.
+- Test: test_forced_non_debug_seed_requires_explicit_password failed first (DID NOT RAISE CommandError); after the fix it rejects missing credentials and accepts explicit credentials.
+- Commit: fix: complete B7 demo and deployment carry-over.

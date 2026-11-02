@@ -146,7 +146,7 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 - [x] Throttling, security audit/headers/errors, deployment/settings review.
 - [x] Every-page query budgets, evidence-based indexes, service-driven demo seed and orphan cleanup.
 - [x] Full B7 gate/checklist/report: 1962 tests; 3770 statements and 510 branches, zero misses, 100%; zero-warning go-live deploy check. See docs/B7_REPORT.md.
-- [ ] Reviewer B7 approval; do not merge/tag or start Testing stage or frontend work before approval.
+- [x] Reviewer B7 approval; merged/tagged b7-approved; phase/t1-testing created.
 
 ## Final backend delivery status
 
@@ -159,6 +159,11 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 | B4 Assessments | Approved |
 | B5 Feedback and Certificates | Approved |
 | B6 Competency, Announcements, Dashboards | Approved |
-| B7 Hardening | Gate passed; awaiting reviewer approval |
+| B7 Hardening | Approved |
 
-Testing stage and frontend have not started.
+Testing stage is active; frontend has not started.
+
+## T1 Testing
+- [x] B7 merged/tagged; testing branch created.
+- [x] Step 0 proxy warning/tests, professional demo history, explicit non-debug password guard and take-page query budget.
+- [ ] T1–T7 verification and backend handoff; no frontend work.

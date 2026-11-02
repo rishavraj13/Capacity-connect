@@ -102,3 +102,17 @@ def _add_participant(quiz: object) -> None:
     """Provide eagerly joined result links and aggregate participation rows."""
     trainee = EnrollmentFactory(course=quiz.course).trainee
     AttemptFactory(questionnaire=quiz, trainee=trainee, status="SUBMITTED")
+
+
+def assessment_take() -> PageSetup:
+    """Grow the active paper from one to ten questions without extra SQL per row."""
+    user = UserFactory(approved_trainee=True)
+    quiz = QuestionnaireFactory()
+    EnrollmentFactory(trainee=user, course=quiz.course)
+    QuestionFactory(questionnaire=quiz)
+    attempt = AttemptFactory(questionnaire=quiz, trainee=user)
+    return PageSetup(
+        reverse("assessments:take", args=[attempt.pk]),
+        user,
+        partial(QuestionFactory.create_batch, 9, questionnaire=quiz),
+    )

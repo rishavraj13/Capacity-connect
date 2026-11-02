@@ -11,6 +11,7 @@ from apps.core import clock
 from apps.core.demo_accounts import demo_accounts
 from apps.core.demo_catalog import demo_catalog, demo_courses
 from apps.core.demo_constants import DEMO_MARKER
+from apps.core.demo_history import demo_history
 from apps.core.demo_learning import (
     demo_assessments,
     demo_profiles,
@@ -63,13 +64,7 @@ def _feedback(graph: object) -> None:
 @transaction.atomic
 def seed_demo_data(force: bool = False) -> dict:
     """Refuse unsafe environments unless explicitly forced; reruns perform no writes."""
-    if not force and (
-        not settings.DEBUG
-        or os.environ.get("DJANGO_SETTINGS_MODULE", "").endswith(".prod")
-    ):
-        raise CapacityConnectError(
-            "Demo seeding requires DEBUG=True outside prod, or explicit --force."
-        )
+    _validate_environment(force)
     if demo_exists():
         return demo_summary()
     with clock.at(clock.now()):
@@ -77,9 +72,25 @@ def seed_demo_data(force: bool = False) -> dict:
         demo_catalog(graph)
         demo_courses(graph)
         demo_profiles(graph)
+        demo_history(graph)
         demo_assessments(graph)
         demo_progress(graph)
         demo_resources(graph)
         _feedback(graph)
         _posts(graph)
     return demo_summary()
+
+
+def _validate_environment(force: bool) -> None:
+    """Require an explicit credential before allowing any non-debug seed writes."""
+    if not force and (
+        not settings.DEBUG
+        or os.environ.get("DJANGO_SETTINGS_MODULE", "").endswith(".prod")
+    ):
+        raise CapacityConnectError(
+            "Demo seeding requires DEBUG=True outside prod, or explicit --force."
+        )
+    if not settings.DEBUG and not os.environ.get("DEMO_PASSWORD", "").strip():
+        raise CapacityConnectError(
+            "Set DEMO_PASSWORD explicitly for non-DEBUG seeding."
+        )

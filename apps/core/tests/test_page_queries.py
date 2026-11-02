@@ -11,7 +11,12 @@ from apps.core.tests.page_accounts import (
     trainee_detail,
     trainer_detail,
 )
-from apps.core.tests.page_assessments import attempt_result, staff_page, trainee_page
+from apps.core.tests.page_assessments import (
+    assessment_take,
+    attempt_result,
+    staff_page,
+    trainee_page,
+)
 from apps.core.tests.page_learning import (
     course_detail,
     course_list,
@@ -46,6 +51,7 @@ RECIPES = {
     "assessment history": partial(trainee_page, "assessments:history"),
     "assessment participation": partial(staff_page, "assessments:participation"),
     "assessment result": attempt_result,
+    "assessment take": assessment_take,
     "assessment authoring list": partial(staff_page, "assessments:course_list"),
     "assessment authoring detail": partial(staff_page, "assessments:manage_detail"),
     "feedback mine": partial(feedback_page, "mine"),

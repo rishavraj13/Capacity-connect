@@ -2,6 +2,8 @@
 
 Use Python 3.14 and the pinned requirements. PostgreSQL readiness is a static review only; no driver was added.
 
+> **Reverse-proxy warning:** Behind one reverse proxy (nginx, PythonAnywhere or Render), set `TRUSTED_PROXY_COUNT=1`. Otherwise every visitor shares the proxy IP and per-IP throttles such as LOGIN_IP_LIMIT can block everyone together. The proxy must strip or safely append forwarding headers; a forged extra left entry is ignored by the rightmost-entry rule.
+
 ## Environment catalogue
 
 The table below lists every environment variable read by our settings. `.env.example` uses development values. SECRET_KEY, ALLOWED_HOSTS and SITE_BASE_URL are required in production. Base DEBUG defaults False; dev defaults True; prod always forces False. Base hosts default to localhost and 127.0.0.1. Relative paths resolve from the process working directory.
@@ -42,7 +44,7 @@ The table below lists every environment variable read by our settings. `.env.exa
 | `SIGNUP_IP_LIMIT` | no | `5` | signup ip limit |
 | `SIGNUP_WINDOW_SECONDS` | no | `60 * 60` | signup window seconds |
 | `SITE_BASE_URL` | production | `'http://127.0.0.1:8000'` | site base url |
-| `TRUSTED_PROXY_COUNT` | no | `0` | trusted proxy count |
+| `TRUSTED_PROXY_COUNT` | yes behind proxy | `0` | Set **1 behind one trusted reverse proxy** or all visitors share the proxy IP/throttles; default ignores X-Forwarded-For |
 | `USE_X_FORWARDED_PROTO` | no | `False` | use x forwarded proto |
 | `VERIFY_IP_LIMIT` | no | `30` | verify ip limit |
 | `VERIFY_WINDOW_SECONDS` | no | `60` | verify window seconds |
@@ -104,7 +106,7 @@ Cleanup is dry-run by default. Inspect output before adding --delete. It checks 
 
 ## Commands and demo
 
-`seed_demo_data [--force]` refuses DEBUG=False or production unless forced. Use a disposable development database. A second completed run changes no rows or timestamps. It prints counts and logins; DEMO_PASSWORD defaults to the public development password `Demo-Connect-2026!`. Never deploy demo accounts. PNG is used for a profile photo; library resources are generated PDFs. Names are Indian names in Latin letters.
+`seed_demo_data [--force]` refuses DEBUG=False or production unless forced. Use a disposable development database. A second completed run changes no rows or timestamps. Non-DEBUG runs with --force require DEMO_PASSWORD explicitly in the environment (no public fallback). It prints counts and logins; DEMO_PASSWORD defaults to the public development password `Demo-Connect-2026!`. Never deploy demo accounts. PNG is used for a profile photo; library resources are generated PDFs. Names are Indian names in Latin letters.
 
 `cleanup_orphan_files [--min-age-hours 24] [--delete]` lists unreferenced aged files and deletes only with --delete. `evaluate_completions` retries eligible completion and certificate issuance. All support --help.
 

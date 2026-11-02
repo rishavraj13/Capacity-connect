@@ -295,3 +295,7 @@
 ## ADR 067: Measured query budgets and authorised indexes
 - **Decision:** Proposed by agent: rendered-page tests warm framework metadata then compare small/large data with authentication included. All 33 page budgets remain constant. SQLite plans on 2000 rows per table justify partial published-course and public-announcement indexes, enrollment status and questionnaire deadline indexes; one new migration per affected app contains AddIndex only. Attempt already uses its questionnaire FK index and needs no new one.
 - **Consequences:** The published-course plan remains a scan of a smaller partial index (40 entries), not a search; no timing claim is made. PostgreSQL review is static only, not run against PostgreSQL. Environment reads are checked against .env.example and documented exhaustively.
+
+## ADR 068: Testing-stage carry-over and explicit seed credentials
+- **Decision:** Proposed by agent, implementing the reviewer's Step 0: seed three qualifications, three work experiences and two external certificates through profile services, using approved demo trainees and valid generated PDF/PNG. Force in a non-debug environment requires an explicit DEMO_PASSWORD environment value before any writes or marker short circuit.
+- **Consequences:** Development retains the public default. Repeating a complete seed preserves every value. Behind one trusted reverse proxy, operators must set TRUSTED_PROXY_COUNT=1; otherwise per-IP throttles share the proxy IP across all visitors. Forwarding headers must be safely managed by that proxy.
