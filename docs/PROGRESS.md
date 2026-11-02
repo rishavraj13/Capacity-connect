@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 gate passed and awaiting review; B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 approved and merged/tagged; B7 in progress. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -137,4 +137,12 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 - [x] Shared core percentage helper, bare HTML/navigation, unchanged role landing names and 196-row new-route matrix.
 - [x] Full gate: 1747 passed; 3296 statements, zero missed, 418 branches, two partial; 99% combined coverage. Every new service/selector is 100%.
 - [x] Fresh competency/announcement migrations, Ruff/check/pip passed; existing HSTS deploy warnings remain. Report docs/B6_REPORT.md; full transcript ignored in .local/reports/.
-- [ ] User B6 approval; do not start B7.
+- [x] User B6 approval; merged/tagged b6-approved and authorized B7.
+
+## B7 Hardening
+- [x] B6 merged/tagged; phase/b7-hardening created.
+- [x] Both remaining completion branches covered; pre-split baseline 1749 passed and 100% coverage.
+- [x] Pure selector split verified: before 1749 passed in 20.43s, after 1749 passed in 21.89s; after coverage 3322 statements / 418 branches, zero misses, 100%. Public imports preserved.
+- [ ] Throttling, security audit/headers/errors, deployment/settings review.
+- [ ] Every-page query budgets, evidence-based indexes, service-driven demo seed and orphan cleanup.
+- [ ] Full B7 gate/checklist/report; do not start Testing stage or frontend work before approval.

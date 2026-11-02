@@ -270,3 +270,11 @@
 ## ADR 061: Trainer dashboard and shared percentage handoff
 - **Decision:** Proposed by agent: TrainerDashboard exposes own courses only, counts non-dropped enrollment, ACTIVE/COMPLETED separately, certificates and questionnaires. Course ratings use course feedback rows only, with None for no ratings; total rating average is weighted over feedback rows. Independent correlated sum/count subqueries avoid multiplying rating weights through enrollment joins. A second global own-quiz read provides direct links to the existing questionnaire participation page.
 - **Consequences:** TrainerDashboard stays at two queries for small/large datasets; no trainer ID is accepted from GET. Admin and trainee are refused by its view. The existing pure grading percent helper moves to core.percentages and all callers use it; the B6 empty-denominator contract adds a 0.00 guard, with nonempty grading behavior unchanged. Fixed SQL-query budgets are verified by tests, and all dashboard DTOs contain eager plain data. No dashboards models, seed command, chart, export, email or CSS is added in B6.
+
+## ADR 062: B7 carry-over and stable assessment read imports
+- **Decision:** Proposed by agent: assessment reads move unchanged into authoring_selectors, usage_selectors and attempt_selectors; selectors.py reexports the same public functions. Existing paper/result/participation modules remain unchanged. No behavior or migration change.
+- **Consequences:** Before the move, 1749 tests passed and every module/branch was covered. Dedicated real tests cover a passing submit after drop and an unmet retry candidate. ADR 060 already states that assessment statistics include all submitted historical pairs, including dropped-only history, while participation uses the ACTIVE/COMPLETED enrolled cohort; B7 preserves that rule.
+
+## ADR 063: Explicit public Django admin login audit exception
+- **User quotation (2026-11-02):** "Allow admin:login explicitly (Recommended)"
+- **Decision:** Proposed by agent, with the quoted answer: the route audit includes admin:login explicitly in its public allowlist. Every other built-in admin route must still deny or redirect an anonymous request, and every application private route must declare role metadata as well as deny anonymous access.
