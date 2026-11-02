@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block content %}<h2>Result: {{ result.title }}</h2><p>Status: {{ result.status }}; score: {{ result.score }}; percent: {{ result.percent }}%; {% if result.passed %}Passed{% else %}Not passed{% endif %}.</p>
+<ol>{% for row in result.questions %}<li>{{ row.text }} ({{ row.marks }} marks)<p>Selected: {{ row.selected_text|default:"No answer" }}; {% if row.is_correct %}Right{% else %}Wrong{% endif %}.</p>{% if row.correct_option %}<p>Correct option: {{ row.correct_option }}</p>{% endif %}</li>{% endfor %}</ol>{% endblock %}

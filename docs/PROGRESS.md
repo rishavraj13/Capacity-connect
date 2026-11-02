@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 in progress; B5 through B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 gate passed and awaiting review; B5 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -100,9 +100,15 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 in progress; B5 through B7 
 - [x] Compact report delivered in docs/B3_REPORT.md; full transcript ignored in .local/reports/.
 - [x] User B3 approval; merged/tagged b3-approved and authorized B4.
 
-## B4 Step 0 (in progress)
+## B4 Step 0 and Assessments
 - [x] B3 merged/tagged; created phase/b4-assessments.
 - [x] Authorized Attempt.status amendment recorded in section 4.
 - [x] Reproduced/fixed course-wide module-order freeze; retained unpublished access.
 - [x] Proved existing Admin trainer reassignment and ACTIVE all-DONE station maps.
-- [ ] Final B4 gate and compact report. Do not start B5.
+- [x] Questionnaire/question/option authoring, protected history and first-attempt freeze.
+- [x] Shared clock, exact start/grace boundaries, quota/resume/expiry and atomic idempotent grading.
+- [x] Safe paper/results DTOs, departures, annotated usage and constant-query participation/statistics.
+- [x] Bare HTML routes, explicit roles/ownership, seven-actor GET/POST matrix, CSRF/IDOR/mass-assignment checks.
+- [x] Fresh migration and full gate: 1265 tests; coverage 99% (2303 statements, 7 missed; 324 branches, 2 partial).
+- [x] Compact report docs/B4_REPORT.md; full transcript ignored in .local/reports/.
+- [ ] User B4 review/approval. Do not merge/tag B4 or start B5 before approval.

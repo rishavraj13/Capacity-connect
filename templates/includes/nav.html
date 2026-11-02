@@ -2,6 +2,8 @@
             <ul>
                 {% if user.is_authenticated %}
                     {% if user.is_approved and user.is_active %}
+                    {% if user.role == "TRAINEE" %}<li><a href="{% url 'assessments:mine' %}">My assessments</a></li><li><a href="{% url 'assessments:history' %}">Assessment history</a></li>{% endif %}
+                    {% if user.role == "TRAINER" or user.role == "ADMIN" %}<li><a href="{% url 'courses:list' %}">Course assessments</a></li>{% endif %}
                     <li><a href="{% url 'courses:list' %}">Courses</a></li>
                     <li><a href="{% url 'library:list' %}">Library</a></li>
                     {% if user.role == "TRAINEE" %}<li><a href="{% url 'courses:my_courses' %}">My courses</a></li><li><a href="{% url 'courses:station_map' %}">Station map</a></li>{% endif %}

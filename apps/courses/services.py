@@ -71,6 +71,7 @@ def update_course(actor: User, course: Course, data: dict) -> Course:
         raise CourseRuleError(
             "Update associated resources before changing course trainer or subject."
         )
+    _check_assessment_references(course, trainer, subject)
     course.trainer = trainer
     _apply_course(course, data)
     validated_save(course, CourseRuleError)
@@ -137,3 +138,15 @@ def delete_module(actor: User, module: Module) -> None:
         module.delete()
     except ProtectedError as exc:
         raise CourseRuleError("A module with progress cannot be deleted.") from exc
+
+
+def _check_assessment_references(
+    course: Course, trainer: User, subject: object
+) -> None:
+    """Prevent course edits from invalidating derived quiz trainer/subject fields."""
+    from apps.assessments.selectors import conflicting_course_questionnaires
+
+    if conflicting_course_questionnaires(course, trainer, subject).exists():
+        raise CourseRuleError(
+            "Course trainer/subject cannot change while linked assessments exist."
+        )

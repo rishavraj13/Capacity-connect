@@ -101,3 +101,10 @@
 - Fix: Course-locked order validation freezes existing orders and permits only max+1 append; progress uses the same course-first lock order.
 - Tests: test_any_progress_freezes_existing_module_order (both cases), test_progress_allows_only_appended_modules (all failed first).
 - Commit: fix(courses): freeze progressed module order and authorize B4 status.
+
+## BUG 015: Empty deadline scope lost usage annotations
+- Symptom: next_deadlines_for on an ineligible user raised FieldError instead of returning no data.
+- Root cause: The early empty queryset omitted aliases used by downstream start/deadline filters.
+- Fix: Preserve the annotated queryset contract for empty eligibility scopes too.
+- Test: test_ineligible_users_have_no_departures (failed first).
+- Commit: feat(assessments): add B4 authoring and timed atomic attempts.

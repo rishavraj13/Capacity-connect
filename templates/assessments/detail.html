@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}<h2>{{ questionnaire.title }}</h2>
+<p>{{ questionnaire.course.title }} - {{ questionnaire.subject.name }}</p>
+<p>Opens {{ questionnaire.opens_at }}; deadline {{ questionnaire.deadline }}; duration {{ questionnaire.duration_minutes }} minutes.</p><p>Attempts used: {{ questionnaire.attempts_used }}; left: {{ questionnaire.attempts_left }}.</p>
+{% if questionnaire.open_attempt_id %}<a href="{% url 'assessments:take' questionnaire.open_attempt_id %}">Resume attempt</a>{% elif questionnaire.enrollment_status == "ACTIVE" %}<form method="post" action="{% url 'assessments:start' questionnaire.pk %}">{% csrf_token %}<button>Start attempt</button></form>{% endif %}
+<p><a href="{% url 'assessments:history' %}">My history</a></p>{% endblock %}
