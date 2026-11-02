@@ -4,6 +4,9 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns: list = [
+    path("", include("apps.announcements.urls")),
+    path("competency/", include("apps.competency.urls")),
+    path("dashboards/", include("apps.dashboards.urls")),
     path("feedback/", include("apps.feedback.urls")),
     path("", include("apps.certificates.urls")),
     path("assessments/", include("apps.assessments.urls")),

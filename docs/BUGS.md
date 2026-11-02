@@ -143,3 +143,10 @@
 - Fix: Reuse readiness in the submitted-grade selector and reject missing ready submissions with a domain error.
 - Tests: test_ready_quiz_and_empty_draft_average_is_100 and test_missing_ready_quiz_submission_is_domain_error (both failed first).
 - Commit: fix(certificates): align ready-quiz averages and close B5 carry-over.
+
+## BUG 021: Trainer dashboard annotation shadowed the questionnaire relation
+- Symptom: Trainer dashboard raised ValueError even for an empty course scope.
+- Root cause: An annotation used the existing reverse relation name questionnaires.
+- Fix: Use questionnaire_count in SQL and map it into the CourseStats questionnaires field.
+- Tests: test_trainer_dashboard_only_own_courses_and_weighted_totals and query-count/empty-scope tests failed first.
+- Commit: feat: add B6 competency ranking public announcements and dashboards.

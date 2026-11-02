@@ -3,6 +3,9 @@
 {% block title %}Administrator Dashboard - Capacity Connect<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
 <p><a href="{% url 'courses:list' %}">Choose a course to manage assessments</a></p>
 <p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
+<p><a href="{% url 'competency:ranking' %}">Find trainers</a></p>
+<p><a href="{% url 'announcements:manage' %}">Manage announcements</a></p>
+<p><a href="{% url 'dashboards:admin' %}">Admin statistics</a></p>
 {% endblock %}
 
 {% block content %}
@@ -19,4 +22,7 @@
 <p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
 <p><a href="{% url 'courses:list' %}">Choose a course to manage assessments</a></p>
 <p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
+<p><a href="{% url 'competency:ranking' %}">Find trainers</a></p>
+<p><a href="{% url 'announcements:manage' %}">Manage announcements</a></p>
+<p><a href="{% url 'dashboards:admin' %}">Admin statistics</a></p>
 {% endblock %}

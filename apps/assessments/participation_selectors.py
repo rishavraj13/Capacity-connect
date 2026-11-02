@@ -8,8 +8,8 @@ from django.db.models.functions import Coalesce
 from apps.accounts.models import User
 from apps.assessments.constants import PERCENT_QUANTUM, ZERO_PERCENT, AttemptStatus
 from apps.assessments.dataclasses import ParticipationRow, QuestionnaireStats
-from apps.assessments.grading import percent_for
 from apps.assessments.models import Attempt, Questionnaire
+from apps.core.percentages import percent_for
 from apps.courses.models import Enrollment
 
 

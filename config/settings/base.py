@@ -39,6 +39,9 @@ LOCAL_APPS: list[str] = [
     "apps.assessments.apps.AssessmentsConfig",
     "apps.feedback.apps.FeedbackConfig",
     "apps.certificates.apps.CertificatesConfig",
+    "apps.competency.apps.CompetencyConfig",
+    "apps.announcements.apps.AnnouncementsConfig",
+    "apps.dashboards.apps.DashboardsConfig",
 ]
 
 INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

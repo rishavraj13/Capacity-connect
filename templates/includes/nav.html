@@ -43,3 +43,6 @@
 
 {% if user.is_authenticated and user.role == "TRAINEE" %}<a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a>{% endif %}
 <a href="{% url 'certificates:verify_form' %}">Verify certificate</a>
+
+<a href="{% url 'announcements:home' %}">Public announcements</a>
+{% if user.is_approved and user.is_active %}{% if user.role == "TRAINER" %}<a href="{% url 'competency:mine' %}">My competencies</a> <a href="{% url 'dashboards:trainer' %}">My trainer statistics</a>{% elif user.role == "ADMIN" %}<a href="{% url 'competency:ranking' %}">Find trainers</a> <a href="{% url 'announcements:manage' %}">Manage announcements</a> <a href="{% url 'dashboards:admin' %}">Admin statistics</a>{% endif %}{% endif %}

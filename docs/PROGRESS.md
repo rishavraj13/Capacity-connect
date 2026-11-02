@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 in progress; B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 gate passed and awaiting review; B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -131,5 +131,10 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 - [x] READY-only certificate average regressions failed first then passed; no model/migration changes.
 - [x] All six reviewed branches covered; Helvetica/Times-only font inventory and test.
 - [x] Step 0: 1492 passed; 2849 statements, zero missed, 384 branches, two partial; 99% combined coverage. Remaining partial branches: absent active enrollment trigger and retry-command candidate that cannot complete.
-- [ ] B6 implementation, full gate and compact report.
+- [x] Trainer-only competency declarations, exact row-weighted ranking and eligibility/tie/query tests.
+- [x] Public manual announcement board, Admin CRUD/publication lifecycle and draft/XSS/CSRF proofs.
+- [x] Read-only Admin/trainer dashboards with SQL best-pair aggregates and explicit participation cohort.
+- [x] Shared core percentage helper, bare HTML/navigation, unchanged role landing names and 196-row new-route matrix.
+- [x] Full gate: 1747 passed; 3296 statements, zero missed, 418 branches, two partial; 99% combined coverage. Every new service/selector is 100%.
+- [x] Fresh competency/announcement migrations, Ruff/check/pip passed; existing HSTS deploy warnings remain. Report docs/B6_REPORT.md; full transcript ignored in .local/reports/.
 - [ ] User B6 approval; do not start B7.

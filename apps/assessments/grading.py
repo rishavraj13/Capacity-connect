@@ -1,11 +1,11 @@
 """Validate the entire answer plan before any grade or answer write."""
 
 from dataclasses import dataclass
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 
-from apps.assessments.constants import PERCENT_QUANTUM, PERCENT_SCALE
 from apps.assessments.exceptions import AssessmentRuleError
 from apps.assessments.models import Attempt, Question
+from apps.core.percentages import percent_for
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,13 +25,6 @@ class GradePlan:
     score: int
     percent: Decimal
     passed: bool
-
-
-def percent_for(score: int, total: int) -> Decimal:
-    """Round only Decimal arithmetic with the mandated half-up rule."""
-    return (Decimal(score) * PERCENT_SCALE / Decimal(total)).quantize(
-        PERCENT_QUANTUM, rounding=ROUND_HALF_UP
-    )
 
 
 def _selections(selections: dict) -> dict[int, int]:
