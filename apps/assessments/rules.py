@@ -7,13 +7,11 @@ from apps.accounts.models import User
 from apps.accounts.services import require_approved_role, require_owner_or_admin
 from apps.assessments.constants import (
     ATTEMPT_GRACE_SECONDS,
-    MAX_OPTIONS,
-    MIN_OPTIONS,
     ZERO_PERCENT,
     AttemptStatus,
 )
 from apps.assessments.exceptions import AssessmentRuleError
-from apps.assessments.models import Attempt, Question, Questionnaire
+from apps.assessments.models import Attempt, Questionnaire
 from apps.courses.constants import EnrollmentStatus
 from apps.courses.models import Enrollment
 
@@ -47,18 +45,14 @@ def require_enrollment(trainee: User, questionnaire: Questionnaire) -> User:
 
 def require_ready(questionnaire: Questionnaire) -> None:
     """Refuse starts until every question has a valid finite choice set."""
-    questions = list(
-        Question.objects.filter(questionnaire=questionnaire).prefetch_related("options")
-    )
-    if not questions:
+    from apps.assessments.readiness import ready_questionnaires
+
+    if (
+        not ready_questionnaires(questionnaire.course_id)
+        .filter(pk=questionnaire.pk)
+        .exists()
+    ):
         raise AssessmentRuleError("Questionnaire is not ready.")
-    for question in questions:
-        options = list(question.options.all())
-        if (
-            not MIN_OPTIONS <= len(options) <= MAX_OPTIONS
-            or sum(option.is_correct for option in options) != 1
-        ):
-            raise AssessmentRuleError("Questionnaire is not ready.")
 
 
 def expires_at(attempt: Attempt) -> datetime:

@@ -115,3 +115,24 @@
 - Fix: Update quiz trainers in the same course transaction and count independent conflicting resources in the refusal.
 - Tests: test_reassignment_updates_all_questionnaires_atomically and test_linked_resource_refuses_reassignment_with_relink_count (failed first).
 - Commit: fix(courses): synchronize quiz ownership and clean B4 carry-over.
+
+## BUG 017: Direct feedback service accepted overlong comments
+- Symptom: A 2001-character comment was saved through the service despite the 2000-character limit.
+- Root cause: TextField max_length alone does not install a model MaxLengthValidator.
+- Fix: Add MaxLengthValidator at the model boundary, reused by service full_clean; explicit form bounds remain.
+- Test: test_invalid_feedback_returns_domain_error[4-comment2] failed before the fix.
+- Commit: feat: add B5 feedback completion and private certificates.
+
+## BUG 018: Staff certificate download lacked a reachable navigation link
+- Symptom: Owning trainers/Admin could access downloads by URL but the course participants page offered no link.
+- Root cause: The private delivery view was connected only to the trainee certificate list.
+- Fix: Annotate certificate ID/PK into the already authorized participant query and render a link without extra per-row queries.
+- Test: test_staff_participants_link_to_authorized_certificate_download failed first; existing one-query participation tests remain in the gate.
+- Commit: feat: add B5 feedback completion and private certificates.
+
+## BUG 019: Secondary certificate cleanup failure escaped generation isolation
+- Symptom: An OSError deleting a just-written PDF could escape the generation domain boundary and roll back the triggering write.
+- Root cause: The generation exception handler performed cleanup without converting its own expected I/O failure.
+- Fix: Convert cleanup OSError to CertificateGenerationError too; the existing completion savepoint/logger handles it. A denied filesystem delete requires operator cleanup, but no partial certificate row persists.
+- Test: test_cleanup_storage_failure_still_raises_generation_domain_error failed before the fix.
+- Commit: feat: add B5 feedback completion and private certificates.

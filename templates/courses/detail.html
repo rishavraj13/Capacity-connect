@@ -13,4 +13,7 @@
 {% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}<a href="{% url 'courses:module_edit' module.pk %}">Edit module</a><form method="post" action="{% url 'courses:module_delete' module.pk %}">{% csrf_token %}<button>Delete module</button></form>{% endif %}
 {% if user.role == "TRAINEE" and enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:complete_module' enrollment.pk module.pk %}">{% csrf_token %}<button>Complete module</button></form>{% endif %}
 </li>{% empty %}<li>No modules yet.</li>{% endfor %}</ol>
+{% include "courses/completion.html" %}
+{% if user.role == "TRAINEE" and enrollment %}<p><a href="{% url 'feedback:course_submit' course.pk %}">Give or edit feedback</a></p>{% endif %}
+{% if user.role == "ADMIN" or user.pk == course.trainer_id %}<p><a href="{% url 'feedback:course_summary' course.pk %}">Course feedback</a></p>{% endif %}
 {% endblock %}

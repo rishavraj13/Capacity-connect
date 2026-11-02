@@ -37,6 +37,8 @@ LOCAL_APPS: list[str] = [
     "apps.courses.apps.CoursesConfig",
     "apps.library.apps.LibraryConfig",
     "apps.assessments.apps.AssessmentsConfig",
+    "apps.feedback.apps.FeedbackConfig",
+    "apps.certificates.apps.CertificatesConfig",
 ]
 
 INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -132,3 +134,11 @@ LIBRARY_UPLOAD_LIMITS = {
     "PRESENTATION": env.int("LIBRARY_PRESENTATION_MAX_BYTES", default=25 * 1024 * 1024),
     "DOCUMENT": env.int("LIBRARY_DOCUMENT_MAX_BYTES", default=25 * 1024 * 1024),
 }
+
+SITE_BASE_URL: str = env("SITE_BASE_URL", default="http://127.0.0.1:8000")
+CERTIFICATE_SIGNATORY_NAME: str = env(
+    "CERTIFICATE_SIGNATORY_NAME", default="Capacity Connect Administrator"
+)
+CERTIFICATE_SIGNATORY_TITLE: str = env(
+    "CERTIFICATE_SIGNATORY_TITLE", default="Programme Director"
+)

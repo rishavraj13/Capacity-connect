@@ -28,6 +28,7 @@ def _activate(enrollment: Enrollment) -> Enrollment:
     if enrollment.status == EnrollmentStatus.DROPPED:
         enrollment.status = EnrollmentStatus.ACTIVE
         enrollment.save(update_fields=["status", "updated_at"])
+        _evaluate(enrollment)
     return enrollment
 
 
@@ -96,6 +97,20 @@ def complete_module(
     )
     if next_module != module:
         raise EnrollmentRuleError("Complete modules in order.")
-    return ModuleProgress.objects.create(
+    return _record_progress(enrollment, module)
+
+
+def _evaluate(enrollment: Enrollment) -> None:
+    """Import the orchestration boundary lazily to keep service modules acyclic."""
+    from apps.courses.completion import evaluate_completion
+
+    evaluate_completion(enrollment)
+
+
+def _record_progress(enrollment: Enrollment, module: Module) -> ModuleProgress:
+    """Keep persisted progress outside the completion retry savepoint."""
+    progress = ModuleProgress.objects.create(
         enrollment=enrollment, module=module, completed_at=clock.now()
     )
+    _evaluate(enrollment)
+    return progress

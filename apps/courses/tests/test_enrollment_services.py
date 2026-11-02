@@ -83,8 +83,8 @@ def test_enrollment_race_without_recoverable_row_is_domain_error() -> None:
     assert Enrollment.objects.count() == 1
 
 
-def test_sequential_completion_is_idempotent_and_never_completes_enrollment() -> None:
-    """Keep progress ordered and defer quiz-dependent enrollment completion."""
+def test_sequential_completion_is_idempotent_and_finishes_module_only_course() -> None:
+    """Keep progress ordered and finish module-only courses under the B5 policy."""
     enrollment = EnrollmentFactory()
     first = ModuleFactory(course=enrollment.course, order=1)
     second = ModuleFactory(course=enrollment.course, order=2)
@@ -95,7 +95,7 @@ def test_sequential_completion_is_idempotent_and_never_completes_enrollment() ->
     assert repeated.pk == progress.pk and repeated.completed_at == progress.completed_at
     services.complete_module(enrollment.trainee, enrollment, second)
     enrollment.refresh_from_db()
-    assert enrollment.status == EnrollmentStatus.ACTIVE
+    assert enrollment.status == EnrollmentStatus.COMPLETED
     assert enrollment.progress.count() == 2
 
 

@@ -1,6 +1,6 @@
 """Provide visibility-filtered course reads and bounded participant counts."""
 
-from django.db.models import Count, Prefetch, Q, QuerySet
+from django.db.models import Count, F, Prefetch, Q, QuerySet
 
 from apps.accounts.constants import UserRole
 from apps.accounts.models import User
@@ -75,7 +75,10 @@ def enrollments_for(trainee: User) -> QuerySet[Enrollment]:
 def course_participants(user: User, course: Course) -> QuerySet[Enrollment]:
     """Restrict participation data to an owning trainer or Admin."""
     allowed = managed_courses(user).filter(pk=course.pk)
-    return _progress_counts(Enrollment.objects.filter(course__in=allowed))
+    return _progress_counts(Enrollment.objects.filter(course__in=allowed)).annotate(
+        certificate_pk=F("certificate__pk"),
+        certificate_number=F("certificate__certificate_id"),
+    )
 
 
 def managed_modules(user: User) -> QuerySet[Module]:
@@ -92,7 +95,13 @@ def detail_context(user: User, course: Course) -> dict:
         if user.role == UserRole.TRAINEE
         else None
     )
-    return {"course": course, "enrollment": enrollment}
+    from apps.courses.completion_selectors import completion_status
+
+    return {
+        "course": course,
+        "enrollment": enrollment,
+        "completion": completion_status(enrollment) if enrollment else None,
+    }
 
 
 def enrollment_modules(enrollment: Enrollment) -> QuerySet[Module]:

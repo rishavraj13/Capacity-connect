@@ -165,13 +165,11 @@ def has_passed(trainee: User, questionnaire: Questionnaire) -> bool:
     ).exists()
 
 
-def conflicting_course_questionnaires(
-    course: object, trainer: User, subject: object
+def conflicting_course_questionnaire_subjects(
+    course: object, subject: object
 ) -> QuerySet[Questionnaire]:
     """Keep derived assessment references consistent when course metadata changes."""
-    return Questionnaire.objects.filter(course=course).exclude(
-        trainer=trainer, subject=subject
-    )
+    return Questionnaire.objects.filter(course=course).exclude(subject=subject)
 
 
 def question_initial(question: Question) -> dict:
@@ -200,4 +198,43 @@ def result_history(user: User, questionnaire: Questionnaire) -> QuerySet[Attempt
         visible_results(user)
         .filter(questionnaire=questionnaire)
         .select_related("trainee")
+    )
+
+
+def completion_questionnaires(enrollment: object) -> QuerySet[Questionnaire]:
+    """Join ready-quiz passing/usage requirements for the completion handoff."""
+    from apps.assessments.readiness import ready_questionnaires
+
+    attempts = Attempt.objects.filter(
+        questionnaire_id=OuterRef("pk"), trainee_id=enrollment.trainee_id
+    )
+    return ready_questionnaires(enrollment.course_id).annotate(
+        trainee_passed=Exists(
+            attempts.filter(status=AttemptStatus.SUBMITTED, passed=True)
+        ),
+        attempts_left=Greatest(
+            F("max_attempts")
+            - Count("attempts", filter=Q(attempts__trainee_id=enrollment.trainee_id)),
+            Value(0),
+        ),
+    )
+
+
+def best_submitted_percents(enrollment: object) -> list:
+    """Keep all quizzes in certificate averaging, including missing submitted grades."""
+    from django.db.models import Max
+
+    return list(
+        Questionnaire.objects.filter(course_id=enrollment.course_id)
+        .order_by()
+        .annotate(
+            best=Max(
+                "attempts__percent",
+                filter=Q(
+                    attempts__trainee_id=enrollment.trainee_id,
+                    attempts__status=AttemptStatus.SUBMITTED,
+                ),
+            )
+        )
+        .values_list("best", flat=True)
     )

@@ -3,7 +3,11 @@
 import pytest
 
 from apps.accounts.tests.factories import UserFactory
-from apps.assessments.tests.factories import QuestionFactory
+from apps.assessments.tests.factories import (
+    AttemptFactory,
+    QuestionFactory,
+    QuestionnaireFactory,
+)
 from apps.core.exceptions import CapacityConnectError
 from apps.courses.services import update_course
 from apps.library.tests.factories import ResourceFactory
@@ -15,10 +19,13 @@ def test_reassignment_updates_all_questionnaires_atomically() -> None:
     """Allow a valid new trainer to own the course and every derived quiz."""
     question = QuestionFactory()
     quiz = question.questionnaire
+    second = QuestionnaireFactory(course=quiz.course)
+    AttemptFactory(questionnaire=second)
     new_trainer = UserFactory(approved_trainer=True)
     update_course(UserFactory(active_admin=True), quiz.course, {"trainer": new_trainer})
     quiz.refresh_from_db()
-    assert quiz.trainer == new_trainer
+    second.refresh_from_db()
+    assert quiz.trainer == second.trainer == new_trainer
 
 
 def test_linked_resource_refuses_reassignment_with_relink_count() -> None:

@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 in progress; B6 through B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 gate passed and awaiting review; B6 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -111,11 +111,17 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 - [x] Bare HTML routes, explicit roles/ownership, seven-actor GET/POST matrix, CSRF/IDOR/mass-assignment checks.
 - [x] Fresh migration and full gate: 1265 tests; coverage 99% (2303 statements, 7 missed; 324 branches, 2 partial).
 - [x] Compact report docs/B4_REPORT.md; full transcript ignored in .local/reports/.
-- [ ] User B4 review/approval. Do not merge/tag B4 or start B5 before approval.
+- [x] User B4 approval; merged/tagged b4-approved and authorized B5.
 
 ## B5 Step 0 and Feedback/Certificates
 - [x] B4 merged/tagged b4-approved; created phase/b5-feedback-certificates.
 - [x] ADR 047 attribution/units corrected; pass_rate_percent rename preserves arithmetic.
 - [x] Carry-over: reassignment regressions failed first then passed; unreachable guards removed, direct eligibility/clock tests added. Step 0: 1274 passed; 2301 statements and 322 branches, 100% coverage.
-- [ ] Feedback, completion, certificates and full B5 gate/report.
+- [x] Feedback constraints, eligible upserts, anonymity, pagination and exact summaries.
+- [x] Shared readiness, sole completion entry/triggers, isolated failures and retry command.
+- [x] Certificate constraints, exact averages/grades, yearly ID collision recovery and private PDF snapshot.
+- [x] Minimal public verification, private downloads, bare HTML/navigation and 140-row permission matrix.
+- [x] Sample PDF generated and visually inspected in ignored .local/samples/.
+- [x] Final gate: 1486 passed; 99% combined coverage (2847 statements, 6 missed; 374/382 branches covered), clean Ruff/fresh migrations/check/pip; existing HSTS warnings remain.
+- [x] Compact report docs/B5_REPORT.md; raw transcript/import evidence ignored in .local/reports/.
 - [ ] User B5 approval; do not start B6.

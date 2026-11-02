@@ -46,6 +46,7 @@ def test_production_csrf_cookie_is_httponly(monkeypatch: object) -> None:
     from importlib import import_module
 
     monkeypatch.setenv("ALLOWED_HOSTS", "prod.example")
+    monkeypatch.setenv("SITE_BASE_URL", "https://prod.example")
     prod = import_module("config.settings.prod")
     assert prod.CSRF_COOKIE_HTTPONLY is True
 

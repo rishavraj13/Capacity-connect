@@ -144,9 +144,9 @@ def delete_module(actor: User, module: Module) -> None:
 
 def _check_assessment_references(course: Course, subject: object) -> None:
     """Keep assessment subject history stable when editing a course's subject."""
-    from apps.assessments.selectors import conflicting_course_questionnaires
+    from apps.assessments.selectors import conflicting_course_questionnaire_subjects
 
-    if conflicting_course_questionnaires(course, course.trainer, subject).exists():
+    if conflicting_course_questionnaire_subjects(course, subject).exists():
         raise CourseRuleError(
             "Course subject cannot change while linked assessments exist."
         )

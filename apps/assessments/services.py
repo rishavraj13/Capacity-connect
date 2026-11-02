@@ -152,6 +152,8 @@ def _persist_submission(attempt: Attempt, plan: GradePlan, instant: datetime) ->
         )
         attempt.status, attempt.submitted_at = AttemptStatus.SUBMITTED, instant
         attempt.save(update_fields=SUBMISSION_FIELDS)
+    if attempt.passed:
+        _evaluate_completion(attempt)
 
 
 @transaction.atomic
@@ -172,3 +174,10 @@ def submit_attempt(trainee: User, attempt: Attempt, selections: dict) -> Attempt
             raise AssessmentRuleError("Submission conflict; retry.") from exc
         return winner
     return attempt
+
+
+def _evaluate_completion(attempt: Attempt) -> None:
+    """Keep the trigger adapter lazy while completion owns the transition rule."""
+    from apps.courses.completion import evaluate_course_attempt
+
+    evaluate_course_attempt(attempt)

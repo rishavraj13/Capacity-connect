@@ -20,3 +20,5 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS: bool = env.bool(
 SECURE_CONTENT_TYPE_NOSNIFF: bool = env.bool(
     "SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )
+
+SITE_BASE_URL: str = env("SITE_BASE_URL")

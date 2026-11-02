@@ -2,6 +2,8 @@
 
 {% block title %}Trainee Dashboard - Capacity Connect<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
 <p><a href="{% url 'assessments:mine' %}">My assessments</a></p>
+<p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
+<p><a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a></p>
 {% endblock %}
 
 {% block content %}
@@ -11,4 +13,6 @@
 </section>
 <p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
 <p><a href="{% url 'assessments:mine' %}">My assessments</a></p>
+<p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
+<p><a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a></p>
 {% endblock %}

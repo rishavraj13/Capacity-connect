@@ -64,3 +64,12 @@ def assert_matrix_case(client: Client, row: tuple, request: MatrixRequest) -> No
     response = getattr(client, method.lower())(request.url, data=request.data)
     assert response.status_code == expected
     response.close()
+
+
+def public_permission_rows(name: str) -> list[tuple]:
+    """Express public safe-method routes, including anonymous GET 200, explicitly."""
+    return [
+        (actor, name, method, 200 if method == "GET" else 405)
+        for actor in OWNERSHIP_ACTORS
+        for method in ("GET", "POST")
+    ]

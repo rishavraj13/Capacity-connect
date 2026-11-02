@@ -7,6 +7,7 @@ from django.test import Client
 from django.urls import reverse
 
 from apps.accounts.tests.factories import UserFactory
+from apps.assessments.tests.factories import QuestionFactory
 from apps.catalog.tests.factories import SubjectFactory
 from apps.courses.models import Course, Enrollment, Module
 from apps.courses.tests.factories import CourseFactory, ModuleFactory
@@ -60,8 +61,9 @@ def test_trainer_module_form_writes(client: Client) -> None:
 
 
 def test_enroll_complete_drop_resume_http_flow(client: Client) -> None:
-    """Keep progress across drops without triggering quiz-dependent completion."""
+    """Keep progress across drops while an unpassed ready quiz prevents completion."""
     course = CourseFactory(is_published=True)
+    QuestionFactory(questionnaire__course=course)
     module = ModuleFactory(course=course, order=1)
     trainee = UserFactory(approved_trainee=True)
     client.force_login(trainee)

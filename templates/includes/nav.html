@@ -40,3 +40,6 @@
                 {% endif %}
             </ul>
         </nav>
+
+{% if user.is_authenticated and user.role == "TRAINEE" %}<a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a>{% endif %}
+<a href="{% url 'certificates:verify_form' %}">Verify certificate</a>

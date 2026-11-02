@@ -5,6 +5,7 @@ from django.test import Client
 from django.urls import reverse
 
 from apps.accounts.tests.factories import UserFactory
+from apps.assessments.tests.factories import QuestionFactory
 from apps.catalog.tests.factories import SkillFactory
 from apps.core.exceptions import CapacityConnectError
 from apps.courses import services
@@ -76,8 +77,9 @@ def test_unpublished_enrollment_keeps_access_and_module_progress(
 
 
 def test_active_all_done_station_map_has_no_current() -> None:
-    """Keep an all-done ACTIVE enrollment ready for future quiz completion rules."""
+    """Keep an all-done ACTIVE enrollment while a ready quiz still needs a pass."""
     enrollment = EnrollmentFactory()
+    QuestionFactory(questionnaire__course=enrollment.course)
     for order in (1, 2):
         module = ModuleFactory(course=enrollment.course, order=order)
         services.complete_module(enrollment.trainee, enrollment, module)
