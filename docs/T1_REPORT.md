@@ -1,3 +1,5 @@
+Historical interim report, superseded by [the final backend handoff](BACKEND_HANDOFF_REPORT.md). The results and pending decision below describe that earlier checkpoint.
+
 PHASE / TASK: T1 Testing stage (interim report)
 
 STATUS: Needs decision

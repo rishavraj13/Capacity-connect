@@ -1,6 +1,6 @@
 # Testing stage evidence and requirements
 
-Verification is in progress; this is not the final backend handoff. No frontend work. All evidence transcripts are UTF-8 under ignored .local/reports/.
+T1–T7 verification is complete; see BACKEND_HANDOFF_REPORT.md for the final report. No frontend work. All evidence transcripts are UTF-8 under ignored .local/reports/.
 
 ## Requirements traceability
 
@@ -32,7 +32,7 @@ R4 originally lacked grouped/filtered subject discovery. The reviewer authorised
 | Authentication/password checks | accounts/tests/test_forms.py::test_login_form_wrong_password_gives_generic_message; test_login_form_approved_user_succeeds | Covered |
 | Approval/rejection | accounts/tests/test_forms.py::test_login_form_unapproved_user_gives_awaiting_approval; core/tests/journeys/test_failure_paths.py::test_j2_unapproved_wrong_role_and_rejected_session | Covered |
 | Roles/future routes | core/tests/test_route_audit.py::test_every_route_declares_access_and_denies_anonymous_unless_public; accounts/tests/test_permissions.py | Covered |
-| Ownership/IDOR | profiles/tests/test_idor.py::test_other_trainee_history_and_files_are_hidden; courses/tests/test_idor.py; assessments/tests/test_idor.py | Covered |
+| Ownership/IDOR | core/tests/journeys/test_isolation.py::test_j3_url_walk_classifies_shared_reads_and_denies_cross_owner; profiles/tests/test_idor.py::test_other_trainee_history_and_files_are_hidden; courses/tests/test_idor.py; assessments/tests/test_idor.py | Covered |
 | CSRF | core/tests/test_csrf.py::test_new_post_routes_enforce_csrf; core/tests/test_b3_csrf.py; assessments/tests/test_csrf.py | Covered |
 | XSS escaping | announcements/tests/test_selectors.py::test_public_body_is_escaped_with_only_line_breaks; feedback/tests/test_selectors.py::test_trainer_anonymity_admin_identity_and_escaped_comments | Covered |
 | Upload bytes/size/path abuse | core/tests/test_uploads.py; profiles/tests/test_upload_forms.py; library/tests/test_uploads.py::test_wrong_content_empty_and_oversize | Covered |
@@ -50,7 +50,7 @@ All paths in this table are under apps/. Module references include all parametri
 
 - R4 subject discovery gap was approved and fixed separately (ADR 069); regression tests failed first.
 - R14 is deliberately Partial: proposed default is to retain frontend usability/device/accessibility verification for the frontend stage, as already required. No frontend implementation is added.
-- J3 shared-read classification is pending reviewer clarification; no approved access policy will be tightened silently.
+- J3 classification was approved on 2026-11-02 and implemented as tests only (ADR 071). No unresolved backend requirement gap remains.
 
 ## What is not tested
 
@@ -58,7 +58,7 @@ PostgreSQL not run; no driver added. No multi-process, concurrency stress or loa
 
 Operational note: behind one trusted reverse proxy set TRUSTED_PROXY_COUNT=1, otherwise all visitors share the proxy IP and can throttle each other. The proxy must sanitize forwarding headers; HTTPS proxy trust is separately opt-in. HSTS is 3600 s; include-subdomains and preload are intentionally off until HTTPS is verified; go-live checks use the documented strict environment.
 
-## Execution results (before pending J3 classification)
+## Final execution results
 
 ### Step 0
 
@@ -81,10 +81,10 @@ Installed top-level package versions (pip freeze; T1_VERSIONS.txt):
 
 Cloned into a new empty temporary directory; no working-tree files copied. Used the clone virtualenv Python explicitly (equivalent to activation), requirements/dev.txt, copied the clone .env.example, replaced only SECRET_KEY with a generated value, migrated and seeded (the authorised alternative to createsuperuser). Commands/results:
 
-`git clone --branch phase/t1-testing C:\Django\Project C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2` (exit 0):
+`git clone --branch phase/t1-testing C:\Django\Project C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n` (exit 0):
 
 ```text
-Cloning into 'C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2'...
+Cloning into 'C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n'...
 done.
 ```
 
@@ -94,16 +94,16 @@ done.
 
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe -m pip install -r requirements/dev.txt` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe -m pip install -r requirements/dev.txt` (exit 0):
 
 ```text
 -2.21.0 pytest-9.2.0 pytest-django-4.14.0 reportlab-5.1.0 ruff-0.17.3 sqlparse-0.6.1 tzdata-2026.6
 
 [notice] A new release of pip is available: 26.1.2 -> 26.2.2
-[notice] To update, run: C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe -m pip install --upgrade pip
+[notice] To update, run: C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe -m pip install --upgrade pip
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe manage.py migrate` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe manage.py migrate` (exit 0):
 
 ```text
 g certificates.0001_initial... OK
@@ -115,7 +115,7 @@ g certificates.0001_initial... OK
   Applying sessions.0001_initial... OK
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe manage.py seed_demo_data` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe manage.py seed_demo_data` (exit 0):
 
 ```text
 proved
@@ -128,43 +128,43 @@ demo_trainer_vikram | TRAINER | approved
 Demo password (development only): Demo-Connect-2026!
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe -m pytest` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe -m pytest` (exit 0):
 
 ```text
-============================ 1978 passed in 27.57s ============================
+============================ 1984 passed in 35.68s ============================
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe -m coverage run -m pytest` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe -m coverage run -m pytest` (exit 0):
 
 ```text
-============================ 1978 passed in 27.09s ============================
+============================ 1984 passed in 35.53s ============================
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe -m coverage report -m` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe -m coverage report -m` (exit 0):
 
 ```text
 TOTAL                                                       3817      0    522      0   100%
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe -m ruff check .` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe -m ruff check .` (exit 0):
 
 ```text
 All checks passed!
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe -m ruff format --check .` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe -m ruff format --check .` (exit 0):
 
 ```text
-354 files already formatted
+361 files already formatted
 ```
 
-`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-do6ug7r2\venv\Scripts\python.exe manage.py check` (exit 0):
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-clone-6kgrqy3n\venv\Scripts\python.exe manage.py check` (exit 0):
 
 ```text
 System check identified no issues (0 silenced).
 ```
 
-The clone runserver --noreload homepage returned HTTP 200, then the process was terminated. Full output: T1_CLONE_OUTPUT.txt. Requirements pin top-level versions; clone transitive sqlparse resolved 0.6.1 while the original environment has 0.6.0. Both passed; no transitive lockfile claim is made. The real installed package index was used; no package was added to requirements.
+The tested source commit is fc844b5; subsequent changes are handoff documentation only. The clone runserver --noreload homepage returned HTTP 200, then the process was terminated. Full output: T1_CLONE_OUTPUT.txt. Requirements pin top-level versions; clone transitive sqlparse resolved 0.6.1 while the original environment has 0.6.0. Both passed; no transitive lockfile claim is made. The real installed package index was used; no package was added to requirements.
 
 ### T2 separate apps and orders
 
@@ -176,16 +176,16 @@ The clone runserver --noreload homepage returned HTTP 200, then the process was 
 | catalog | 105 passed in 1.39s |
 | certificates | 173 passed in 2.51s |
 | competency | 23 passed in 1.01s |
-| core | 274 passed in 5.81s |
+| core | 280 passed in 9.08s |
 | courses | 276 passed in 3.79s |
 | dashboards | 205 passed in 2.40s |
 | feedback | 29 passed in 0.99s |
 | library | 150 passed in 2.07s |
 | profiles | 277 passed in 4.07s |
 
-- REVERSE: 1978 passed in 25.29s.
-- NORMAL_1: 1978 passed in 26.35s.
-- NORMAL_2: 1978 passed in 25.14s.
+- REVERSE: 1984 passed in 34.74s.
+- NORMAL_1: 1984 passed in 34.83s.
+- NORMAL_2: 1984 passed in 33.61s.
 
 Reverse run temporarily appended pytest_collection_modifyitems to conftest.py; original bytes restored in finally. Hook is not committed. Exact requested clock/sleep rg command returned exit 1 with no matches (T1_CLOCK_SCAN.txt); there are no matches to explain. Operational server-start polling outside the repo tests uses sleep; application tests do not.
 
@@ -224,8 +224,9 @@ Admin bootstrap is the only direct initial fixture write, equivalent to createsu
 - `apps/core/tests/journeys/test_failure_paths.py::test_j2_late_submission_and_third_attempt_refused`: PASS.
 - `apps/core/tests/journeys/test_failure_paths.py::test_j2_module_skip_and_dropped_trainee_refused`: PASS.
 - `apps/core/tests/journeys/test_happy_path.py::test_j1_happy_path`: PASS.
+- `apps/core/tests/journeys/test_isolation.py::test_j3_url_walk_classifies_shared_reads_and_denies_cross_owner`: PASS.
 
-J3 has not run: the pending question concerns explicitly shared published details/trainer profiles versus ownership-only routes. Existing IDOR suites and all-route audit already pass, but do not substitute for the requested HTTP-only generic J3 journey.
+J3 completed after the reviewer answered on 2026-11-02: "Classify shared reads explicitly (Recommended)" (ADR 071). Four parametrized HTTP walks cover all 59 integer-identifier app routes in both directions with trainer A/B and trainee A/B. Each issues 78 requests: 71 restricted requests returning 403/404, 5 shared reads returning 200 and 2 separately classified current-user participation actions. Total 312 requests. Three private-file kinds are exercised. Every target row exists and was created through HTTP. Snapshot comparisons prove protected requests leave all domain rows unchanged (sessions excluded); legitimate enrollment creates a distinct own ACTIVE row and preserves the target completed row. The URLconf inventory must exactly match bindings: unclassified new routes fail. Full route/method/status evidence: T1_J3_HTTP.json. Built-in admin routes and public string-ID verification retain route-audit/J1 coverage.
 
 ### Bugs and failing-first proof
 
@@ -238,13 +239,13 @@ J3 has not run: the pending question concerns explicitly shared published detail
 `python -m pytest` (exit 0):
 
 ```text
-============================ 1978 passed in 23.35s ============================
+============================ 1984 passed in 31.10s ============================
 ```
 
 `python -m coverage run -m pytest` (exit 0):
 
 ```text
-============================ 1978 passed in 23.45s ============================
+============================ 1984 passed in 31.55s ============================
 ```
 
 `python -m coverage report -m` (exit 0):
@@ -262,7 +263,7 @@ All checks passed!
 `python -m ruff format --check .` (exit 0):
 
 ```text
-356 files already formatted
+361 files already formatted
 ```
 
 `python manage.py makemigrations --check` (exit 0):
@@ -343,6 +344,7 @@ Files >150 lines:
 - apps/assessments/tests/test_grading.py: 164.
 - apps/assessments/tests/test_selectors.py: 179.
 - apps/assessments/tests/test_views.py: 192.
+- apps/core/tests/journeys/isolation_data.py: 172.
 - apps/core/tests/test_throttle.py: 174.
 - apps/courses/services.py: 159.
 - apps/courses/tests/test_completion.py: 201.
@@ -357,6 +359,7 @@ AST top ten:
 
 - 25 lines: apps/library/tests/test_crud.py:42 test_edit_replace_delete_forms_cleanup_files.
 - 25 lines: apps/core/tests/test_environment_catalogue.py:40 test_production_defaults_and_opt_in_proxy.
+- 25 lines: apps/core/tests/journeys/isolation_data.py:148 _declarations.
 - 25 lines: apps/core/demo_learning.py:54 demo_assessments.
 - 25 lines: apps/certificates/services.py:60 issue_certificate.
 - 25 lines: apps/accounts/permissions.py:45 role_required.
@@ -364,6 +367,16 @@ AST top ten:
 - 24 lines: apps/profiles/tests/test_crud.py:20 test_trainee_profile_post_and_private_photo.
 - 24 lines: apps/feedback/tests/test_views.py:53 test_csrf_required_for_submit_and_delete.
 - 24 lines: apps/dashboards/tests/factories.py:11 analytics_dataset.
-- 24 lines: apps/core/tests/journeys/helpers.py:44 learning_course.
 
-No production deployment, frontend work or testing-branch merge/tag has occurred. Final backend handoff remains pending J3.
+No production deployment, frontend work or testing-branch merge/tag has occurred. Final backend handoff is ready for reviewer approval.
+
+## J3 parametrized node results
+
+| Exact node under apps/core/tests/journeys/test_isolation.py | Requests | Result |
+|---|---:|---|
+| test_j3_url_walk_classifies_shared_reads_and_denies_cross_owner[0-staff] | 78 | PASS |
+| test_j3_url_walk_classifies_shared_reads_and_denies_cross_owner[0-learner] | 78 | PASS |
+| test_j3_url_walk_classifies_shared_reads_and_denies_cross_owner[1-staff] | 78 | PASS |
+| test_j3_url_walk_classifies_shared_reads_and_denies_cross_owner[1-learner] | 78 | PASS |
+
+All 59 app routes with pk, course_id or user_id are explicitly bound to actual existing objects. Built-in admin uses its separate audited policy, and public string-ID verification is covered by J1. Shared reads and own participation are recorded separately from forbidden cross-owner requests; no access rule was changed.

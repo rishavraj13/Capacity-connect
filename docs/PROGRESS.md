@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 approved and merged/tagged; B7 in progress. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 approved and merged/tagged; B7 approved and merged/tagged; T1–T7 verification complete and backend handoff awaiting approval. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -166,7 +166,7 @@ Testing stage is active; frontend has not started.
 ## T1 Testing
 - [x] B7 merged/tagged; testing branch created.
 - [x] Step 0 proxy warning/tests, professional demo history, explicit non-debug password guard and take-page query budget.
-- [ ] T1–T7 verification and backend handoff; no frontend work.
+- [x] T1–T7 verification and backend handoff complete; docs/TEST_REPORT.md and docs/BACKEND_HANDOFF_REPORT.md. No frontend work.
 
 - [x] R4 subject filter authorised and implemented with HTTP regression tests.
 - [x] J1 happy path and J2 failure journeys pass using HTTP after the initial admin fixture.
@@ -174,11 +174,13 @@ Testing stage is active; frontend has not started.
 
 - [x] BUG 024 reproduced with three failing HTTP regressions; authentication non-field errors now rendered.
 
-- [x] T1 clean clone from the committed testing branch: isolated venv/install/setup, 1978 tests, 100% coverage, runserver homepage 200.
-- [x] T2 all twelve apps separately; reverse and two normal runs each 1978 passed; no requested sleep/real-clock rg matches.
+- [x] Initial T1 clone checkpoint before J3: isolated venv/install/setup, 1978 tests, 100% coverage, runserver homepage 200.
+- [x] Initial T2 checkpoint before J3: all twelve apps separately; reverse and two normal runs each 1978 passed; no requested sleep/real-clock rg matches.
 - [x] T3 twenty hand-authored mutations each trigger test failures; restored through git checkout, clean status asserted after each mutation.
 - [x] T5 requirements traceability and T6 security-control mapping in docs/TEST_REPORT.md; R4 fixed after explicit approval; R14 remains frontend-partial by scope.
 - [x] T7 honest limits, URL map and dataclass frontend contracts documented; no frontend work.
-- [x] Current verification gate: 1978 passed in 23.35s; coverage run 1978 passed in 23.45s; 3817 statements / 522 branches, zero misses, 100%; Ruff, fresh migrate, checks, pip and go-live deploy check clean; no size/encoding violations.
+- [x] Interim verification gate before J3: 1978 passed in 23.35s; coverage run 1978 passed in 23.45s; 3817 statements / 522 branches, zero misses, 100%; Ruff, fresh migrate, checks, pip and go-live deploy check clean; no size/encoding violations.
 - [x] J3 complete with real target IDs, both actor roles/directions and no protected-request domain writes.
-- [ ] Final verification refresh and backend handoff report.
+- [x] Final verification: 1984 passed in 31.10s; coverage run 1984 passed in 31.55s; 3817 statements / 522 branches, zero misses, 100%; standard checks and fresh migrations pass, go-live deploy zero issues, no size/encoding violations.
+- [x] Final fresh clone: 1984 tests and 100% coverage; reverse/normal/normal each 1984; per-app counts sum to 1984.
+- [ ] Reviewer approval of backend handoff; no testing-branch merge/tag or frontend work before instruction.
