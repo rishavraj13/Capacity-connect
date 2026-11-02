@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block content %}<h2>Station map</h2>
+<ul>{% for line in lines %}<li>{{ line.subject_name }}<ol>{% for station in line.stations %}<li><a href="{% url 'courses:detail' station.course_id %}">{{ station.course_title }}</a> - {{ station.order }}. {{ station.title }} - {{ station.state }}{% if station.is_interchange %} (interchange){% endif %}</li>{% empty %}<li>No stations.</li>{% endfor %}</ol></li>{% empty %}<li>No active or completed enrollments.</li>{% endfor %}</ul>{% endblock %}

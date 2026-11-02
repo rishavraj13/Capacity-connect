@@ -80,3 +80,17 @@
 - Fix: Apply distinct at the selector boundary before exposing form choices.
 - Test: test_existing_and_active_choices_do_not_duplicate_shared_skills (failed first).
 - Commit: fix(profiles): complete B2.1 pre-merge review.
+
+## BUG 012: Resource detail leaked linked unpublished course titles
+- Symptom: A published resource displayed its unpublished course title to an unrelated trainee.
+- Root cause: The template used the resource FK directly without applying course visibility.
+- Fix: Resolve course_visible through courses.selectors.visible_courses before rendering a course link.
+- Test: test_public_resource_does_not_expose_unpublished_course_metadata (failed first).
+- Commit: feat(courses): add B3 courses and private library workflows.
+
+## BUG 013: Settings test assumed wrapper metadata was the configured module
+- Symptom: The full suite's loader assertion failed after shared temporary-storage overrides were introduced.
+- Root cause: Django's settings override holder has SETTINGS_MODULE=None even though the configured test loader, DB and hasher remain correct.
+- Fix: Assert the configured DJANGO_SETTINGS_MODULE environment value; retain the concrete DB, hasher and timezone assertions.
+- Test: test_settings_load_under_test_settings (failed in the full B3 suite before the adjustment).
+- Commit: feat(courses): add B3 courses and private library workflows.

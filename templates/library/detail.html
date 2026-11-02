@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block content %}<h2>{{ resource.title }}</h2>
+<p>{{ resource.description }}</p><p>{{ resource.kind }} - {{ resource.subject.name }} - {{ resource.trainer.username }}</p>
+{% if course_visible %}<p><a href="{% url 'courses:detail' resource.course_id %}">{{ resource.course.title }}</a></p>{% endif %}
+<a href="{% url 'library:download' resource.pk %}">Open or download file</a>
+{% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == resource.trainer_id %}
+<p><a href="{% url 'library:edit' resource.pk %}">Edit resource</a></p>
+{% if resource.is_published %}<form method="post" action="{% url 'library:unpublish' resource.pk %}">{% csrf_token %}<button>Unpublish</button></form>{% else %}<form method="post" action="{% url 'library:publish' resource.pk %}">{% csrf_token %}<button>Publish</button></form>{% endif %}
+<form method="post" action="{% url 'library:delete' resource.pk %}">{% csrf_token %}<button>Delete resource</button></form>{% endif %}{% endblock %}

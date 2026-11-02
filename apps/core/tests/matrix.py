@@ -16,9 +16,28 @@ ACTOR_TRAITS = {
 }
 
 
+OWNERSHIP_ACTORS = (
+    "anonymous",
+    "trainee",
+    "trainer_owner",
+    "trainer_other",
+    "admin",
+    "unapproved",
+    "inactive",
+)
+OWNERSHIP_ALIASES = {
+    "trainee": "approved_trainee",
+    "trainer_owner": "approved_trainer",
+    "trainer_other": "approved_trainer",
+    "admin": "approved_admin",
+    "unapproved": "unapproved_user",
+    "inactive": "rejected_user",
+}
+
+
 def actor_user(actor: str) -> User | None:
     """Create a consistent persona for permission checks in every app."""
-    trait = ACTOR_TRAITS.get(actor)
+    trait = ACTOR_TRAITS.get(OWNERSHIP_ALIASES.get(actor, actor))
     return UserFactory(**{trait: True}) if trait else None
 
 

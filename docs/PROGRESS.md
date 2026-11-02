@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 in progress; B4 through B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 gate passed and awaiting approval; B4 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -51,7 +51,7 @@ Status: B0, B1 and B2/B2.1 approved; B3 in progress; B4 through B7 not started. 
 - Added `docs/IMPLEMENTATION_BRIEF.md` covering all 16 architecture and engineering sections.
 - Re-verified all gate checks: Pytest, Coverage, Ruff check, Ruff format, makemigrations, fresh database migration, check, and pip check.
 
-## B2 Catalog and Profiles (gate passed; awaiting approval)
+## B2 Catalog and Profiles (approved; merged and tagged b2-approved)
 - [x] B1 merged into main and tagged b1-approved.
 - [x] Phase table corrected and ADR 015 appended in the first B2 commit.
 - [x] Added root AGENTS.md; split authentication and administrator view tests.
@@ -69,9 +69,10 @@ Status: B0, B1 and B2/B2.1 approved; B3 in progress; B4 through B7 not started. 
 ## Current known issues
 - Login and signup throttling is not implemented (ADR 011, planned for B7).
 - HSTS is 3600 s; include-subdomains and preload are intentionally off until HTTPS is verified (B7).
+- Library video downloads do not implement Range requests; long videos cannot seek (planned for B7 deployment).
 - Storage writes are not transactional; new files can remain unreferenced after an outer transaction rollback (ADR 021).
 
-## B2.1 pre-merge review (gate passed; awaiting approval)
+## B2.1 pre-merge review (approved)
 - [x] Confirmed initial profiles migrations shared one first commit; regenerated one clean 0001.
 - [x] Fixed source encoding, setup README and status-independent AGENTS instructions.
 - [x] Removed committed raw transcript from Git; local evidence is ignored.
@@ -87,3 +88,14 @@ Status: B0, B1 and B2/B2.1 approved; B3 in progress; B4 through B7 not started. 
 - [x] Verified ignore rules for public/private storage and local evidence.
 - [x] Moved CSRF_COOKIE_HTTPONLY to base settings; dev/prod inherit True.
 - [x] Full pytest: 533 passed in 6.28s; real private_uploads file list before=[] and after=[] (identical).
+
+## B3 Courses and Library (gate passed; awaiting approval)
+- [x] Course/module/enrollment/progress models, named constraints and migrations.
+- [x] Eligible-role and owner/Admin writes, clean unique races and sequential progress.
+- [x] Visibility/count selectors and immutable station-map handoff.
+- [x] Kind-specific private library uploads, lifecycle and download delivery.
+- [x] Bare semantic views, reachable navigation, seven-actor new-route matrix and CSRF tests.
+- [x] Four-query station-map tests at small and large scales; IDOR and file cleanup tests.
+- [x] Final gate: 948 tests passed; 1597/1597 statements and 222/222 branches covered.
+- [x] Compact report delivered in docs/B3_REPORT.md; full transcript ignored in .local/reports/.
+- [ ] User B3 approval. Do not start B4.

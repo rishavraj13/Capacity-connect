@@ -141,3 +141,35 @@
 ## ADR 029: Shared HttpOnly CSRF cookie and storage isolation
 - **Decision:** CSRF_COOKIE_HTTPONLY=True lives in base.py so dev, test and prod match. Server-rendered csrf_token fields require no JavaScript cookie reader.
 - **Consequences:** Ignore rules protect media/, private_uploads/ and .local/; a before/after full-suite file inventory verifies that tests leave the real private storage unchanged.
+
+## ADR 030: Course schema and eligible role references
+- **Decision:** Course and Enrollment retain subject/trainer/trainee references with PROTECT; modules cascade with their course, and progress cascades with enrollment but protects modules. Named constraints enforce course date order, module order >=1, unique course/order, unique trainee/course and unique enrollment/module.
+- **Consequences:** User role eligibility cannot be a database FK check. Shared account services re-read persisted role, approval and active state for trainer assignment and trainee participation. There is no course delete service or URL; enrolled courses are protected by their FK history.
+
+## ADR 031: Course ownership and descriptive edits
+- **Decision:** Trainers create/manage only their own courses and resources; trainer ownership is assigned from the actor automatically. Admin can assign any currently valid trainer and manage any record. Services accept the actor where needed to enforce ownership even outside views; views filter object access to 404. Publication uses separate POST actions, never mass-assigned form fields.
+- **Consequences:** New courses and new subject assignments require active subjects. Existing retired-subject history can be edited without changing its subject. Course trainer/subject edits that would invalidate existing library associations are rejected until those resources are detached/reassigned, rather than silently corrupting the invariant.
+
+## ADR 032: Unique enrollment and reactivation
+- **Decision:** enroll checks an approved active trainee and a published course with an eligible trainer. ACTIVE repeats reuse their row; DROPPED resumes ACTIVE with progress retained; COMPLETED raises already completed. A unique constraint arbitrates races inside an inner atomic savepoint; only after rollback does the service retrieve the winning enrollment or raise a clean conflict error.
+- **Consequences:** No duplicate participation or broken transaction is exposed. drop is owner-only and accepts ACTIVE -> DROPPED only. Enrolled trainees retain course visibility after unpublishing, including retained dropped history.
+
+## ADR 033: Sequential station progress and deferred final completion
+- **Decision:** complete_module requires the owner of an ACTIVE enrollment and a module from that course. Only the lowest incomplete module order can advance; repeating existing progress is idempotent and preserves its timestamp. Module deletion with progress is a domain error, including the FK-protection race.
+- **Consequences:** B3 never sets enrollment status COMPLETED. evaluate_completion(enrollment) is reserved for B4/B5 when quizzes/completion rules exist; no placeholder or premature implementation is added in B3.
+
+## ADR 034: Station-map handoff and query contract
+- **Decision:** Frozen Line/Station dataclasses contain no lazy ORM objects. ACTIVE and COMPLETED enrollments only; dropped are excluded. Lines sort by subject ID; stations by course ID and module order. Progress is DONE, the first missing ACTIVE station CURRENT, later missing stations LOCKED; a COMPLETED enrollment renders all DONE. Two or more distinct skill subjects make an interchange.
+- **Consequences:** One joined enrollment query and three prefetch queries bound populated maps at four queries. Empty enrollments may skip unnecessary prefetches. Tests prove four queries for 1 course x 2 modules x 1 skill and 8 courses x 7 modules x 3 skills.
+
+## ADR 035: Private library associations and visibility
+- **Decision:** A resource's optional course must belong to its trainer and subject; references use PROTECT. Approved users see published resources; owner/Admin also see drafts. Lists use select_related and twenty-item pagination with validated subject/kind filters.
+- **Consequences:** A published resource does not grant access to unpublished course metadata; its course link is rendered only when course visibility permits it. File visibility remains the resource's own published/owner/Admin policy.
+
+## ADR 036: Library signatures, limits and download behavior
+- **Decision:** Reuse PrivateStorage and deconstructible UUID UploadPath. VIDEO accepts mp4 (ftyp at byte 4) or webm (EBML prefix), 200 MiB; PRESENTATION accepts pptx ZIP or pdf, 25 MiB; DOCUMENT accepts docx ZIP or pdf, 25 MiB. Limits/extensions live in settings; prefix validation is composable beside the existing validators. Office files are signature-checked only, never parsed, and served as attachments only.
+- **Consequences:** Content-Type comes from validated extension, never browser MIME. Video streams inline; other kinds are attachments; all are private/no-store. Replaced/deleted files are removed after commit. Range requests are not implemented: long videos cannot seek until B7 deployment adds protected Range-capable delivery. The existing storage rollback/orphan limitation remains ADR 021.
+
+## ADR 037: Shared domain feedback and global upload test isolation
+- **Decision:** Course/resource services raise CapacityConnectError subclasses. Shared validated persistence converts model errors and DB constraint races after savepoint rollback; form/action coordinators render domain feedback without HTTP logic in services.
+- **Consequences:** Temporary MEDIA_ROOT/PRIVATE_MEDIA_ROOT fixtures now live in root conftest.py, protecting cross-app resource factories as well as profile tests. The prior settings-loader test now inspects the configured environment rather than override-holder metadata; concrete DB/hasher/timezone assertions remain. Raw transcripts stay ignored in .local/reports/; phase reports use the user's compact nine-field format.

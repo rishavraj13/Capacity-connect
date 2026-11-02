@@ -34,6 +34,8 @@ LOCAL_APPS: list[str] = [
     "apps.accounts",
     "apps.catalog.apps.CatalogConfig",
     "apps.profiles.apps.ProfilesConfig",
+    "apps.courses.apps.CoursesConfig",
+    "apps.library.apps.LibraryConfig",
 ]
 
 INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -117,3 +119,15 @@ PHOTO_MAX_BYTES = env.int("PHOTO_MAX_BYTES", default=2 * 1024 * 1024)
 CERTIFICATE_MAX_BYTES = env.int("CERTIFICATE_MAX_BYTES", default=5 * 1024 * 1024)
 
 CSRF_COOKIE_HTTPONLY: bool = True
+
+LIBRARY_EXTENSIONS = ("mp4", "webm", "pptx", "pdf", "docx")
+LIBRARY_UPLOAD_EXTENSIONS = {
+    "VIDEO": ("mp4", "webm"),
+    "PRESENTATION": ("pptx", "pdf"),
+    "DOCUMENT": ("pdf", "docx"),
+}
+LIBRARY_UPLOAD_LIMITS = {
+    "VIDEO": env.int("LIBRARY_VIDEO_MAX_BYTES", default=200 * 1024 * 1024),
+    "PRESENTATION": env.int("LIBRARY_PRESENTATION_MAX_BYTES", default=25 * 1024 * 1024),
+    "DOCUMENT": env.int("LIBRARY_DOCUMENT_MAX_BYTES", default=25 * 1024 * 1024),
+}

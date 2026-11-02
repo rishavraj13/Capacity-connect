@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% block title %}Administrator Dashboard - Capacity Connect{% endblock %}
+{% block title %}Administrator Dashboard - Capacity Connect<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
+{% endblock %}
 
 {% block content %}
 <section>
@@ -13,4 +14,5 @@
         </ul>
     </nav>
 </section>
+<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
 {% endblock %}

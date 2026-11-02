@@ -42,3 +42,8 @@ def email_in_use(email: str, excluding_user_id: int) -> bool:
     return (
         User.objects.exclude(pk=excluding_user_id).filter(email__iexact=email).exists()
     )
+
+
+def approved_users(role: str) -> QuerySet[User]:
+    """Share current persisted role eligibility across training workflows."""
+    return User.objects.filter(role=role, is_active=True, is_approved=True)

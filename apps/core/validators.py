@@ -70,3 +70,24 @@ def validate_certificate(file: UploadedFile) -> None:
     extension = validate_extension(file, settings.CERTIFICATE_EXTENSIONS)
     validate_size(file, settings.CERTIFICATE_MAX_BYTES)
     validate_content(file, extension)
+
+
+CONTAINER_SIGNATURES = {
+    "mp4": (4, b"ftyp"),
+    "webm": (0, b"\x1a\x45\xdf\xa3"),
+    "pptx": (0, b"PK\x03\x04"),
+    "docx": (0, b"PK\x03\x04"),
+    "pdf": (0, PDF_SIGNATURE),
+}
+
+
+def validate_signature(file: UploadedFile, extension: str) -> None:
+    """Check container signatures without parsing office documents or videos."""
+    offset, signature = CONTAINER_SIGNATURES[extension]
+    position = file.tell()
+    try:
+        file.seek(offset)
+        if file.read(len(signature)) != signature:
+            raise ValidationError("File content does not match its extension.")
+    finally:
+        file.seek(position)

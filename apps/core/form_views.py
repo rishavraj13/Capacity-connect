@@ -5,10 +5,13 @@ from dataclasses import dataclass
 from typing import Any
 
 from django import forms
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
+
+from apps.core.exceptions import CapacityConnectError
 
 
 @dataclass
@@ -34,6 +37,19 @@ def form_response(request: HttpRequest, action: FormAction) -> HttpResponse:
         try:
             action.save(form.cleaned_data)
             return redirect(action.success_url)
+        except CapacityConnectError as exc:
+            form.add_error(None, exc.message)
         except ValidationError as exc:
             form.add_error(None, exc)
     return render(request, "shared/form.html", {"form": form, "title": action.title})
+
+
+def action_response(
+    request: HttpRequest, action: Callable, destination: str
+) -> HttpResponse:
+    """Translate domain rejection into user feedback for explicit POST actions."""
+    try:
+        action()
+    except CapacityConnectError as exc:
+        messages.error(request, exc.message)
+    return redirect(destination)

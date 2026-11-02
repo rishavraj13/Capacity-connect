@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<h2>Courses</h2>
+{% if user.role == "TRAINER" or user.role == "ADMIN" %}<p><a href="{% url 'courses:create' %}">Create course</a></p>{% endif %}
+<ul>{% for course in courses %}<li><a href="{% url 'courses:detail' course.pk %}">{{ course.title }}</a> - {{ course.subject.name }} - {{ course.trainer.username }}{% if not course.is_published %} (unpublished){% endif %}</li>{% empty %}<li>No visible courses.</li>{% endfor %}</ul>
+{% endblock %}

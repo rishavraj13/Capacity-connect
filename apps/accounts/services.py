@@ -4,10 +4,12 @@ from typing import Any
 
 from apps.accounts.constants import SIGNUP_ROLES, UserRole
 from apps.accounts.models import User
+from apps.accounts.selectors import approved_users
 from apps.core.exceptions import (
     InvalidRoleError,
     LastAdminProtectionError,
     SelfModificationError,
+    UserManagementError,
 )
 
 
@@ -80,3 +82,33 @@ def change_role(target_user: User, new_role: str, admin_user: User) -> User:
     target_user.role = new_role
     target_user.save(update_fields=["role"])
     return target_user
+
+
+def require_approved_role(user: User, roles: tuple[str, ...]) -> User:
+    """Recheck persisted eligibility rather than trusting a stale role object."""
+    for role in roles:
+        current = approved_users(role).filter(pk=user.pk).first()
+        if current:
+            return current
+    raise UserManagementError(
+        "An active approved account with the required role is needed."
+    )
+
+
+def require_owner_or_admin(actor: User, owner_id: int) -> User:
+    """Share the ownership rule between course and resource service writes."""
+    current = require_approved_role(actor, (UserRole.TRAINER, UserRole.ADMIN))
+    if current.role != UserRole.ADMIN and current.pk != owner_id:
+        raise UserManagementError(
+            "Only the owner or an administrator may manage this record."
+        )
+    return current
+
+
+def assigned_trainer(actor: User, data: dict, current: User | None = None) -> User:
+    """Set trainer ownership automatically except for explicit Admin assignment."""
+    actor = require_approved_role(actor, (UserRole.TRAINER, UserRole.ADMIN))
+    trainer = actor if actor.role == UserRole.TRAINER else data.get("trainer", current)
+    if trainer is None:
+        raise UserManagementError("Select an eligible trainer.")
+    return require_approved_role(trainer, (UserRole.TRAINER,))

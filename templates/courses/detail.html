@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block content %}
+<h2>{{ course.title }}</h2><p>{{ course.description }}</p><p>{{ course.subject.name }} - {{ course.trainer.username }}</p><p>{{ course.start_date }} to {{ course.end_date }}</p>
+{% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}
+<p><a href="{% url 'courses:edit' course.pk %}">Edit course</a> <a href="{% url 'courses:module_add' course.pk %}">Add module</a> <a href="{% url 'courses:participants' course.pk %}">Participants</a></p>
+{% if course.is_published %}<form method="post" action="{% url 'courses:unpublish' course.pk %}">{% csrf_token %}<button>Unpublish course</button></form>{% else %}<form method="post" action="{% url 'courses:publish' course.pk %}">{% csrf_token %}<button>Publish course</button></form>{% endif %}
+{% endif %}
+{% if user.role == "TRAINEE" %}
+{% if enrollment %}<p>Enrollment: {{ enrollment.status }}; {{ enrollment.modules_done }} / {{ enrollment.modules_total }} modules done.</p>{% endif %}
+{% if course.is_published %}<form method="post" action="{% url 'courses:enroll' course.pk %}">{% csrf_token %}<button>Enroll or resume</button></form>{% endif %}
+{% if enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:drop' enrollment.pk %}">{% csrf_token %}<button>Drop course</button></form>{% endif %}
+{% endif %}
+<ol>{% for module in course.modules.all %}<li>{{ module.order }}. {{ module.title }}<ul>{% for skill in module.skills.all %}<li>{{ skill.name }} ({{ skill.subject.name }})</li>{% endfor %}</ul>
+{% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}<a href="{% url 'courses:module_edit' module.pk %}">Edit module</a><form method="post" action="{% url 'courses:module_delete' module.pk %}">{% csrf_token %}<button>Delete module</button></form>{% endif %}
+{% if user.role == "TRAINEE" and enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:complete_module' enrollment.pk module.pk %}">{% csrf_token %}<button>Complete module</button></form>{% endif %}
+</li>{% empty %}<li>No modules yet.</li>{% endfor %}</ol>
+{% endblock %}
