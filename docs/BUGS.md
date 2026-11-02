@@ -164,3 +164,10 @@
 - Fix: Require a nonempty DEMO_PASSWORD environment value before non-debug seed execution, including reruns.
 - Test: test_forced_non_debug_seed_requires_explicit_password failed first (DID NOT RAISE CommandError); after the fix it rejects missing credentials and accepts explicit credentials.
 - Commit: fix: complete B7 demo and deployment carry-over.
+
+## BUG 024: Authentication templates hid form-level errors
+- Symptom: A fresh login client received no visible awaiting-approval or invalid-password explanation; signup password mismatches were invisible too.
+- Root cause: The templates iterated bound fields but omitted form.non_field_errors, where authentication and cross-field validation place errors.
+- Fix: Render Django's escaped non-field error list in both login and signup forms, leaving validation and disclosure rules unchanged.
+- Tests: test_fresh_login_client_renders_form_level_error (two cases) and test_signup_renders_password_mismatch all failed first; isolated-client J2 exposed the issue without a signup flash message masking it.
+- Commit: fix: render authentication form errors for fresh clients.

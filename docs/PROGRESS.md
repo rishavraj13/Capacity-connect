@@ -171,3 +171,5 @@ Testing stage is active; frontend has not started.
 - [x] R4 subject filter authorised and implemented with HTTP regression tests.
 - [x] J1 happy path and J2 failure journeys pass using HTTP after the initial admin fixture.
 - [ ] J3 shared-read classification awaits reviewer decision.
+
+- [x] BUG 024 reproduced with three failing HTTP regressions; authentication non-field errors now rendered.

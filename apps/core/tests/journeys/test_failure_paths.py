@@ -15,6 +15,7 @@ from apps.core.tests.journeys.helpers import (
     learning_course,
     post,
     questionnaire,
+    register,
 )
 from apps.courses.models import Enrollment, ModuleProgress
 
@@ -25,24 +26,14 @@ def test_j2_unapproved_wrong_role_and_rejected_session(journey: tuple) -> None:
     """Show status messages and revoke an already authenticated rejected user."""
     admin, _, _, trainee, learner, _ = journey
     visitor = Client()
-    post(
-        visitor,
-        "signup",
-        {
-            "username": "pending",
-            "email": "pending@example.org",
-            "role": "TRAINEE",
-            "password": PASSWORD,
-            "confirm_password": PASSWORD,
-        },
-    )
+    register("pending")
     response = visitor.post(
         reverse("login"), {"username": "pending", "password": PASSWORD}
     )
     assert (
         response.status_code == 200
         and b"awaiting administrator approval" in response.content.lower()
-    )
+    ), response.context["form"].errors
     assert learner.get(reverse("dashboards:admin")).status_code == 403
     post(admin, "admin_reject_user", args=(trainee.pk,))
     assert learner.get(reverse("profiles:trainee_edit")).status_code in {302, 403}

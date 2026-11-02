@@ -36,21 +36,7 @@ def login(user: User, password: str = PASSWORD) -> Client:
 
 def signup(admin: Client, name: str, role: str = "TRAINEE") -> tuple:
     """Approve an HTTP signup through the administrator's own action endpoint."""
-    visitor = Client()
-    post(
-        visitor,
-        "signup",
-        {
-            "username": name,
-            "email": f"{name}@example.org",
-            "first_name": name.title(),
-            "last_name": "Rao",
-            "role": role,
-            "password": PASSWORD,
-            "confirm_password": PASSWORD,
-        },
-    )
-    user = User.objects.get(username=name)
+    user = register(name, role)
     post(admin, "admin_approve_user", args=(user.pk,))
     return user, login(user)
 
@@ -109,3 +95,22 @@ def quiz_data() -> dict:
         "pass_percent": 50,
         "max_attempts": 2,
     }
+
+
+def register(name: str, role: str = "TRAINEE") -> User:
+    """Create a pending account through the public signup handler."""
+    visitor = Client()
+    post(
+        visitor,
+        "signup",
+        {
+            "username": name,
+            "email": f"{name}@example.org",
+            "first_name": name.title(),
+            "last_name": "Rao",
+            "role": role,
+            "password": PASSWORD,
+            "confirm_password": PASSWORD,
+        },
+    )
+    return User.objects.get(username=name)
