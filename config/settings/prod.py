@@ -5,7 +5,7 @@ import environ
 from config.settings.base import *  # noqa: F403
 from config.settings.base import env
 
-ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS", default=environ.Env.NOTSET)
+ALLOWED_HOSTS: list[str] = environ.Env().list("ALLOWED_HOSTS")
 
 DEBUG: bool = False
 SECRET_KEY: str = env("SECRET_KEY")
