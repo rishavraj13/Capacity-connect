@@ -94,3 +94,10 @@
 - Fix: Assert the configured DJANGO_SETTINGS_MODULE environment value; retain the concrete DB, hasher and timezone assertions.
 - Test: test_settings_load_under_test_settings (failed in the full B3 suite before the adjustment).
 - Commit: feat(courses): add B3 courses and private library workflows.
+
+## BUG 014: Progressed course order could be rewritten
+- Symptom: Existing station order changed and gaps could be inserted after progress existed.
+- Root cause: Module writes validated uniqueness/positivity but not course-wide historical ordering.
+- Fix: Course-locked order validation freezes existing orders and permits only max+1 append; progress uses the same course-first lock order.
+- Tests: test_any_progress_freezes_existing_module_order (both cases), test_progress_allows_only_appended_modules (all failed first).
+- Commit: fix(courses): freeze progressed module order and authorize B4 status.

@@ -117,7 +117,7 @@ Use `core.TimeStampedModel` (created/updated) as the base for all models. All ch
 - **Questionnaire**: `course`, `subject`, `trainer`, `title`, `opens_at`, `deadline`, `duration_minutes`, `pass_percent` (default 50), `max_attempts` (default 1).
 - **Question**: `questionnaire`, `text`, `order`, `marks` (default 1).
 - **Option**: `question`, `text`, `is_correct`. Exactly one correct option per question (enforced in the service and validated in the form).
-- **Attempt**: `questionnaire`, `trainee`, `started_at`, `submitted_at` (nullable), `score`, `percent`, `passed`.
+- **Attempt**: `questionnaire`, `trainee`, `started_at`, `submitted_at` (nullable), `score`, `percent`, `passed`, `status` (IN_PROGRESS, SUBMITTED, TIMED_OUT; default IN_PROGRESS).
 - **AttemptAnswer**: `attempt`, `question`, `selected_option`, `is_correct`. Unique on (attempt, question).
 
 ### feedback

@@ -173,3 +173,14 @@
 ## ADR 037: Shared domain feedback and global upload test isolation
 - **Decision:** Course/resource services raise CapacityConnectError subclasses. Shared validated persistence converts model errors and DB constraint races after savepoint rollback; form/action coordinators render domain feedback without HTTP logic in services.
 - **Consequences:** Temporary MEDIA_ROOT/PRIVATE_MEDIA_ROOT fixtures now live in root conftest.py, protecting cross-app resource factories as well as profile tests. The prior settings-loader test now inspects the configured environment rather than override-holder metadata; concrete DB/hasher/timezone assertions remain. Raw transcripts stay ignored in .local/reports/; phase reports use the user's compact nine-field format.
+
+## ADR 038: Authorized B4 attempt status amendment
+- **Decision:** User authorized Attempt.status as TextChoices IN_PROGRESS, SUBMITTED, TIMED_OUT, default IN_PROGRESS. Section 4 is amended in the first B4 commit; no other domain fields are added.
+
+## ADR 039: Module order after first course progress
+- **Decision:** Any course progress freezes every existing module order; titles and skills remain editable. New modules must append at max(order)+1. Module mutation and first progress share a course-first lock order, then enrollment/module locks, avoiding inconsistent ordering and lock cycles.
+- **Consequences:** Violations are CourseRuleError; the three new regression cases failed before the fix. Unprogressed courses keep their prior order-edit behavior.
+
+## ADR 040: Unpublished enrolled access and existing trainer reassignment
+- **Decision:** Unpublishing forbids new enrollment but enrolled trainees retain course access, module progress and, in B4, assessment attempts while enrollment remains ACTIVE. The existing Admin CourseForm includes trainer and can reassign to a valid trainer; its existing library-association guard remains unchanged. No new reassignment feature is built.
+- **Consequences:** Dedicated HTTP/service tests prove retained module access and the existing Admin reassignment; quiz access on unpublished courses is covered with B4. ACTIVE all-done station maps contain only DONE and no CURRENT.

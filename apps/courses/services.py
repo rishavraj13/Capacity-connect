@@ -22,6 +22,7 @@ from apps.courses.enrollment_services import (
 )
 from apps.courses.exceptions import CourseRuleError
 from apps.courses.models import Course, Module
+from apps.courses.module_rules import locked_module, validate_module_order
 
 COURSE_FIELDS = ("title", "description", "subject", "start_date", "end_date")
 MODULE_FIELDS = ("title", "order")
@@ -103,6 +104,7 @@ def add_module(actor: User, course: Course, data: dict) -> Module:
     """Keep module ownership derived from its managed course."""
     course = Course.objects.select_for_update().get(pk=course.pk)
     require_owner_or_admin(actor, course.trainer_id)
+    validate_module_order(course, data["order"])
     module = Module(course=course, **{field: data[field] for field in MODULE_FIELDS})
     validated_save(module, CourseRuleError)
     module.skills.set(data.get("skills", []))
@@ -112,10 +114,9 @@ def add_module(actor: User, course: Course, data: dict) -> Module:
 @transaction.atomic
 def update_module(actor: User, module: Module, data: dict) -> Module:
     """Turn duplicate station orders into domain validation feedback."""
-    module = (
-        Module.objects.select_for_update().select_related("course").get(pk=module.pk)
-    )
+    module = locked_module(module)
     require_owner_or_admin(actor, module.course.trainer_id)
+    validate_module_order(module.course, data.get("order", module.order), module)
     for field in MODULE_FIELDS:
         if field in data:
             setattr(module, field, data[field])
@@ -128,9 +129,7 @@ def update_module(actor: User, module: Module, data: dict) -> Module:
 @transaction.atomic
 def delete_module(actor: User, module: Module) -> None:
     """Protect progress history, including a concurrent completion write."""
-    module = (
-        Module.objects.select_for_update().select_related("course").get(pk=module.pk)
-    )
+    module = locked_module(module)
     require_owner_or_admin(actor, module.course.trainer_id)
     if module.progress.exists():
         raise CourseRuleError("A module with progress cannot be deleted.")

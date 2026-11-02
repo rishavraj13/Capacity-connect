@@ -9,6 +9,7 @@ from apps.accounts.services import require_approved_role
 from apps.courses.constants import EnrollmentStatus
 from apps.courses.exceptions import EnrollmentRuleError
 from apps.courses.models import Course, Enrollment, Module, ModuleProgress
+from apps.courses.module_rules import lock_progress_course
 
 
 def _existing(trainee: User, course: Course) -> Enrollment | None:
@@ -78,6 +79,7 @@ def complete_module(
     actor: User, enrollment: Enrollment, module: Module
 ) -> ModuleProgress:
     """Complete only the lowest unfinished station; final completion is deferred."""
+    lock_progress_course(enrollment)
     enrollment = _owned_active(actor, enrollment)
     module = Module.objects.get(pk=module.pk)
     if module.course_id != enrollment.course_id:

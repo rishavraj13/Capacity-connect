@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 gate passed and awaiting approval; B4 through B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 in progress; B5 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -89,7 +89,7 @@ Status: B0, B1 and B2/B2.1 approved; B3 gate passed and awaiting approval; B4 th
 - [x] Moved CSRF_COOKIE_HTTPONLY to base settings; dev/prod inherit True.
 - [x] Full pytest: 533 passed in 6.28s; real private_uploads file list before=[] and after=[] (identical).
 
-## B3 Courses and Library (gate passed; awaiting approval)
+## B3 Courses and Library (approved; merged and tagged b3-approved)
 - [x] Course/module/enrollment/progress models, named constraints and migrations.
 - [x] Eligible-role and owner/Admin writes, clean unique races and sequential progress.
 - [x] Visibility/count selectors and immutable station-map handoff.
@@ -98,4 +98,11 @@ Status: B0, B1 and B2/B2.1 approved; B3 gate passed and awaiting approval; B4 th
 - [x] Four-query station-map tests at small and large scales; IDOR and file cleanup tests.
 - [x] Final gate: 948 tests passed; 1597/1597 statements and 222/222 branches covered.
 - [x] Compact report delivered in docs/B3_REPORT.md; full transcript ignored in .local/reports/.
-- [ ] User B3 approval. Do not start B4.
+- [x] User B3 approval; merged/tagged b3-approved and authorized B4.
+
+## B4 Step 0 (in progress)
+- [x] B3 merged/tagged; created phase/b4-assessments.
+- [x] Authorized Attempt.status amendment recorded in section 4.
+- [x] Reproduced/fixed course-wide module-order freeze; retained unpublished access.
+- [x] Proved existing Admin trainer reassignment and ACTIVE all-DONE station maps.
+- [ ] Final B4 gate and compact report. Do not start B5.
