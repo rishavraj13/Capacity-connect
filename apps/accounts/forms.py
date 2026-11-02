@@ -14,6 +14,7 @@ from apps.accounts.constants import (
     UserRole,
 )
 from apps.accounts.models import User
+from apps.core.constants import CERTIFICATE_NAME_HELP
 
 
 class SignupForm(forms.Form):
@@ -28,8 +29,12 @@ class SignupForm(forms.Form):
         required=True,
         widget=forms.EmailInput(attrs={"autocomplete": "email"}),
     )
-    first_name = forms.CharField(max_length=150, required=False)
-    last_name = forms.CharField(max_length=150, required=False)
+    first_name = forms.CharField(
+        max_length=150, required=False, help_text=CERTIFICATE_NAME_HELP
+    )
+    last_name = forms.CharField(
+        max_length=150, required=False, help_text=CERTIFICATE_NAME_HELP
+    )
     role = forms.ChoiceField(
         choices=[(role, UserRole(role).label) for role in SIGNUP_ROLES],
         required=True,

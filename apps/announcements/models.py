@@ -28,6 +28,13 @@ class Announcement(TimeStampedModel):
         """Require a publication timestamp for every visible item."""
 
         ordering = ("-published_at", "-pk")
+        indexes = [
+            models.Index(
+                fields=["category", "-published_at", "-id"],
+                condition=models.Q(is_published=True),
+                name="announcement_public_board_idx",
+            )
+        ]
         constraints = [
             models.CheckConstraint(
                 condition=models.Q(is_published=False)

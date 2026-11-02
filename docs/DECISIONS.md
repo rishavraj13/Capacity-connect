@@ -278,3 +278,20 @@
 ## ADR 063: Explicit public Django admin login audit exception
 - **User quotation (2026-11-02):** "Allow admin:login explicitly (Recommended)"
 - **Decision:** Proposed by agent, with the quoted answer: the route audit includes admin:login explicitly in its public allowlist. Every other built-in admin route must still deny or redirect an anonymous request, and every application private route must declare role metadata as well as deny anonymous access.
+
+## ADR 064: Cache-based anti-abuse controls and proxy trust
+- **Decision:** Proposed by agent: fixed windows use clock.now, hashed identity keys and cache.add/incr. Five failed pair logins or twenty IP failures fill a fifteen-minute window; the next request is blocked. Successful login resets only the pair. Signup counts five handler requests/hour, verification thirty/minute. Unknown and known accounts receive the same bare 429 and Retry-After. The built-in admin login uses the same helper.
+- **Consequences:** Development/test use LocMem; production requires DatabaseCache and createcachetable. DatabaseCache increments are not atomic: limits are best-effort anti-abuse, not a security boundary. ADR 011's deferred throttling is implemented here. REMOTE_ADDR is authoritative unless an explicitly trusted hop count is configured; forwarded HTTPS trust is separately opt-in.
+
+## ADR 065: Production headers, deployment and admin role enforcement
+- **Decision:** Proposed by agent: CSP lives in one setting; frontend font/style needs will be reviewed later. HSTS defaults stay 3600 seconds with include-subdomains/preload off until HTTPS is verified. Deployment documents opt-in one-year HSTS and runs a zero-warning go-live check. HttpOnly cookies, bare error pages and secret-free warning logs are enforced.
+- **Consequences:** Django's staff flag alone was insufficient for the approved role contract (BUG 022). Both admin authentication and admin-site permission checks require active approved ADMIN as well as staff. Signup unique username/email errors and awaiting-approval login messages remain intentional disclosures.
+
+## ADR 066: Service-driven demo fixture and safe orphan maintenance
+- **User quotation (2026-11-02):** "PNG profile photo; PDF library resources (Recommended)"
+- **Decision:** Proposed by agent, with the quoted answer: generated Pillow PNG is a profile photo and ReportLab PDFs are library resources. Existing upload rules remain. Seed uses real services, one public development password, a final marker and a transaction; repeating a complete seed changes no rows/timestamps. A scoped clock override creates a real expired attempt through normal services without database timestamp edits.
+- **Consequences:** Production seeding requires --force. Database transactions cannot roll back external file writes after an interrupted seed; aged orphan cleanup is the explicit recovery tool. Cleanup is dry-run, age-gated, confined to resolved storage roots and rechecks all model FileField references before unlinking. Use a maintenance window because filesystem and database operations cannot be atomic together.
+
+## ADR 067: Measured query budgets and authorised indexes
+- **Decision:** Proposed by agent: rendered-page tests warm framework metadata then compare small/large data with authentication included. All 33 page budgets remain constant. SQLite plans on 2000 rows per table justify partial published-course and public-announcement indexes, enrollment status and questionnaire deadline indexes; one new migration per affected app contains AddIndex only. Attempt already uses its questionnaire FK index and needs no new one.
+- **Consequences:** The published-course plan remains a scan of a smaller partial index (40 entries), not a search; no timing claim is made. PostgreSQL review is static only, not run against PostgreSQL. Environment reads are checked against .env.example and documented exhaustively.

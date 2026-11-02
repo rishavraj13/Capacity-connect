@@ -143,6 +143,22 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 - [x] B6 merged/tagged; phase/b7-hardening created.
 - [x] Both remaining completion branches covered; pre-split baseline 1749 passed and 100% coverage.
 - [x] Pure selector split verified: before 1749 passed in 20.43s, after 1749 passed in 21.89s; after coverage 3322 statements / 418 branches, zero misses, 100%. Public imports preserved.
-- [ ] Throttling, security audit/headers/errors, deployment/settings review.
-- [ ] Every-page query budgets, evidence-based indexes, service-driven demo seed and orphan cleanup.
-- [ ] Full B7 gate/checklist/report; do not start Testing stage or frontend work before approval.
+- [x] Throttling, security audit/headers/errors, deployment/settings review.
+- [x] Every-page query budgets, evidence-based indexes, service-driven demo seed and orphan cleanup.
+- [x] Full B7 gate/checklist/report: 1962 tests; 3770 statements and 510 branches, zero misses, 100%; zero-warning go-live deploy check. See docs/B7_REPORT.md.
+- [ ] Reviewer B7 approval; do not merge/tag or start Testing stage or frontend work before approval.
+
+## Final backend delivery status
+
+| Phase | Status |
+|---|---|
+| B0 Foundations | Approved |
+| B1 Accounts | Approved |
+| B2 Catalog and Profiles | Approved |
+| B3 Courses and Library | Approved |
+| B4 Assessments | Approved |
+| B5 Feedback and Certificates | Approved |
+| B6 Competency, Announcements, Dashboards | Approved |
+| B7 Hardening | Gate passed; awaiting reviewer approval |
+
+Testing stage and frontend have not started.

@@ -15,6 +15,7 @@ python -m pip install -r requirements/dev.txt
 Copy-Item .env.example .env
 python manage.py migrate
 python manage.py createsuperuser
+python manage.py seed_demo_data
 python manage.py runserver
 ```
 
@@ -44,3 +45,11 @@ web-server alias for PRIVATE_MEDIA_ROOT; authenticated downloads use the profile
 file view. Production requires SECRET_KEY and ALLOWED_HOSTS environment values.
 
 Verification transcripts are local ignored evidence under .local/reports/.
+
+## Requirements and app map
+
+Python 3.14, Django 5.x and requirements/dev.txt. Core supplies clock, storage, throttles and operational commands; accounts manages approval and roles; catalog/profiles manage skills and people; courses/library manage learning; assessments grades attempts; feedback/certificates manage completion evidence; competency/announcements/dashboards provide ranking and reporting.
+
+Demo password: `Demo-Connect-2026!` (DEMO_PASSWORD override). The seed prints all login names and statuses. Use `python manage.py cleanup_orphan_files` for a dry run; add --delete only after reviewing candidates. `python manage.py evaluate_completions` retries completion/certificates.
+
+See [deployment and environment catalogue](docs/DEPLOYMENT.md), [decisions](docs/DECISIONS.md), [progress](docs/PROGRESS.md) and [binding brief](docs/IMPLEMENTATION_BRIEF.md).

@@ -4,6 +4,7 @@ from django import forms
 
 from apps.accounts.models import User
 from apps.accounts.selectors import email_in_use
+from apps.core.constants import CERTIFICATE_NAME_HELP
 from apps.core.widgets import PrivateFileInput
 from apps.profiles.constants import (
     ACCOUNT_FIELDS,
@@ -93,6 +94,10 @@ class AccountForm(forms.ModelForm):
 
         model = User
         fields = ACCOUNT_FIELDS
+        help_texts = {
+            "first_name": CERTIFICATE_NAME_HELP,
+            "last_name": CERTIFICATE_NAME_HELP,
+        }
 
     def clean_email(self) -> str:
         """Report case-insensitive email collisions before the database write."""

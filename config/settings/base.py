@@ -19,7 +19,7 @@ DEBUG: bool = env("DEBUG")
 ALLOWED_HOSTS: list[str] = env("ALLOWED_HOSTS")
 
 DJANGO_APPS: list[str] = [
-    "django.contrib.admin",
+    "config.admin_site_config.CapacityAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -48,6 +48,7 @@ INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE: list[str] = [
     "django.middleware.security.SecurityMiddleware",
+    "apps.core.middleware.SecurityHeadersMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -124,7 +125,6 @@ CERTIFICATE_EXTENSIONS = ("pdf", *PHOTO_EXTENSIONS)
 PHOTO_MAX_BYTES = env.int("PHOTO_MAX_BYTES", default=2 * 1024 * 1024)
 CERTIFICATE_MAX_BYTES = env.int("CERTIFICATE_MAX_BYTES", default=5 * 1024 * 1024)
 
-CSRF_COOKIE_HTTPONLY: bool = True
 
 LIBRARY_EXTENSIONS = ("mp4", "webm", "pptx", "pdf", "docx")
 LIBRARY_UPLOAD_EXTENSIONS = {
@@ -145,3 +145,5 @@ CERTIFICATE_SIGNATORY_NAME: str = env(
 CERTIFICATE_SIGNATORY_TITLE: str = env(
     "CERTIFICATE_SIGNATORY_TITLE", default="Programme Director"
 )
+
+from config.settings.security import *  # noqa: F403, E402

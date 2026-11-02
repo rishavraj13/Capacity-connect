@@ -150,3 +150,10 @@
 - Fix: Use questionnaire_count in SQL and map it into the CourseStats questionnaires field.
 - Tests: test_trainer_dashboard_only_own_courses_and_weighted_totals and query-count/empty-scope tests failed first.
 - Commit: feat: add B6 competency ranking public announcements and dashboards.
+
+## BUG 022: Built-in admin trusted leftover staff flags after approval/role changes
+- Symptom: An unapproved Admin or a demoted trainer retaining is_staff could authenticate to Django admin.
+- Root cause: Django's default staff checks do not know the portal's is_approved or role fields.
+- Fix: The custom Admin authentication form and AdminSite permission check require active approved ADMIN plus Django staff eligibility; generic denial logging and shared throttling remain in place.
+- Test: test_unapproved_or_demoted_staff_cannot_authenticate_or_open_admin (both cases failed first).
+- Commit: feat: harden B7 security deployment and operational workflows.

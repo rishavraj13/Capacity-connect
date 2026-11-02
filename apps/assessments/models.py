@@ -45,6 +45,7 @@ class Questionnaire(TimeStampedModel):
         """Apply timing and numeric bounds even when forms are bypassed."""
 
         ordering = ("deadline", "pk")
+        indexes = [models.Index(fields=["deadline", "id"], name="quiz_deadline_pk_idx")]
         constraints = [
             models.CheckConstraint(
                 condition=models.Q(deadline__gt=models.F("opens_at")),

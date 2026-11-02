@@ -1,13 +1,12 @@
 """View controllers for authentication, onboarding, dashboards, and user management."""
 
 from django.contrib import messages
-from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.http import url_has_allowed_host_and_scheme
 
+from apps.accounts.auth_responses import login_response
 from apps.accounts.constants import (
     ADMIN_USER_PAGE_SIZE,
     MSG_AWAITING_APPROVAL,
@@ -21,6 +20,7 @@ from apps.accounts.permissions import role_required
 from apps.accounts.selectors import pending_users, users_filtered
 from apps.accounts.services import approve_user, change_role, register_user, reject_user
 from apps.core.exceptions import CapacityConnectError
+from apps.core.rate_views import Kind, record_login_failure, throttled
 
 
 def get_role_home_url(role: str) -> str:
@@ -28,6 +28,7 @@ def get_role_home_url(role: str) -> str:
     return ROLE_HOME_URL_NAMES.get(role, "login")
 
 
+@throttled(Kind.SIGNUP)
 def signup_view(request: HttpRequest) -> HttpResponse:
     """Handle new user self-registration into pending approval status."""
     if request.user.is_authenticated:
@@ -43,6 +44,7 @@ def signup_view(request: HttpRequest) -> HttpResponse:
     return render(request, "accounts/signup.html", {"form": form})
 
 
+@throttled(Kind.LOGIN)
 def login_view(request: HttpRequest) -> HttpResponse:
     """Authenticate existing approved users and direct to designated portal home."""
     if request.user.is_authenticated:
@@ -50,16 +52,8 @@ def login_view(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
-            user: User = form.get_user()
-            auth_login(request, user)
-            next_url: str | None = request.POST.get("next") or request.GET.get("next")
-            if next_url and url_has_allowed_host_and_scheme(
-                next_url,
-                allowed_hosts={request.get_host()},
-                require_https=request.is_secure(),
-            ):
-                return redirect(next_url)
-            return redirect(get_role_home_url(user.role))
+            return login_response(request, form.get_user())
+        record_login_failure(request)
     else:
         form = LoginForm(request)
     return render(request, "accounts/login.html", {"form": form})

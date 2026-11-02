@@ -31,6 +31,13 @@ class Course(TimeStampedModel):
         """Reject reversed dates independently of form validation."""
 
         ordering = ("pk",)
+        indexes = [
+            models.Index(
+                fields=["id"],
+                condition=models.Q(is_published=True),
+                name="course_published_pk_idx",
+            )
+        ]
         constraints = [
             models.CheckConstraint(
                 condition=models.Q(end_date__gte=models.F("start_date")),
@@ -91,6 +98,7 @@ class Enrollment(TimeStampedModel):
         """Prevent duplicate participation rows even under concurrent requests."""
 
         ordering = ("pk",)
+        indexes = [models.Index(fields=["status"], name="enrollment_status_idx")]
         constraints = [
             models.UniqueConstraint(
                 fields=("trainee", "course"), name="unique_trainee_course"

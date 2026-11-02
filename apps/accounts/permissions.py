@@ -1,5 +1,6 @@
 """Role-based authorization mixins and decorators for view access control."""
 
+import logging
 from collections.abc import Callable
 from functools import wraps
 from typing import Any
@@ -8,6 +9,14 @@ from django.contrib.auth.mixins import AccessMixin
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
+
+logger = logging.getLogger("security.permissions")
+
+
+def _deny(reason: str) -> None:
+    """Log only a generic denial reason before returning Django's safe 403 page."""
+    logger.warning("permission_denied reason=%s", reason)
+    raise PermissionDenied(reason)
 
 
 class RoleRequiredMixin(AccessMixin):
@@ -27,9 +36,9 @@ class RoleRequiredMixin(AccessMixin):
         if not request.user.is_active or not getattr(
             request.user, "is_approved", False
         ):
-            raise PermissionDenied("Account is not active or approved.")
+            _deny("Account is not active or approved.")
         if getattr(request.user, "role", None) not in self.allowed_roles:
-            raise PermissionDenied("Access forbidden for assigned user role.")
+            _deny("Access forbidden for assigned user role.")
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -49,11 +58,12 @@ def role_required(*allowed_roles: str) -> Callable:
             if not request.user.is_active or not getattr(
                 request.user, "is_approved", False
             ):
-                raise PermissionDenied("Account is not active or approved.")
+                _deny("Account is not active or approved.")
             if getattr(request.user, "role", None) not in allowed_roles:
-                raise PermissionDenied("Access forbidden for assigned user role.")
+                _deny("Access forbidden for assigned user role.")
             return view_func(request, *args, **kwargs)
 
+        _wrapped.allowed_roles = allowed_roles
         return _wrapped
 
     return decorator

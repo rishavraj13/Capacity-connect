@@ -211,14 +211,14 @@ For every bug, in this order:
 
 ## 11. Security checklist (gate for B7)
 
-- [ ] `DEBUG=False`, `ALLOWED_HOSTS`, secure and HttpOnly cookies, CSRF, HSTS set in `prod.py`
-- [ ] `manage.py check --deploy` shows no warnings
-- [ ] Password validators on; no secrets in the repository
-- [ ] Every view has an explicit role requirement; object access is filtered by ownership
-- [ ] `role` and `is_approved` can never be set by a normal user through any form
-- [ ] Uploads validated; media never executed; private files not served publicly
-- [ ] Login and signup are rate-limited at least by simple throttling in a service, or the limitation is recorded in `DECISIONS.md`
-- [ ] No N+1 queries on list pages (verified by tests)
+- [x] `DEBUG=False`, `ALLOWED_HOSTS`, secure and HttpOnly cookies, CSRF, HSTS set in `prod.py`
+- [x] `manage.py check --deploy` shows no warnings
+- [x] Password validators on; no secrets in the repository
+- [x] Every view has an explicit role requirement; object access is filtered by ownership
+- [x] `role` and `is_approved` can never be set by a normal user through any form
+- [x] Uploads validated; media never executed; private files not served publicly
+- [x] Login and signup are rate-limited at least by simple throttling in a service, or the limitation is recorded in `DECISIONS.md`
+- [x] No N+1 queries on list pages (verified by tests)
 
 ## 12. Communication protocol
 

@@ -8,6 +8,7 @@ from apps.accounts.constants import UserRole
 from apps.accounts.permissions import role_required
 from apps.certificates import selectors
 from apps.certificates.forms import VerificationForm
+from apps.core.rate_views import Kind, throttled
 
 
 @role_required(UserRole.TRAINEE)
@@ -44,6 +45,7 @@ def _verification_headers(response: HttpResponse) -> HttpResponse:
 
 
 @require_safe
+@throttled(Kind.VERIFY)
 def verify_form(request: HttpRequest) -> HttpResponse:
     """Allow public GET lookup without disclosing private certificate metadata."""
     form = VerificationForm(request.GET or None)
@@ -59,6 +61,7 @@ def verify_form(request: HttpRequest) -> HttpResponse:
 
 
 @require_safe
+@throttled(Kind.VERIFY)
 def verify(request: HttpRequest, identifier: str) -> HttpResponse:
     """Use the same public 404 body for unknown and malformed identifiers."""
     record = selectors.public_verification(identifier)
