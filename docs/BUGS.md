@@ -108,3 +108,10 @@
 - Fix: Preserve the annotated queryset contract for empty eligibility scopes too.
 - Test: test_ineligible_users_have_no_departures (failed first).
 - Commit: feat(assessments): add B4 authoring and timed atomic attempts.
+
+## BUG 016: Course reassignment rejected derived quiz ownership
+- Symptom: Valid Admin reassignment failed whenever questionnaires existed; library refusal omitted actionable counts.
+- Root cause: Derived questionnaire trainer was treated as independent history instead of synchronizing it with the course.
+- Fix: Update quiz trainers in the same course transaction and count independent conflicting resources in the refusal.
+- Tests: test_reassignment_updates_all_questionnaires_atomically and test_linked_resource_refuses_reassignment_with_relink_count (failed first).
+- Commit: fix(courses): synchronize quiz ownership and clean B4 carry-over.

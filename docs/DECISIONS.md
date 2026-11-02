@@ -216,3 +216,8 @@
 ## ADR 048: Explicit statistics units without changing behavior
 - **Decision:** User clarified that pass rate remains a 0..100 percentage; rename the plain dataclass field pass_rate to pass_rate_percent and update its template/tests. No migration or arithmetic change. ADR 047 attribution is reworded as requested; unspecified approval is described as proposed.
 - **Consequences:** Tests pin 3/4=75.00, 1/3=33.33 and no attempts=0.00. Both percentage statistics use Decimal ROUND_HALF_UP.
+
+## ADR 049: B5 carry-over coverage and derived ownership
+- **Decision:** Remove the unreachable empty-total grading guard: ready quizzes have questions and positive marks. Remove draft-delete ProtectedError handlers: questionnaire locks serialize starts and the existing no-attempt guard prevents protected history; no supported service creates cross-questionnaire answers. Cover the public owned_attempts eligibility guard directly and test the real aware clock.
+- **Decision:** Admin course reassignment updates derived questionnaire trainers in the same transaction, through the assessment write boundary. Library trainer ownership remains independent: count conflicting linked resources and require Admin to relink/unlink them. Assessment subject changes remain guarded.
+- **Consequences:** No schema change or bulk reassignment feature. Both reassignment regressions failed first. Courses and assessment grading obtain time only from core.clock.

@@ -3,11 +3,11 @@
 from datetime import date
 
 import factory
-from django.utils import timezone
 from factory.django import DjangoModelFactory
 
 from apps.accounts.tests.factories import UserFactory
 from apps.catalog.tests.factories import SubjectFactory
+from apps.core import clock
 from apps.courses.models import Course, Enrollment, Module, ModuleProgress
 
 
@@ -63,4 +63,4 @@ class ModuleProgressFactory(DjangoModelFactory):
     module = factory.SubFactory(
         ModuleFactory, course=factory.SelfAttribute("..enrollment.course")
     )
-    completed_at = factory.LazyFunction(timezone.now)
+    completed_at = factory.LazyFunction(lambda: clock.now())

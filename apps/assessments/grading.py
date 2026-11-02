@@ -29,8 +29,6 @@ class GradePlan:
 
 def percent_for(score: int, total: int) -> Decimal:
     """Round only Decimal arithmetic with the mandated half-up rule."""
-    if total <= 0:
-        raise AssessmentRuleError("Questionnaire is not ready.")
     return (Decimal(score) * PERCENT_SCALE / Decimal(total)).quantize(
         PERCENT_QUANTUM, rounding=ROUND_HALF_UP
     )

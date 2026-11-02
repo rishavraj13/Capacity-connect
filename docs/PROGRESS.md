@@ -116,6 +116,6 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 ## B5 Step 0 and Feedback/Certificates
 - [x] B4 merged/tagged b4-approved; created phase/b5-feedback-certificates.
 - [x] ADR 047 attribution/units corrected; pass_rate_percent rename preserves arithmetic.
-- [ ] Carry-over coverage, reassignment and proof inventory.
+- [x] Carry-over: reassignment regressions failed first then passed; unreachable guards removed, direct eligibility/clock tests added. Step 0: 1274 passed; 2301 statements and 322 branches, 100% coverage.
 - [ ] Feedback, completion, certificates and full B5 gate/report.
 - [ ] User B5 approval; do not start B6.

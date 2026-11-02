@@ -67,14 +67,16 @@ def update_course(actor: User, course: Course, data: dict) -> Course:
     subject = data.get("subject", course.subject)
     if subject.pk != course.subject_id:
         _subject_available(subject)
-    if conflicting_course_resources(course, trainer, subject).exists():
+    count = conflicting_course_resources(course, trainer, subject).count()
+    if count:
         raise CourseRuleError(
-            "Update associated resources before changing course trainer or subject."
+            f"{count} linked resource(s): Admin must relink or unlink them first."
         )
-    _check_assessment_references(course, trainer, subject)
+    _check_assessment_references(course, subject)
     course.trainer = trainer
     _apply_course(course, data)
     validated_save(course, CourseRuleError)
+    _reassign_questionnaires(course, trainer)
     return course
 
 
@@ -140,13 +142,18 @@ def delete_module(actor: User, module: Module) -> None:
         raise CourseRuleError("A module with progress cannot be deleted.") from exc
 
 
-def _check_assessment_references(
-    course: Course, trainer: User, subject: object
-) -> None:
-    """Prevent course edits from invalidating derived quiz trainer/subject fields."""
+def _check_assessment_references(course: Course, subject: object) -> None:
+    """Keep assessment subject history stable when editing a course's subject."""
     from apps.assessments.selectors import conflicting_course_questionnaires
 
-    if conflicting_course_questionnaires(course, trainer, subject).exists():
+    if conflicting_course_questionnaires(course, course.trainer, subject).exists():
         raise CourseRuleError(
-            "Course trainer/subject cannot change while linked assessments exist."
+            "Course subject cannot change while linked assessments exist."
         )
+
+
+def _reassign_questionnaires(course: Course, trainer: User) -> None:
+    """Use the assessment write boundary for derived trainer ownership."""
+    from apps.assessments.authoring import reassign_course_questionnaires
+
+    reassign_course_questionnaires(course, trainer)

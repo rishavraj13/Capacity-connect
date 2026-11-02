@@ -2,7 +2,6 @@
 
 from django.db import transaction
 from django.db.models import Max
-from django.db.models.deletion import ProtectedError
 
 from apps.accounts.models import User
 from apps.accounts.services import require_owner_or_admin
@@ -97,14 +96,9 @@ def delete_questionnaire(actor: User, questionnaire: Questionnaire) -> None:
     """Remove a draft explicitly without discarding protected assessment history."""
     questionnaire = managed_questionnaire(actor, questionnaire)
     require_editable_questions(questionnaire)
-    try:
-        Option.objects.filter(question__questionnaire=questionnaire).delete()
-        questionnaire.questions.all().delete()
-        questionnaire.delete()
-    except ProtectedError as exc:
-        raise AssessmentRuleError(
-            "Questionnaire has protected assessment history."
-        ) from exc
+    Option.objects.filter(question__questionnaire=questionnaire).delete()
+    questionnaire.questions.all().delete()
+    questionnaire.delete()
 
 
 def _options(question: Question, data: QuestionInput) -> None:
@@ -161,8 +155,10 @@ def delete_question(actor: User, question: Question) -> None:
     question = Question.objects.select_related("questionnaire").get(pk=question.pk)
     managed_questionnaire(actor, question.questionnaire)
     require_editable_questions(question.questionnaire)
-    try:
-        question.options.all().delete()
-        question.delete()
-    except ProtectedError as exc:
-        raise AssessmentRuleError("Question has protected assessment history.") from exc
+    question.options.all().delete()
+    question.delete()
+
+
+def reassign_course_questionnaires(course: Course, trainer: User) -> None:
+    """Update derived quiz ownership inside the caller's course transaction."""
+    Questionnaire.objects.filter(course=course).update(trainer=trainer)

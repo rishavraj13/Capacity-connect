@@ -1,11 +1,11 @@
 """Serialize enrollment lifecycle and sequential, idempotent station progress."""
 
 from django.db import IntegrityError, transaction
-from django.utils import timezone
 
 from apps.accounts.constants import UserRole
 from apps.accounts.models import User
 from apps.accounts.services import require_approved_role
+from apps.core import clock
 from apps.courses.constants import EnrollmentStatus
 from apps.courses.exceptions import EnrollmentRuleError
 from apps.courses.models import Course, Enrollment, Module, ModuleProgress
@@ -97,5 +97,5 @@ def complete_module(
     if next_module != module:
         raise EnrollmentRuleError("Complete modules in order.")
     return ModuleProgress.objects.create(
-        enrollment=enrollment, module=module, completed_at=timezone.now()
+        enrollment=enrollment, module=module, completed_at=clock.now()
     )

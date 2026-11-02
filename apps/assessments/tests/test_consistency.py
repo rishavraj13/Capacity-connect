@@ -16,7 +16,7 @@ from apps.courses.services import update_course
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.parametrize("field", ["trainer", "subject"])
+@pytest.mark.parametrize("field", ["subject"])
 def test_course_changes_preserve_assessment_references(field: str) -> None:
     """Reject reassignment that would leave existing quiz ownership inconsistent."""
     quiz, _, _ = ready_quiz()
