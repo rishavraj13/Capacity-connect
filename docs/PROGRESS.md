@@ -167,3 +167,7 @@ Testing stage is active; frontend has not started.
 - [x] B7 merged/tagged; testing branch created.
 - [x] Step 0 proxy warning/tests, professional demo history, explicit non-debug password guard and take-page query budget.
 - [ ] T1–T7 verification and backend handoff; no frontend work.
+
+- [x] R4 subject filter authorised and implemented with HTTP regression tests.
+- [x] J1 happy path and J2 failure journeys pass using HTTP after the initial admin fixture.
+- [ ] J3 shared-read classification awaits reviewer decision.

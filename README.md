@@ -5,10 +5,9 @@ Read docs/IMPLEMENTATION_BRIEF.md for binding scope and docs/PROGRESS.md for cur
 
 ## Local setup (Windows PowerShell)
 
-After cloning the repository, start from the approved main branch:
+Clone main for an approved release. When validating an explicitly selected review branch, keep that branch throughout these setup commands:
 
 ```powershell
-git switch main
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 python -m pip install -r requirements/dev.txt

@@ -304,3 +304,7 @@
 - **User quotation (2026-11-02):** "Add subject filter, then continue (Recommended)"
 - **Decision:** Proposed by agent, with the quoted answer: add a GET subject filter to My assessments. Choices come only from subjects in the trainee's existing ACTIVE/COMPLETED questionnaire scope; apply the choice to both questionnaires and departures. Invalid/foreign IDs show a form error and no rows. Empty selection retains existing defaults; no enrollment/ownership rule changes.
 - **Consequences:** Three new HTTP cases failed before implementation, then all four passed. This is a separately authorised requirement fix during testing, not an unapproved feature addition.
+
+## ADR 070: HTTP journey bootstrap and setup branch selection
+- **Decision:** Proposed by agent: journey fixtures bootstrap only the initial administrator and password (equivalent to createsuperuser); every subsequent domain write, signup, login, approval and transition uses the Django test client. ORM reads inspect durable state, generated uploads are real and temporary storage is isolated. Time is patched through core.clock only.
+- **Consequences:** No domain services or command are called to create journey state. README setup keeps the explicitly cloned branch, using main for approved releases and the review branch for reproducibility testing; setup no longer silently switches a reviewer to older approved code.
