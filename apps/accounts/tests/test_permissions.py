@@ -11,7 +11,7 @@ from django.views.generic import View
 from apps.accounts.constants import UserRole
 from apps.accounts.permissions import RoleRequiredMixin
 from apps.accounts.tests.factories import UserFactory
-from apps.core.tests.matrix import assert_matrix_case, matrix_id
+from apps.core.tests.matrix import MatrixRequest, assert_matrix_case, matrix_id
 
 PERMISSION_MATRIX: list[tuple[str, str, str, int]] = [
     ("anonymous", "trainee_home", "GET", 302),
@@ -81,7 +81,7 @@ def test_permission_matrix(client: Client, matrix_entry: tuple) -> None:
     state_urls = {"admin_approve_user", "admin_reject_user", "admin_change_role"}
     url = reverse(name, args=[target.id] if name in state_urls else [])
     data = {"role": UserRole.TRAINER} if name == "admin_change_role" else {}
-    assert_matrix_case(client, matrix_entry, url, data)
+    assert_matrix_case(client, matrix_entry, MatrixRequest(url, data))
 
 
 class DummyCBV(RoleRequiredMixin, View):

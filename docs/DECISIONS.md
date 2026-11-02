@@ -83,3 +83,36 @@
 - **Context:** PROGRESS.md was generated from a reconstructed brief.
 - **Decision:** Corrected the phase table to section 8; the implementation brief is the single source of truth for phase names and scope.
 - **Consequences:** Historical entries remain intact; phase planning follows section 8 exactly.
+
+## ADR 016: Catalog lifecycle and database names
+- **Decision:** Subject and Skill names have both form validation and authorized database Lower(name) uniqueness. Subject lifecycle uses deactivate/reactivate POST actions, never deletion; Skill.subject uses PROTECT. Descriptive names use a shared 150-character limit.
+- **Consequences:** Existing subject references survive retirement. New skills and skill moves cannot target inactive subjects; an existing skill on a retired subject may be renamed without changing its subject.
+
+## ADR 017: Lazy role profiles and account editing
+- **Decision:** ensure_trainee_profile and ensure_trainer_profile are idempotent services without signals. A role change preserves the old profile and creates the new one lazily. There is no Admin profile model; all approved roles can edit basic account details.
+- **Consequences:** Profile ownership and account privileges are excluded from forms and service write allowlists. Account email remains normalized to lowercase with the approved database constraint.
+
+## ADR 018: Private file delivery and visibility
+- **Decision:** Profile photos and certificate files use PrivateStorage, which refuses public URL generation. One FileResponse view checks selector visibility before opening storage; attachments use opaque filenames, explicit Content-Type and private/no-store caching. A shared PrivateFileInput renders existing uploads without calling file.url and preserves replacement/clear controls. MEDIA_ROOT must never be mapped by a public web server.
+- **Consequences:** Trainee profiles and files are visible to owner and Admin; trainer profiles and photos are readable by any approved user. Cross-owner child edits/deletes return 404 from filtered selectors. Admin has read access, not child-edit privileges.
+
+## ADR 019: Upload content contract and opaque paths
+- **Decision:** A deconstructible UploadPath generates UUID names in per-model folders, retaining only allowlisted lowercase extensions. Photos accept jpg/jpeg/png up to 2 MiB; certificates additionally accept pdf up to 5 MiB. Settings allow size overrides. Pillow verify and matching image formats check images; PDFs must begin with %PDF-. Browser MIME headers are not trusted.
+- **Consequences:** Empty, oversized, mismatched and extension-spoofed uploads fail before service persistence. The PDF signature check is the requested validation contract, not a full PDF parser.
+
+## ADR 020: Profile validation bounds
+- **Decision:** WorkExperience dates use the authorized nullable-aware database check. Trainer experience uses 0..60 validators. Qualification year bounds are named constants: 1900 through 2100. Descriptive profile fields use a shared 200-character limit.
+- **Consequences:** Ongoing employment is accepted; reversed dates and out-of-range experience/year inputs are rejected. Fixed bounds avoid migration drift when the calendar year changes.
+
+## ADR 021: File cleanup at transaction commit
+- **Decision:** Services schedule deletion of replaced photos/evidence and deleted child evidence with transaction.on_commit; no signals are used.
+- **Consequences:** A rollback preserves old files. Storage writes themselves are not transactional: a new upload written before an outer transaction rollback can remain unreferenced; reconciliation belongs to storage operations rather than deleting the preserved old file.
+
+## ADR 022: Shared form coordination and permission contracts
+- **Decision:** A small core FormAction dataclass groups HTTP form configuration; form_response handles validation and delegates writes to services. Forms display on GET and persist on POST; destructive/lifecycle endpoints accept POST only. Shared matrix machinery accepts declared rows and an optional fixture owner.
+- **Consequences:** New views declare roles explicitly, remain thin, and share validation-error presentation. Catalog matrix has 96 cases; profiles have 216 cases including three private-file variants. The approved B1 matrix retains all 54 cases with readable actor-url_name-METHOD IDs.
+
+## ADR 023: Generated migration size exception (explicit user approval)
+- **Context:** Generated profiles migration 0001_initial is 297 lines and has run only in disposable test databases.
+- **Decision:** The user explicitly chose to exempt generated migrations from the 250-line module limit. Preserve migration history; do not split or rewrite the applied generated migration.
+- **Consequences:** All application and test modules remain limited to 250 lines; the final wc/AST audit excludes generated migrations as requested in the B2 gate.

@@ -8,31 +8,7 @@
 <body>
     <header>
         <h1>Capacity Connect</h1>
-        <nav aria-label="Main Navigation">
-            <ul>
-                {% if user.is_authenticated %}
-                    <li>Logged in as: {{ user.username }} ({{ user.role }})</li>
-                    {% if user.role == "TRAINEE" %}
-                        <li><a href="{% url 'trainee_home' %}">Trainee Dashboard</a></li>
-                    {% elif user.role == "TRAINER" %}
-                        <li><a href="{% url 'trainer_home' %}">Trainer Dashboard</a></li>
-                    {% elif user.role == "ADMIN" %}
-                        <li><a href="{% url 'admin_panel' %}">Admin Dashboard</a></li>
-                        <li><a href="{% url 'admin_user_list' %}">User Management</a></li>
-                        <li><a href="{% url 'admin_pending_list' %}">Pending Approvals</a></li>
-                    {% endif %}
-                    <li>
-                        <form method="post" action="{% url 'logout' %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" id="logout-button">Logout</button>
-                        </form>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+        {% include "includes/nav.html" %}
     </header>
 
     {% include "includes/messages.html" %}

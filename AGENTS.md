@@ -1,12 +1,12 @@
 # Capacity Connect
 
-Capacity Connect is a Django learning-management portal for Trainees, Trainers, and Admins. The current stage is backend only, followed by testing and bug fixing; B2 Catalog and Profiles is in progress.
+Capacity Connect is a Django learning-management portal for Trainees, Trainers, and Admins. The current stage is backend only, followed by testing and bug fixing; B2 Catalog and Profiles has passed its gate and is awaiting user approval.
 
 Binding rules: docs/IMPLEMENTATION_BRIEF.md. Read it before any task.
 
 Models define data; selectors read; services write and enforce rules.
 Forms validate input; permissions declare roles; views coordinate HTTP only.
-Functions: at most 25 lines and 4 parameters; modules: at most 250 lines.
+Functions: at most 25 lines and 4 parameters; modules: at most 250 lines (generated migrations exempt by user approval).
 Views: at most 15 lines of logic; use type hints and one-line why docstrings.
 
 Run before reporting (activate venv first):

@@ -35,3 +35,10 @@ def users_filtered(
     elif status == STATUS_INACTIVE:
         queryset = queryset.filter(is_active=False)
     return queryset
+
+
+def email_in_use(email: str, excluding_user_id: int) -> bool:
+    """Share case-insensitive account collision reads with profile forms."""
+    return (
+        User.objects.exclude(pk=excluding_user_id).filter(email__iexact=email).exists()
+    )

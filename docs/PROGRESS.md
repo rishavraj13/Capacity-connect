@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0 and B1 approved; B2 through B7 not started. Historical fix rounds remain below.
+Status: B0 and B1 approved; B2 gate passed and report delivered, awaiting approval; B3 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -46,16 +46,27 @@ Status: B0 and B1 approved; B2 through B7 not started. Historical fix rounds rem
 - Upgraded and pinned `Django==5.2.18` (LTS) for official Python 3.14 support.
 - Configured coverage in `pyproject.toml` (`source = ["apps"]`, omitting migrations and tests) with 100% test coverage.
 - Enforced mechanical Ruff rules in `pyproject.toml`: `C901` (max-complexity 8), `PLR0913` (max-args 4), `PLR0915` (max-statements 20), `T20` (ban print), `E722` (ban bare except), `ERA001` (ban commented-out code).
-- Verified line count of all `.py` files (all ≤ 104 lines, well within 250 line limit).
+- Verified line count of all `.py` files (all â‰¤ 104 lines, well within 250 line limit).
 - Documented ADRs 005-008 in `docs/DECISIONS.md`.
 - Added `docs/IMPLEMENTATION_BRIEF.md` covering all 16 architecture and engineering sections.
 - Re-verified all gate checks: Pytest, Coverage, Ruff check, Ruff format, makemigrations, fresh database migration, check, and pip check.
 
-## B2 housekeeping (in progress)
+## B2 Catalog and Profiles (gate passed; awaiting approval)
 - [x] B1 merged into main and tagged b1-approved.
 - [x] Phase table corrected and ADR 015 appended in the first B2 commit.
 - [x] Added root AGENTS.md; split authentication and administrator view tests.
 - [x] Extracted reusable permission matrix helper with readable case IDs.
 - [x] Enabled branch coverage and added missing service/form branch tests.
 - [x] Reproduced and fixed HTTPS login redirect downgrade (BUG 001).
-- [ ] Complete catalog, profiles, uploads, security tests, and final gate.
+- [x] Added catalog models, constraints, services, selectors and role-restricted views.
+- [x] Added lazy role profiles, account editing and owner-scoped child CRUD.
+- [x] Added private uploads, validation, UUID naming and commit-time file cleanup.
+- [x] Added complete new-route matrices, CSRF, IDOR, mass-assignment and query-count tests.
+- [x] Completed final gate: 517 tests pass, 867/867 statements and 116/118 branches covered; all service/selector/form/permission modules at 100%.
+- [x] Delivered docs/B2_REPORT.md and docs/B2_GATE_OUTPUT.txt with raw command evidence.
+- [ ] User approval for B2; do not start B3.
+
+## Current known issues
+- Login and signup throttling is not implemented (ADR 011, planned for B7).
+- HSTS is 3600 s; include-subdomains and preload are intentionally off until HTTPS is verified (B7).
+- Storage writes are not transactional; new files can remain unreferenced after an outer transaction rollback (ADR 021).

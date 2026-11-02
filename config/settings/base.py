@@ -32,6 +32,8 @@ THIRD_PARTY_APPS: list[str] = []
 LOCAL_APPS: list[str] = [
     "apps.core",
     "apps.accounts",
+    "apps.catalog.apps.CatalogConfig",
+    "apps.profiles.apps.ProfilesConfig",
 ]
 
 INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -105,3 +107,8 @@ DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
 
 LOGIN_URL: str = "login"
 LOGOUT_REDIRECT_URL: str = "login"
+
+PHOTO_EXTENSIONS = ("jpg", "jpeg", "png")
+CERTIFICATE_EXTENSIONS = ("pdf", *PHOTO_EXTENSIONS)
+PHOTO_MAX_BYTES = env.int("PHOTO_MAX_BYTES", default=2 * 1024 * 1024)
+CERTIFICATE_MAX_BYTES = env.int("CERTIFICATE_MAX_BYTES", default=5 * 1024 * 1024)

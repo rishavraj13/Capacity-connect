@@ -1,0 +1,36 @@
+        <nav aria-label="Main Navigation">
+            <ul>
+                {% if user.is_authenticated %}
+                    {% if user.is_approved and user.is_active %}
+                    <li><a href="{% url 'catalog:subject_list' %}">Catalog</a></li>
+                    <li><a href="{% url 'profiles:profile_list' %}">Profiles</a></li>
+                    <li><a href="{% url 'profiles:account_edit' %}">Account details</a></li>
+                    {% if user.role == "TRAINEE" %}<li><a href="{% url 'profiles:trainee_edit' %}">My trainee profile</a></li>
+                    <li><a href="{% url 'profiles:qualification_create' %}">Add qualification</a></li>
+                    <li><a href="{% url 'profiles:experience_create' %}">Add experience</a></li>
+                    <li><a href="{% url 'profiles:certificate_create' %}">Add certificate</a></li>
+                    {% elif user.role == "TRAINER" %}<li><a href="{% url 'profiles:trainer_edit' %}">My trainer profile</a></li>
+                    {% elif user.role == "ADMIN" %}<li><a href="{% url 'catalog:subject_create' %}">Create subject</a></li><li><a href="{% url 'catalog:skill_create' %}">Create skill</a></li>{% endif %}
+                    {% endif %}
+                    <li>Logged in as: {{ user.username }} ({{ user.role }})</li>
+                    {% if user.role == "TRAINEE" %}
+                        <li><a href="{% url 'trainee_home' %}">Trainee Dashboard</a></li>
+                    {% elif user.role == "TRAINER" %}
+                        <li><a href="{% url 'trainer_home' %}">Trainer Dashboard</a></li>
+                    {% elif user.role == "ADMIN" %}
+                        <li><a href="{% url 'admin_panel' %}">Admin Dashboard</a></li>
+                        <li><a href="{% url 'admin_user_list' %}">User Management</a></li>
+                        <li><a href="{% url 'admin_pending_list' %}">Pending Approvals</a></li>
+                    {% endif %}
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" >
+                            {% csrf_token %}
+                            <button type="submit" id="logout-button">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>

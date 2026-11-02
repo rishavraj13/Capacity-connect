@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}<h2>{{ profile.user.username }}</h2><p>{{ profile.headline }}</p><p>{{ profile.bio }}</p><p>Experience: {{ profile.years_experience }} years</p>
+{% if profile.photo %}<a href="{% url 'profiles:private_file' 'trainer' profile.pk %}">Download photo</a>{% endif %}
+{% if user.pk == profile.user_id and user.role == "TRAINER" %}<a href="{% url 'profiles:trainer_edit' %}">Edit profile</a>{% endif %}
+{% endblock %}

@@ -1,5 +1,7 @@
 """Share actor setup and assertions so phases only declare permission rows."""
 
+from dataclasses import dataclass, field
+
 from django.test import Client
 
 from apps.accounts.models import User
@@ -25,11 +27,21 @@ def matrix_id(row: tuple) -> str:
     return "-".join(row[:3])
 
 
-def assert_matrix_case(client: Client, row: tuple, url: str, data: dict) -> None:
-    """Exercise a declared access contract with a real authenticated client."""
+@dataclass
+class MatrixRequest:
+    """Allow object permission tests to supply the owner used by their fixtures."""
+
+    url: str
+    data: dict = field(default_factory=dict)
+    user: User | None = None
+
+
+def assert_matrix_case(client: Client, row: tuple, request: MatrixRequest) -> None:
+    """Exercise a declared contract using the fixture's actor when supplied."""
     actor, _, method, expected = row
-    user = actor_user(actor)
+    user = request.user if request.user is not None else actor_user(actor)
     if user:
         client.force_login(user)
-    response = getattr(client, method.lower())(url, data=data)
+    response = getattr(client, method.lower())(request.url, data=request.data)
     assert response.status_code == expected
+    response.close()

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Subjects and skills</h2>
+{% if user.role == "ADMIN" %}<p><a href="{% url 'catalog:subject_create' %}">Create subject</a> <a href="{% url 'catalog:skill_create' %}">Create skill</a></p>{% endif %}
+{% for subject in subjects %}
+<section><h3>{{ subject.name }}{% if not subject.is_active %} (inactive){% endif %}</h3><p>{{ subject.description }}</p>
+{% if user.role == "ADMIN" %}
+<a href="{% url 'catalog:subject_edit' subject.pk %}">Edit subject</a>
+{% if subject.is_active %}<form method="post" action="{% url 'catalog:subject_deactivate' subject.pk %}">{% csrf_token %}<button>Deactivate</button></form>
+{% else %}<form method="post" action="{% url 'catalog:subject_reactivate' subject.pk %}">{% csrf_token %}<button>Reactivate</button></form>{% endif %}
+{% endif %}
+<ul>{% for skill in subject.skills.all %}<li>{{ skill.name }}
+{% if user.role == "ADMIN" %}<a href="{% url 'catalog:skill_edit' skill.pk %}">Edit skill</a><form method="post" action="{% url 'catalog:skill_delete' skill.pk %}">{% csrf_token %}<button>Delete skill</button></form>{% endif %}
+</li>{% empty %}<li>No skills yet.</li>{% endfor %}</ul></section>
+{% empty %}<p>No subjects yet.</p>{% endfor %}
+{% endblock %}
