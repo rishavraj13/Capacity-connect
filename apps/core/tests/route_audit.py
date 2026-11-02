@@ -36,6 +36,8 @@ STATE_NAMES = frozenset(
         "courses:drop",
         "courses:complete_module",
         "library:delete",
+        "library:publish",
+        "library:unpublish",
         "assessments:delete",
         "assessments:question_delete",
         "assessments:start",
