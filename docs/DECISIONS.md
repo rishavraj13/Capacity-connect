@@ -137,3 +137,7 @@
 ## ADR 028: Database email-race recovery
 - **Decision:** Account writes run inside an inner atomic savepoint. After an IntegrityError rolls back that savepoint, the service rechecks case-insensitive email ownership; a collision becomes an email ValidationError. Unrelated integrity errors are re-raised.
 - **Consequences:** The shared form coordinator displays an email field error with HTTP 200, while the original account data remains unchanged and the connection remains usable. The test inserts a real competing case variant after service full_clean, exercising the database constraint rather than mocking its exception.
+
+## ADR 029: Shared HttpOnly CSRF cookie and storage isolation
+- **Decision:** CSRF_COOKIE_HTTPONLY=True lives in base.py so dev, test and prod match. Server-rendered csrf_token fields require no JavaScript cookie reader.
+- **Consequences:** Ignore rules protect media/, private_uploads/ and .local/; a before/after full-suite file inventory verifies that tests leave the real private storage unchanged.

@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0 and B1 approved; B2.1 gate passed, awaiting user review and approval; B3 through B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 in progress; B4 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -64,7 +64,7 @@ Status: B0 and B1 approved; B2.1 gate passed, awaiting user review and approval;
 - [x] Added complete new-route matrices, CSRF, IDOR, mass-assignment and query-count tests.
 - [x] Completed final gate: 517 tests pass, 867/867 statements and 116/118 branches covered; all service/selector/form/permission modules at 100%.
 - [x] Delivered docs/B2_REPORT.md and docs/B2_GATE_OUTPUT.txt with raw command evidence.
-- [ ] User approval for B2; do not start B3.
+- [x] User approved B2/B2.1; merged into main and tagged b2-approved.
 
 ## Current known issues
 - Login and signup throttling is not implemented (ADR 011, planned for B7).
@@ -80,4 +80,10 @@ Status: B0 and B1 approved; B2.1 gate passed, awaiting user review and approval;
 - [x] Added 1/10-child query counts and covered both inherited account view branches.
 - [x] Final gate: 532 tests passed; 898/898 statements and 120/120 branches covered.
 - [x] Delivered docs/B21_REPORT.md with requested source and real verification output.
-- [ ] Await user approval; no merge, tag or B3 work.
+- [x] User approved B2.1 and authorized B3.
+
+## B3 Step 0
+- [x] Approved B2 merged and tagged b2-approved; created phase/b3-courses-library.
+- [x] Verified ignore rules for public/private storage and local evidence.
+- [x] Moved CSRF_COOKIE_HTTPONLY to base settings; dev/prod inherit True.
+- [x] Full pytest: 533 passed in 6.28s; real private_uploads file list before=[] and after=[] (identical).

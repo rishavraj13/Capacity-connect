@@ -46,3 +46,8 @@ def test_production_csrf_cookie_is_httponly(monkeypatch: object) -> None:
     monkeypatch.setenv("ALLOWED_HOSTS", "prod.example")
     prod = import_module("config.settings.prod")
     assert prod.CSRF_COOKIE_HTTPONLY is True
+
+
+def test_csrf_cookie_is_httponly_in_shared_settings() -> None:
+    """Keep server-rendered form cookie protection consistent across environments."""
+    assert settings.CSRF_COOKIE_HTTPONLY is True
