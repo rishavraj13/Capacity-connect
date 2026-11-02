@@ -1,6 +1,8 @@
 # Deployment and operations
 
-Use Python 3.14 and the pinned requirements. PostgreSQL readiness is a static review only; no driver was added.
+Use Python 3.14 and the pinned requirements plus requirements/constraints.txt.
+
+For development/testing install with `python -m pip install -r requirements/dev.txt -c requirements/constraints.txt`. Production installs use `python -m pip install -r requirements/base.txt -c requirements/constraints.txt`. The constraint file captures all distributions from the verified Python 3.14.6 Windows environment (including transitive packages and pip); constraints do not install packages on their own. Refresh only after an approved upgrade and full verification, following ADR 072. PostgreSQL readiness is a static review only; no driver was added.
 
 > **Reverse-proxy warning:** Behind one reverse proxy (nginx, PythonAnywhere or Render), set `TRUSTED_PROXY_COUNT=1`. Otherwise every visitor shares the proxy IP and per-IP throttles such as LOGIN_IP_LIMIT can block everyone together. The proxy must strip or safely append forwarding headers; a forged extra left entry is ignored by the rightmost-entry rule.
 
@@ -82,7 +84,7 @@ DJANGO_SETTINGS_MODULE is Django's process selector. Conservative code defaults 
 Deploy using the production environment for every command:
 
 ```sh
-python -m pip install -r requirements/base.txt
+python -m pip install -r requirements/base.txt -c requirements/constraints.txt
 python manage.py migrate --noinput
 python manage.py createcachetable
 python manage.py collectstatic --noinput

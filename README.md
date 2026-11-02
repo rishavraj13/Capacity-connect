@@ -10,7 +10,7 @@ Clone main for an approved release. When validating an explicitly selected revie
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
-python -m pip install -r requirements/dev.txt
+python -m pip install -r requirements/dev.txt -c requirements/constraints.txt
 Copy-Item .env.example .env
 python manage.py migrate
 python manage.py createsuperuser
@@ -20,6 +20,8 @@ python manage.py runserver
 
 Set a strong SECRET_KEY in .env before deployment. Never commit .env.
 Open /login/ locally with the created administrator account.
+
+The committed constraints pin all 20 distributions from the verified Python 3.14.6 Windows environment, including transitive packages and pip. Use the constraint file on every install; constraints limit versions but do not install packages by themselves. See ADR 072 for upgrades and refresh instructions.
 
 ## Verify
 

@@ -184,3 +184,7 @@ Testing stage is active; frontend has not started.
 - [x] Final verification: 1984 passed in 31.10s; coverage run 1984 passed in 31.55s; 3817 statements / 522 branches, zero misses, 100%; standard checks and fresh migrations pass, go-live deploy zero issues, no size/encoding violations.
 - [x] Final fresh clone: 1984 tests and 100% coverage; reverse/normal/normal each 1984; per-app counts sum to 1984.
 - [ ] Reviewer approval of backend handoff; no testing-branch merge/tag or frontend work before instruction.
+
+## T1 reproducible install review follow-up
+- [x] Stay on phase/t1-testing; no merge/tag. Exact constraints generated from all 20 distributions in the verified environment; README/deployment install commands updated (ADR 072).
+- [ ] Fresh-clone constrained install and verification evidence.
