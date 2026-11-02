@@ -181,3 +181,13 @@ def test_login_form_empty_credentials() -> None:
     """Verify login form handles empty username or password cleanly."""
     form = LoginForm(data={"username": "", "password": ""})
     assert not form.is_valid()
+
+
+@pytest.mark.django_db
+def test_signup_missing_password_is_invalid() -> None:
+    """Reject incomplete credentials without invoking password validation."""
+    form = SignupForm(
+        data={"username": "missing", "email": "m@example.com", "role": UserRole.TRAINEE}
+    )
+    assert not form.is_valid()
+    assert "password" in form.errors

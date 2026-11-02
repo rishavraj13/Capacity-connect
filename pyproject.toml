@@ -49,6 +49,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.coverage.run]
+branch = true
 source = ["apps"]
 omit = [
     "*/migrations/*",

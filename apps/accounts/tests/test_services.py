@@ -119,3 +119,12 @@ def test_change_role_invalid_role_raises_error() -> None:
     trainee = UserFactory(approved_trainee=True)
     with pytest.raises(InvalidRoleError):
         change_role(trainee, "INVALID_ROLE", admin_user)
+
+
+@pytest.mark.django_db
+def test_reject_admin_when_another_active_admin_remains() -> None:
+    """Permit administrative rejection when portal administration survives."""
+    actor = UserFactory(active_admin=True)
+    target = UserFactory(active_admin=True)
+    reject_user(target, actor)
+    assert not target.is_active

@@ -50,3 +50,12 @@ Status: B0 and B1 approved; B2 through B7 not started. Historical fix rounds rem
 - Documented ADRs 005-008 in `docs/DECISIONS.md`.
 - Added `docs/IMPLEMENTATION_BRIEF.md` covering all 16 architecture and engineering sections.
 - Re-verified all gate checks: Pytest, Coverage, Ruff check, Ruff format, makemigrations, fresh database migration, check, and pip check.
+
+## B2 housekeeping (in progress)
+- [x] B1 merged into main and tagged b1-approved.
+- [x] Phase table corrected and ADR 015 appended in the first B2 commit.
+- [x] Added root AGENTS.md; split authentication and administrator view tests.
+- [x] Extracted reusable permission matrix helper with readable case IDs.
+- [x] Enabled branch coverage and added missing service/form branch tests.
+- [x] Reproduced and fixed HTTPS login redirect downgrade (BUG 001).
+- [ ] Complete catalog, profiles, uploads, security tests, and final gate.

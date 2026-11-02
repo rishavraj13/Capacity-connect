@@ -9,9 +9,9 @@ from django.urls import reverse
 from django.views.generic import View
 
 from apps.accounts.constants import UserRole
-from apps.accounts.models import User
 from apps.accounts.permissions import RoleRequiredMixin
 from apps.accounts.tests.factories import UserFactory
+from apps.core.tests.matrix import assert_matrix_case, matrix_id
 
 PERMISSION_MATRIX: list[tuple[str, str, str, int]] = [
     ("anonymous", "trainee_home", "GET", 302),
@@ -71,42 +71,17 @@ PERMISSION_MATRIX: list[tuple[str, str, str, int]] = [
 ]
 
 
-def _get_actor_user(actor: str) -> User | None:
-    """Return initialized user instance for declared matrix actor."""
-    if actor == "approved_trainee":
-        return UserFactory(approved_trainee=True)
-    if actor == "approved_trainer":
-        return UserFactory(approved_trainer=True)
-    if actor == "approved_admin":
-        return UserFactory(active_admin=True)
-    if actor == "unapproved_user":
-        return UserFactory(pending_trainee=True)
-    if actor == "rejected_user":
-        return UserFactory(rejected_user=True)
-    return None
-
-
 @pytest.mark.django_db
-@pytest.mark.parametrize("matrix_entry", PERMISSION_MATRIX)
-def test_permission_matrix(
-    client: Client,
-    matrix_entry: tuple[str, str, str, int],
-) -> None:
-    """Verify access permission matrix matches brief specifications."""
-    actor, url_name, method, expected_status = matrix_entry
+@pytest.mark.parametrize("matrix_entry", PERMISSION_MATRIX, ids=matrix_id)
+def test_permission_matrix(client: Client, matrix_entry: tuple) -> None:
+    """Preserve the approved B1 permission contract through shared machinery."""
     target = UserFactory(pending_trainee=True)
     UserFactory(active_admin=True)
-    user = _get_actor_user(actor)
-    if user:
-        client.force_login(user)
-
+    _, name, _, _ = matrix_entry
     state_urls = {"admin_approve_user", "admin_reject_user", "admin_change_role"}
-    args = [target.id] if url_name in state_urls else []
-    url = reverse(url_name, args=args)
-    data = {"role": UserRole.TRAINER} if url_name == "admin_change_role" else {}
-
-    res = client.get(url) if method == "GET" else client.post(url, data=data)
-    assert res.status_code == expected_status
+    url = reverse(name, args=[target.id] if name in state_urls else [])
+    data = {"role": UserRole.TRAINER} if name == "admin_change_role" else {}
+    assert_matrix_case(client, matrix_entry, url, data)
 
 
 class DummyCBV(RoleRequiredMixin, View):
