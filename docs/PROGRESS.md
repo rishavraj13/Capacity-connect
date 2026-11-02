@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 gate passed and awaiting review; B5 through B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 in progress; B6 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -112,3 +112,10 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 gate passed and awaiting re
 - [x] Fresh migration and full gate: 1265 tests; coverage 99% (2303 statements, 7 missed; 324 branches, 2 partial).
 - [x] Compact report docs/B4_REPORT.md; full transcript ignored in .local/reports/.
 - [ ] User B4 review/approval. Do not merge/tag B4 or start B5 before approval.
+
+## B5 Step 0 and Feedback/Certificates
+- [x] B4 merged/tagged b4-approved; created phase/b5-feedback-certificates.
+- [x] ADR 047 attribution/units corrected; pass_rate_percent rename preserves arithmetic.
+- [ ] Carry-over coverage, reassignment and proof inventory.
+- [ ] Feedback, completion, certificates and full B5 gate/report.
+- [ ] User B5 approval; do not start B6.

@@ -76,7 +76,7 @@ def test_participation_includes_zero_and_uses_attempted_denominators() -> None:
     assert (stats.enrolled, stats.attempted, stats.passed) == (3, 2, 1)
     assert stats.average_best_percent == Decimal(
         "40.00"
-    ) and stats.pass_rate == Decimal("50.00")
+    ) and stats.pass_rate_percent == Decimal("50.00")
     assert selectors.participation(UserFactory(approved_trainer=True), quiz) is None
 
 
@@ -84,9 +84,9 @@ def test_zero_participation_statistics_and_b5_handoff() -> None:
     """Return stable zeros and expose successful quiz IDs without marking completion."""
     quiz, _, trainee = ready_quiz()
     rows, stats = selectors.participation(quiz.trainer, quiz)
-    assert len(rows) == 1 and stats.average_best_percent == stats.pass_rate == Decimal(
-        "0.00"
-    )
+    assert len(
+        rows
+    ) == 1 and stats.average_best_percent == stats.pass_rate_percent == Decimal("0.00")
     assert not selectors.has_passed(trainee, quiz)
     AttemptFactory(
         questionnaire=quiz,

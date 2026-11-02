@@ -35,13 +35,13 @@ class ParticipationRow:
 
 @dataclass(frozen=True, slots=True)
 class QuestionnaireStats:
-    """Keep aggregate participation presentation independent of query evaluation."""
+    """Percent statistics use 0..100 Decimal values, rounded half up to two places."""
 
     enrolled: int
     attempted: int
     passed: int
     average_best_percent: Decimal
-    pass_rate: Decimal
+    pass_rate_percent: Decimal
 
 
 @dataclass(frozen=True, slots=True)
