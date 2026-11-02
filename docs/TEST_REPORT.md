@@ -380,3 +380,106 @@ No production deployment, frontend work or testing-branch merge/tag has occurred
 | test_j3_url_walk_classifies_shared_reads_and_denies_cross_owner[1-learner] | 78 | PASS |
 
 All 59 app routes with pk, course_id or user_id are explicitly bound to actual existing objects. Built-in admin uses its separate audited policy, and public string-ID verification is covered by J1. Shared reads and own participation are recorded separately from forbidden cross-owner requests; no access rule was changed.
+
+## Reproducible install follow-up (2026-11-03)
+
+Tested commit d0483b7 on phase/t1-testing, in a new empty clone with its own virtualenv. No working-tree files were copied. requirements/constraints.txt was generated with pip freeze --all from the verified environment; all 20 installed distributions in the new clone match exactly, including pip 26.1.2 and sqlparse 0.6.0. No dependency was added or upgraded. Earlier unconstrained clone results above remain historical evidence. New installs must use constraints (ADR 072).
+
+`git clone --branch phase/t1-testing C:\Django\Project C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do` (exit 0):
+
+```text
+Cloning into 'C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do'...
+done.
+```
+
+`C:\Django\Project\venv\Scripts\python.exe -m venv venv` (exit 0):
+
+```text
+
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m pip install -r requirements/dev.txt -c requirements/constraints.txt` (exit 0):
+
+```text
+0 pytest-9.2.0 pytest-django-4.14.0 reportlab-5.1.0 ruff-0.17.3 sqlparse-0.6.0 tzdata-2026.6
+
+[notice] A new release of pip is available: 26.1.2 -> 26.2.2
+[notice] To update, run: C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m pip install --upgrade pip
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe manage.py migrate` (exit 0):
+
+```text
+g certificates.0001_initial... OK
+  Applying competency.0001_initial... OK
+  Applying courses.0002_course_course_published_pk_idx_and_more... OK
+  Applying library.0001_initial... OK
+  Applying feedback.0001_initial... OK
+  Applying profiles.0001_initial... OK
+  Applying sessions.0001_initial... OK
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe manage.py seed_demo_data` (exit 0):
+
+```text
+proved
+demo_trainee_rohan | TRAINEE | approved
+demo_trainee_sana | TRAINEE | approved
+demo_trainee_tara | TRAINEE | pending
+demo_trainer_ananya | TRAINER | approved
+demo_trainer_kavita | TRAINER | approved
+demo_trainer_vikram | TRAINER | approved
+Demo password (development only): Demo-Connect-2026!
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m pytest` (exit 0):
+
+```text
+============================ 1984 passed in 28.53s ============================
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m coverage run -m pytest` (exit 0):
+
+```text
+============================ 1984 passed in 29.00s ============================
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m coverage report -m` (exit 0):
+
+```text
+TOTAL                                                       3817      0    522      0   100%
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m ruff check .` (exit 0):
+
+```text
+All checks passed!
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m ruff format --check .` (exit 0):
+
+```text
+362 files already formatted
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe manage.py makemigrations --check` (exit 0):
+
+```text
+No changes detected
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe manage.py check` (exit 0):
+
+```text
+System check identified no issues (0 silenced).
+```
+
+`C:\Users\risha\AppData\Local\Temp\capacity-t1-constrained-ml1mx7do\venv\Scripts\python.exe -m pip check` (exit 0):
+
+```text
+No broken requirements found.
+```
+
+Fresh migrate, seed and runserver homepage HTTP 200 also passed. Full UTF-8 transcript: .local/reports/T1_CONSTRAINED_CLONE_OUTPUT.txt; exact installed package inventory: .local/reports/T1_CONSTRAINED_FREEZE.txt.
+
+Mutation-log confirmation: mutation 7 failed apps/assessments/tests/test_grading.py::test_mixed_marks_wrong_and_unanswered_are_graded_from_database (score 5 instead of 2). Mutation 20 failed apps/courses/tests/test_selectors.py::test_enrollment_and_participant_counts_have_one_query because another trainer unexpectedly received participant rows. That is the selector ownership assertion, not an edit-page assertion. The verbatim mutation table remains unchanged.

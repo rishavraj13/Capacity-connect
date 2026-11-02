@@ -187,4 +187,5 @@ Testing stage is active; frontend has not started.
 
 ## T1 reproducible install review follow-up
 - [x] Stay on phase/t1-testing; no merge/tag. Exact constraints generated from all 20 distributions in the verified environment; README/deployment install commands updated (ADR 072).
-- [ ] Fresh-clone constrained install and verification evidence.
+- [x] Fresh clone of d0483b7: all 20 installed distributions exactly match constraints; pytest 1984 passed in 28.53s; coverage run 1984 passed in 29.00s, TOTAL 3817 / 0 missed / 522 branches / 0 partial / 100%; Ruff, fresh migrate, migration check, Django check and pip check pass. See TEST_REPORT.md follow-up and ignored T1_CONSTRAINED_CLONE_OUTPUT.txt.
+- [ ] Reviewer approval; remain on phase/t1-testing without merge/tag.
