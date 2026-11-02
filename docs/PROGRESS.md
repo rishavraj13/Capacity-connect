@@ -173,3 +173,11 @@ Testing stage is active; frontend has not started.
 - [ ] J3 shared-read classification awaits reviewer decision.
 
 - [x] BUG 024 reproduced with three failing HTTP regressions; authentication non-field errors now rendered.
+
+- [x] T1 clean clone from the committed testing branch: isolated venv/install/setup, 1978 tests, 100% coverage, runserver homepage 200.
+- [x] T2 all twelve apps separately; reverse and two normal runs each 1978 passed; no requested sleep/real-clock rg matches.
+- [x] T3 twenty hand-authored mutations each trigger test failures; restored through git checkout, clean status asserted after each mutation.
+- [x] T5 requirements traceability and T6 security-control mapping in docs/TEST_REPORT.md; R4 fixed after explicit approval; R14 remains frontend-partial by scope.
+- [x] T7 honest limits, URL map and dataclass frontend contracts documented; no frontend work.
+- [x] Current verification gate: 1978 passed in 23.35s; coverage run 1978 passed in 23.45s; 3817 statements / 522 branches, zero misses, 100%; Ruff, fresh migrate, checks, pip and go-live deploy check clean; no size/encoding violations.
+- [ ] Finish J3 after reviewer resolves shared-publication reads versus ownership-only expectations; final backend handoff remains pending.
