@@ -4,10 +4,11 @@ from functools import partial
 from typing import Any
 
 from django.core.exceptions import ValidationError
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
 from apps.accounts.constants import UserRole
 from apps.accounts.models import User
+from apps.accounts.selectors import email_in_use
 from apps.catalog.selectors import selectable_skills
 from apps.profiles.constants import (
     ACCOUNT_FIELDS,
@@ -24,6 +25,7 @@ from apps.profiles.models import (
     TrainerProfile,
     WorkExperience,
 )
+from apps.profiles.selectors import retained_skills
 
 CHILD_FIELDS = {
     Qualification: QUALIFICATION_FIELDS,
@@ -73,11 +75,12 @@ def _save_fields(instance: Any, data: dict, fields: tuple) -> Any:
 def update_trainee_profile(profile: TraineeProfile, data: dict) -> TraineeProfile:
     """Validate active skill selection at the write boundary as well as in forms."""
     skills = list(data.get("skills", profile.skills.all()))
-    ids = {skill.pk for skill in skills}
+    retired = list(retained_skills(profile))
+    ids = {skill.pk for skill in skills} - {skill.pk for skill in retired}
     if selectable_skills().filter(pk__in=ids).count() != len(ids):
         raise ValidationError("Select skills from active subjects only.")
     _save_fields(profile, data, TRAINEE_FIELDS)
-    profile.skills.set(skills)
+    profile.skills.set([*skills, *retired])
     return profile
 
 
@@ -110,5 +113,18 @@ def update_account(user: User, data: dict) -> User:
     for field, value in allowed.items():
         setattr(user, field, value)
     user.full_clean()
-    user.save()
+    _persist_account(user)
     return user
+
+
+def _persist_account(user: User) -> None:
+    """Recover email collisions only after the failed write savepoint rolls back."""
+    try:
+        with transaction.atomic():
+            user.save()
+    except IntegrityError as exc:
+        if email_in_use(user.email, user.pk):
+            raise ValidationError(
+                {"email": "A user with that email already exists."}
+            ) from exc
+        raise

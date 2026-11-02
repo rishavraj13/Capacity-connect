@@ -1,5 +1,6 @@
 """Validate actual upload bytes before private files enter storage."""
 
+import warnings
 from pathlib import PurePath
 
 from django.conf import settings
@@ -25,6 +26,16 @@ def validate_size(file: UploadedFile, limit: int) -> None:
         raise ValidationError("File is empty or exceeds the upload size limit.")
 
 
+def _validate_image(file: UploadedFile, extension: str) -> None:
+    """Treat Pillow's warning threshold as a rejection without global filters."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", Image.DecompressionBombWarning)
+        with Image.open(file) as image:
+            if image.format != IMAGE_FORMATS[extension]:
+                raise ValidationError("Image content does not match its extension.")
+            image.verify()
+
+
 def validate_content(file: UploadedFile, extension: str) -> None:
     """Check the file format independently of browser supplied MIME headers."""
     position = file.tell()
@@ -34,15 +45,13 @@ def validate_content(file: UploadedFile, extension: str) -> None:
             if file.read(len(PDF_SIGNATURE)) != PDF_SIGNATURE:
                 raise ValidationError("Invalid PDF content.")
         else:
-            image = Image.open(file)
-            if image.format != IMAGE_FORMATS[extension]:
-                raise ValidationError("Image content does not match its extension.")
-            image.verify()
+            _validate_image(file, extension)
     except (
         UnidentifiedImageError,
         OSError,
         SyntaxError,
         Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
     ) as exc:
         raise ValidationError("Invalid image content.") from exc
     finally:

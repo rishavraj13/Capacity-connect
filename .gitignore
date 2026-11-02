@@ -42,3 +42,8 @@ wheels/
 .coverage
 htmlcov/
 .ruff_cache/
+
+# Private storage and local verification evidence
+private_uploads/
+.local/
+docs/B2_GATE_OUTPUT.txt

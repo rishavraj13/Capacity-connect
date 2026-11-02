@@ -4,7 +4,6 @@ from django import forms
 
 from apps.accounts.models import User
 from apps.accounts.selectors import email_in_use
-from apps.catalog.selectors import selectable_skills
 from apps.core.widgets import PrivateFileInput
 from apps.profiles.constants import (
     ACCOUNT_FIELDS,
@@ -21,10 +20,11 @@ from apps.profiles.models import (
     TrainerProfile,
     WorkExperience,
 )
+from apps.profiles.selectors import skill_choices
 
 
 class TraineeProfileForm(forms.ModelForm):
-    """Prevent profile owners from selecting retired catalog skills."""
+    """Keep retired skill history visible while limiting new selections."""
 
     class Meta:
         """Exclude the owning user from posted fields."""
@@ -36,7 +36,11 @@ class TraineeProfileForm(forms.ModelForm):
     def __init__(self, *args: object, **kwargs: object) -> None:
         """Rebuild available skills for each request's catalog state."""
         super().__init__(*args, **kwargs)
-        self.fields["skills"].queryset = selectable_skills()
+        self.fields["skills"].queryset = skill_choices(self.instance)
+        self.fields["skills"].help_text = (
+            "Existing skills from inactive subjects are kept, even if omitted. "
+            "Only skills from active subjects can be added."
+        )
 
 
 class TrainerProfileForm(forms.ModelForm):

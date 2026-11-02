@@ -38,3 +38,45 @@
 - Fix: Shared PrivateFileInput identifies initial files by name and renders replacement/clear controls without a public link.
 - Tests: test_profile_permission_matrix[approved_trainee-profiles:trainee_edit-GET], certificate_edit GET/POST (failed before the fix).
 - Commit: feat(profiles): add private role profiles and catalog workflows.
+
+## BUG 006: Silent removal of retired trainee skills
+- Symptom: Inactive-subject selections disappeared from forms and could be silently removed on save.
+- Root cause: Form choices excluded historical selections while the service replaced the entire M2M set from submitted choices.
+- Fix: Include owner-retained choices in selectors and preserve existing retired skills at the service boundary.
+- Tests: test_retired_selections_remain_visible_and_survive_form_save; test_service_retains_retired_skills_and_rejects_new_inactive_choices (failed first).
+- Commit: fix(profiles): complete B2.1 pre-merge review.
+
+## BUG 007: Account email uniqueness race returned 500
+- Symptom: A database uniqueness collision after validation raised an unhandled IntegrityError.
+- Root cause: Account writes relied on pre-write validation without recovering database-level email races.
+- Fix: Isolate the write in a savepoint, then convert confirmed email collisions to field ValidationError; re-raise unrelated failures.
+- Test: test_account_email_database_race_becomes_form_error (failed with unique_lower_email IntegrityError first).
+- Commit: fix(profiles): complete B2.1 pre-merge review.
+
+## BUG 008: Image decompression warning was accepted
+- Symptom: A tiny PNG declaring 89478486 pixels was accepted despite Pillow's decompression-bomb warning.
+- Root cause: Only DecompressionBombError was converted to validation feedback; the lower warning threshold did not reject uploads.
+- Fix: Promote that warning locally and convert both warning/error thresholds to ValidationError.
+- Test: test_decompression_bomb_is_a_form_error[bomb-warning] (failed with HTTP 302 first); bomb-error also covered.
+- Commit: fix(profiles): complete B2.1 pre-merge review.
+
+## BUG 009: Production CSRF cookie lacked explicit HttpOnly protection
+- Symptom: Production inherited CSRF_COOKIE_HTTPONLY=False.
+- Root cause: Production settings did not explicitly enforce the brief's HttpOnly cookie requirement.
+- Fix: Set CSRF_COOKIE_HTTPONLY=True in prod.
+- Test: test_production_csrf_cookie_is_httponly (failed first).
+- Commit: fix(profiles): complete B2.1 pre-merge review.
+
+## BUG 010: Corrupted documentation punctuation
+- Symptom: The earlier B2 report and one historical progress line contained mojibake.
+- Root cause: Earlier file rewrites used implicit Windows decoding before UTF-8 encoding.
+- Fix: Repair corrupt sequences at source and require explicit UTF-8/no-BOM I/O.
+- Verification: User-requested ripgrep scan reproduced the corruption; final scan and repository text byte audit are in B2.1 evidence.
+- Commit: fix(profiles): complete B2.1 pre-merge review.
+
+## BUG 011: Duplicate shared skill choices during B2.1
+- Symptom: The new retained/active queryset union displayed shared active skills more than once.
+- Root cause: Joining historical M2M selections duplicated active rows associated with multiple trainees.
+- Fix: Apply distinct at the selector boundary before exposing form choices.
+- Test: test_existing_and_active_choices_do_not_duplicate_shared_skills (failed first).
+- Commit: fix(profiles): complete B2.1 pre-merge review.

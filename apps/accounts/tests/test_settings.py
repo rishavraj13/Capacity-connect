@@ -37,3 +37,12 @@ def test_production_requires_allowed_hosts() -> None:
     )
     assert result.returncode != 0
     assert "Set the ALLOWED_HOSTS environment variable" in result.stderr
+
+
+def test_production_csrf_cookie_is_httponly(monkeypatch: object) -> None:
+    """Keep both production authentication cookies inaccessible to scripts."""
+    from importlib import import_module
+
+    monkeypatch.setenv("ALLOWED_HOSTS", "prod.example")
+    prod = import_module("config.settings.prod")
+    assert prod.CSRF_COOKIE_HTTPONLY is True

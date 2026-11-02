@@ -47,3 +47,16 @@ def own_trainee(actor: User) -> QuerySet[TraineeProfile]:
 def own_trainer(actor: User) -> QuerySet[TrainerProfile]:
     """Prevent trainer writes to other published profiles."""
     return TrainerProfile.objects.filter(user=actor)
+
+
+def retained_skills(profile: TraineeProfile) -> QuerySet:
+    """Preserve existing retired selections independently of submitted choices."""
+    return profile.skills.filter(subject__is_active=False).select_related("subject")
+
+
+def skill_choices(profile: TraineeProfile) -> QuerySet:
+    """Display retained history alongside skills that may be newly selected."""
+    from apps.catalog.selectors import selectable_skills
+
+    active = selectable_skills()
+    return (active | retained_skills(profile)).distinct() if profile.pk else active

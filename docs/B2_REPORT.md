@@ -1,4 +1,4 @@
-PHASE / TASK: B2 Catalog and Profiles, including Steps Aâ€“C and phase-table correction
+PHASE / TASK: B2 Catalog and Profiles, including Steps A-C and phase-table correction
 
 STATUS: Done
 
@@ -6,12 +6,14 @@ GOAL: Deliver the catalog, role-specific profiles and private uploads with teste
 
 WHAT CHANGED:
 
+Historical B2 submission: superseded by the B2.1 review. B2 is not approved or merged. The figures below describe that earlier run.
+
 - Git: fast-forwarded main to B1 commit 1a7618a; tagged b1-approved; created phase/b2-catalog-profiles. First B2 commit aadef76 is exactly `docs: align PROGRESS.md phases with brief section 8`; only PROGRESS.md and appended ADR 015 changed. Second commit 5954e74 adds AGENTS.md.
 - Housekeeping: split authentication/admin view tests; shared matrix helper with readable IDs; enabled branch coverage; fixed HTTPS next redirects and required production hosts. Added failing regression tests before fixes.
 - Catalog: Subject and Skill with database Lower(name) uniqueness, protected subject references, services, optimized selectors, form validation, approved-user listing and Admin write actions.
 - Profiles: TraineeProfile, TrainerProfile, Qualification, WorkExperience and ExternalCertificate; lazy idempotent profile creation; basic account editing for every approved role; private selectors and owner-only child writes; service allowlists and cleanup.
 - Core: UUID UploadPath, extension/size/content validators, PrivateStorage, PrivateFileInput and shared form coordination. Bare semantic templates and role-aware nav link to new features.
-- Tests/docs: factories, 366 matrix cases (54 preserved B1 + 96 catalog + 216 profiles), all 19 new write-route CSRF checks, IDOR, uploads, constraints, file cleanup and query counts. ADRs 015â€“023 and BUGs 001â€“005 recorded. No dependencies added; no B3 work.
+- Tests/docs: factories, 366 matrix cases (54 preserved B1 + 96 catalog + 216 profiles), all 19 new write-route CSRF checks, IDOR, uploads, constraints, file cleanup and query counts. ADRs 015-023 and BUGs 001-005 recorded. No dependencies added; no B3 work.
 
 Corrected phase table, copied exactly from brief section 8:
 
@@ -28,7 +30,7 @@ Corrected phase table, copied exactly from brief section 8:
 
 HOW IT WAS VERIFIED:
 
-Commands use the existing venv executables; `pytest` was invoked as `venv/Scripts/python.exe -m pytest`. The complete stdout/stderr, including every test ID, migration and traceback, is pasted in [B2_GATE_OUTPUT.txt](B2_GATE_OUTPUT.txt).
+Commands use the existing venv executables; `pytest` was invoked as `venv/Scripts/python.exe -m pytest`. The complete stdout/stderr, including every test ID, migration and traceback, is pasted in [local ignored B2 transcript](../.local/reports/B2_GATE_OUTPUT.txt).
 
 Baseline from Step A, before changes (real output summary):
 
@@ -75,7 +77,7 @@ $projectPythonFiles = rg --files -g '*.py' -g '!venv/**' -g '!.venv/**' -g '!**/
 
 Final gate output excerpts (full unabridged pytest output is in the transcript):
 
-`pytest` â€” exit 0:
+`pytest` - exit 0:
 
 ```text
 apps/profiles/tests/test_forms.py::test_forms_have_no_privileged_fields[ExternalCertificateForm] PASSED [100%]
@@ -83,7 +85,7 @@ apps/profiles/tests/test_forms.py::test_forms_have_no_privileged_fields[External
 ============================= 517 passed in 6.10s =============================
 ```
 
-`coverage run -m pytest` â€” exit 0:
+`coverage run -m pytest` - exit 0:
 
 ```text
 apps/profiles/tests/test_forms.py::test_forms_have_no_privileged_fields[ExternalCertificateForm] PASSED [100%]
@@ -91,7 +93,7 @@ apps/profiles/tests/test_forms.py::test_forms_have_no_privileged_fields[External
 ============================= 517 passed in 5.62s =============================
 ```
 
-`coverage report -m` â€” exit 0:
+`coverage report -m` - exit 0:
 
 ```text
 Name                              Stmts   Miss Branch BrPart  Cover   Missing
@@ -146,37 +148,37 @@ apps\profiles\views\profiles.py      38      0      0      0   100%
 TOTAL                               867      0    118      2    99%
 ```
 
-`ruff check .` â€” exit 0:
+`ruff check .` - exit 0:
 
 ```text
 All checks passed!
 ```
 
-`ruff format --check .` â€” exit 0:
+`ruff format --check .` - exit 0:
 
 ```text
 94 files already formatted
 ```
 
-`python manage.py makemigrations --check` â€” exit 0:
+`python manage.py makemigrations --check` - exit 0:
 
 ```text
 No changes detected
 ```
 
-`python manage.py check` â€” exit 0:
+`python manage.py check` - exit 0:
 
 ```text
 System check identified no issues (0 silenced).
 ```
 
-`python -m pip check` â€” exit 0:
+`python -m pip check` - exit 0:
 
 ```text
 No broken requirements found.
 ```
 
-`python manage.py migrate --noinput (fresh temporary DATABASE_URL)` â€” exit 0:
+`python manage.py migrate --noinput (fresh temporary DATABASE_URL)` - exit 0:
 
 ```text
 Operations to perform:
@@ -208,7 +210,7 @@ Running migrations:
   Applying sessions.0001_initial... OK
 ```
 
-`python manage.py check --deploy --settings=config.settings.prod (temporary strong key and explicit host)` â€” exit 0:
+`python manage.py check --deploy --settings=config.settings.prod (temporary strong key and explicit host)` - exit 0:
 
 ```text
 System check identified some issues:
@@ -220,7 +222,7 @@ WARNINGS:
 System check identified 2 issues (0 silenced).
 ```
 
-`python manage.py check --settings=config.settings.prod with SECRET_KEY unset (isolated subprocess; .env autoload disabled via read_env mock)` â€” exit 1:
+`python manage.py check --settings=config.settings.prod with SECRET_KEY unset (isolated subprocess; .env autoload disabled via read_env mock)` - exit 1:
 
 ```text
 Traceback (most recent call last):
@@ -310,7 +312,7 @@ Traceback (most recent call last):
 django.core.exceptions.ImproperlyConfigured: Set the SECRET_KEY environment variable
 ```
 
-`python manage.py check --settings=config.settings.prod with ALLOWED_HOSTS unset (isolated subprocess; .env autoload disabled via read_env mock)` â€” exit 1:
+`python manage.py check --settings=config.settings.prod with ALLOWED_HOSTS unset (isolated subprocess; .env autoload disabled via read_env mock)` - exit 1:
 
 ```text
 Traceback (most recent call last):
@@ -398,7 +400,7 @@ Traceback (most recent call last):
 django.core.exceptions.ImproperlyConfigured: Set the ALLOWED_HOSTS environment variable
 ```
 
-`python manage.py shell --settings=config.settings.prod -c <cookie/host/HSTS settings>` â€” exit 0:
+`python manage.py shell --settings=config.settings.prod -c <cookie/host/HSTS settings>` - exit 0:
 
 ```text
 13 objects imported automatically (use -v 2 for details).
@@ -406,7 +408,7 @@ django.core.exceptions.ImproperlyConfigured: Set the ALLOWED_HOSTS environment v
 {'ALLOWED_HOSTS': ['capacity.example.com'], 'SESSION_COOKIE_HTTPONLY': True, 'CSRF_COOKIE_HTTPONLY': False, 'SECURE_HSTS_SECONDS': 3600, 'SECURE_HSTS_INCLUDE_SUBDOMAINS': False, 'SECURE_HSTS_PRELOAD': False}
 ```
 
-`pytest apps/accounts/tests/test_permissions.py -k test_permission_matrix` â€” exit 0:
+`pytest apps/accounts/tests/test_permissions.py -k test_permission_matrix` - exit 0:
 
 ```text
 apps/accounts/tests/test_permissions.py::test_permission_matrix[rejected_user-logout-POST] PASSED [100%]
@@ -414,13 +416,13 @@ apps/accounts/tests/test_permissions.py::test_permission_matrix[rejected_user-lo
 ====================== 54 passed, 4 deselected in 0.65s =======================
 ```
 
-`git diff --check` â€” exit 0:
+`git diff --check` - exit 0:
 
 ```text
 
 ```
 
-`rg -n -i --hidden -g !.git/** -g !venv/** -g !.venv/** -g !.env -g !*.sqlite3 -g !.coverage "Course & Curriculum|Course & Competency|Assessment Engine|Verification & PDF|Verification & Certification|Executive Summary|Phased Delivery Roadmap|\bB[0-7]\b|phase [0-7]" .` â€” exit 0:
+`rg -n -i --hidden -g !.git/** -g !venv/** -g !.venv/** -g !.env -g !*.sqlite3 -g !.coverage "Course & Curriculum|Course & Competency|Assessment Engine|Verification & PDF|Verification & Certification|Executive Summary|Phased Delivery Roadmap|\bB[0-7]\b|phase [0-7]" .` - exit 0:
 
 ```text
 .\README.md:9:   git checkout phase/b0-foundations
@@ -466,7 +468,7 @@ apps/accounts/tests/test_permissions.py::test_permission_matrix[rejected_user-lo
 .\apps\accounts\tests\test_permissions.py:77:    """Preserve the approved B1 permission contract through shared machinery."""
 ```
 
-`AST longest functions: end_lineno - lineno + 1; top 10; all functions <=25` â€” exit 0:
+`AST longest functions: end_lineno - lineno + 1; top 10; all functions <=25` - exit 0:
 
 ```text
 24 apps/profiles/tests/test_crud.py:20 test_trainee_profile_post_and_private_photo
@@ -481,7 +483,7 @@ apps/accounts/tests/test_permissions.py::test_permission_matrix[rejected_user-lo
 21 apps/profiles/tests/test_services.py:90 test_child_save_delete_and_certificate_cleanup
 ```
 
-`"C:\Program Files\Git\usr\bin\wc.exe" -l <every .py under apps/ and config/, plus manage.py; migrations excluded>` â€” exit 0:
+`"C:\Program Files\Git\usr\bin\wc.exe" -l <every .py under apps/ and config/, plus manage.py; migrations excluded>` - exit 0:
 
 ```text
      1 apps/__init__.py
@@ -707,7 +709,7 @@ Regression evidence: HTTPS next downgrade failed before require_https=request.is
 
 DECISIONS AND ASSUMPTIONS:
 
-ADRs 015â€“023 record the binding brief, catalog lifecycle/constraints, lazy role profiles and retained history, no Admin profile model, private selector visibility and attachment delivery, upload limits/content checks, fixed qualification year bounds 1900..2100, experience bounds 0..60, commit-time file cleanup, shared form/matrix machinery, and the explicit generated-migration size exception. Generated migration history was preserved. No production deployment or persistent development database migration was performed.
+ADRs 015-023 record the binding brief, catalog lifecycle/constraints, lazy role profiles and retained history, no Admin profile model, private selector visibility and attachment delivery, upload limits/content checks, fixed qualification year bounds 1900..2100, experience bounds 0..60, commit-time file cleanup, shared form/matrix machinery, and the explicit generated-migration size exception. Generated migration history was preserved. No production deployment or persistent development database migration was performed.
 
 KNOWN ISSUES / RISKS:
 

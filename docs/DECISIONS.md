@@ -112,7 +112,28 @@
 - **Decision:** A small core FormAction dataclass groups HTTP form configuration; form_response handles validation and delegates writes to services. Forms display on GET and persist on POST; destructive/lifecycle endpoints accept POST only. Shared matrix machinery accepts declared rows and an optional fixture owner.
 - **Consequences:** New views declare roles explicitly, remain thin, and share validation-error presentation. Catalog matrix has 96 cases; profiles have 216 cases including three private-file variants. The approved B1 matrix retains all 54 cases with readable actor-url_name-METHOD IDs.
 
-## ADR 023: Generated migration size exception (explicit user approval)
-- **Context:** Generated profiles migration 0001_initial is 297 lines and has run only in disposable test databases.
-- **Decision:** The user explicitly chose to exempt generated migrations from the 250-line module limit. Preserve migration history; do not split or rewrite the applied generated migration.
-- **Consequences:** All application and test modules remain limited to 250 lines; the final wc/AST audit excludes generated migrations as requested in the B2 gate.
+## ADR 023: Generated migration size and pre-merge cleanup (user authorized)
+- **Context:** All three profiles migrations were first committed together in 1802c41; 0001 was not previously committed before 0002/0003 were generated. They ran only on disposable databases, never a persistent database.
+- **Decision:** For B2.1, the user explicitly authorized replacing that pre-merge sequence with one clean 0001_initial from final models. The generated-migration 250-line exemption remains approved. Catalog and accounts migration history stays unchanged.
+- **Consequences:** Profiles has only CreateModel operations with final storage and year validators, no AlterField operations. After merge into main the committed migration history is frozen.
+
+## ADR 024: Explicit UTF-8 text I/O and local evidence
+- **Context:** Implicit Windows text decoding corrupted punctuation in the earlier report and progress notes.
+- **Decision:** Read and write repository text with explicit encoding="utf-8", without BOM. Use ASCII punctuation in new reports and verify all tracked/new text decodes as UTF-8 with no BOM. README starts from main; AGENTS points to PROGRESS for status.
+- **Consequences:** The formerly committed docs/B2_GATE_OUTPUT.txt is removed from Git and retained as ignored local evidence under .local/reports/. New transcripts remain ignored; review reports stay in docs/.
+
+## ADR 025: Production CSRF cookie is HttpOnly
+- **Decision:** Set CSRF_COOKIE_HTTPONLY=True explicitly in production, alongside secure cookies and the default HttpOnly session cookie. The server-rendered forms use csrf_token; no application code reads the CSRF cookie with JavaScript.
+- **Consequences:** Cookie access from scripts is unnecessary; a settings regression test enforces the production requirement.
+
+## ADR 026: Retired subject selections preserve trainee history
+- **Decision:** Deactivating a subject leaves existing trainee skills intact and visible. Form choices include active skills plus that trainee's existing retired skills. Saving preserves retired selections even if omitted from the POST, and the form help text states this. Only new skill selections require an active subject; active selections can still be deselected.
+- **Consequences:** Older browser forms and unrelated profile edits cannot silently erase retired skills. A trainee cannot add an inactive skill selected by somebody else; the service revalidates independently of the form.
+
+## ADR 027: Dedicated private storage and bounded image headers
+- **Decision:** PrivateStorage uses PRIVATE_MEDIA_ROOT (default private_uploads/), independently of MEDIA_ROOT and STATIC_ROOT in dev and prod. No urls.py serves it. Pillow DecompressionBombWarning and DecompressionBombError both become form validation errors, using a local warnings context rather than changing process-global policy.
+- **Consequences:** Private files are delivered only by the existing visibility-checked attachment route; Content-Type comes from the validated storage suffix, never the upload content_type header. Deployment operators must keep the private root outside public web-server aliases.
+
+## ADR 028: Database email-race recovery
+- **Decision:** Account writes run inside an inner atomic savepoint. After an IntegrityError rolls back that savepoint, the service rechecks case-insensitive email ownership; a collision becomes an email ValidationError. Unrelated integrity errors are re-raised.
+- **Consequences:** The shared form coordinator displays an email field error with HTTP 200, while the original account data remains unchanged and the connection remains usable. The test inserts a real competing case variant after service full_clean, exercising the database constraint rather than mocking its exception.

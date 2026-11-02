@@ -36,16 +36,39 @@ def test_visibility_is_filtered_before_object_lookup() -> None:
     assert list(selectors.own_trainer(trainer.user)) == [trainer]
 
 
+@pytest.mark.parametrize(
+    "child_count", [1, 10], ids=["one-child-each", "ten-children-each"]
+)
 def test_profile_page_query_count(
-    client: Client, django_assert_num_queries: object
+    client: Client, django_assert_num_queries: object, child_count: int
 ) -> None:
     """Keep all profile sections independent of child and skill counts."""
     profile = TraineeProfileFactory()
     profile.skills.set(SkillFactory.create_batch(3))
-    QualificationFactory.create_batch(3, profile=profile)
-    WorkExperienceFactory.create_batch(3, profile=profile)
-    ExternalCertificateFactory.create_batch(3, profile=profile)
+    QualificationFactory.create_batch(child_count, profile=profile)
+    WorkExperienceFactory.create_batch(child_count, profile=profile)
+    ExternalCertificateFactory.create_batch(child_count, profile=profile)
     client.force_login(profile.user)
     with django_assert_num_queries(8):
         response = client.get(reverse("profiles:trainee_detail", args=[profile.pk]))
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_skill_choices_for_new_profile() -> None:
+    """Restrict a new unsaved profile to active catalog options."""
+    from apps.profiles.models import TraineeProfile
+
+    active = SkillFactory()
+    SkillFactory(subject__is_active=False)
+    assert list(selectors.skill_choices(TraineeProfile())) == [active]
+
+
+def test_existing_and_active_choices_do_not_duplicate_shared_skills() -> None:
+    """Keep a shared active skill unique when retained choices join owner history."""
+    active = SkillFactory()
+    owner = TraineeProfileFactory()
+    other = TraineeProfileFactory()
+    owner.skills.add(active)
+    other.skills.add(active)
+    assert list(selectors.skill_choices(owner)) == [active]

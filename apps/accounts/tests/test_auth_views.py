@@ -150,3 +150,17 @@ def test_signup_view_posting_admin_role_rejected(client: Client) -> None:
     response = client.post(reverse("signup"), data=bad_data)
     assert response.status_code == 200
     assert not User.objects.filter(username="rogue_user").exists()
+
+
+@pytest.mark.django_db
+def test_invalid_login_post_renders_errors_without_authentication(
+    client: Client,
+) -> None:
+    """Keep failed login attempts on the validation page with no session grant."""
+    user = UserFactory(approved_trainee=True)
+    response = client.post(
+        reverse("login"), {"username": user.username, "password": "wrong"}
+    )
+    assert response.status_code == 200
+    assert response.context["form"].non_field_errors()
+    assert "_auth_user_id" not in client.session

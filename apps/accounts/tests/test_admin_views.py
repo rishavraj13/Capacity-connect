@@ -118,3 +118,17 @@ def test_state_changing_get_rejected_with_405(
     client.force_login(admin)
     url = reverse(url_name, args=[target.id]) if has_arg else reverse(url_name)
     assert client.get(url).status_code == 405
+
+
+@pytest.mark.django_db
+def test_invalid_role_post_keeps_existing_role(client: Client) -> None:
+    """Reject an invalid role choice without invoking a privileged write."""
+    admin = UserFactory(active_admin=True)
+    target = UserFactory(approved_trainee=True)
+    client.force_login(admin)
+    response = client.post(
+        reverse("admin_change_role", args=[target.pk]), {"role": "INVALID"}
+    )
+    assert response.status_code == 302
+    target.refresh_from_db()
+    assert target.role == UserRole.TRAINEE

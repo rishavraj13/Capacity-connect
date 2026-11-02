@@ -1,6 +1,6 @@
 # Capacity Connect
 
-Capacity Connect is a Django learning-management portal for Trainees, Trainers, and Admins. The current stage is backend only, followed by testing and bug fixing; B2 Catalog and Profiles has passed its gate and is awaiting user approval.
+Capacity Connect is a Django learning-management portal for Trainees, Trainers, and Admins. Work is backend only, followed by testing and bug fixing. See docs/PROGRESS.md for current status.
 
 Binding rules: docs/IMPLEMENTATION_BRIEF.md. Read it before any task.
 
@@ -20,5 +20,7 @@ python manage.py makemigrations --check
 python manage.py check
 python -m pip check
 ```
+
+Read and write repository text with explicit encoding="utf-8" (no BOM).
 
 Use the section 12 report format. Never start a phase without approval.

@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0 and B1 approved; B2 gate passed and report delivered, awaiting approval; B3 through B7 not started. Historical fix rounds remain below.
+Status: B0 and B1 approved; B2.1 gate passed, awaiting user review and approval; B3 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -46,7 +46,7 @@ Status: B0 and B1 approved; B2 gate passed and report delivered, awaiting approv
 - Upgraded and pinned `Django==5.2.18` (LTS) for official Python 3.14 support.
 - Configured coverage in `pyproject.toml` (`source = ["apps"]`, omitting migrations and tests) with 100% test coverage.
 - Enforced mechanical Ruff rules in `pyproject.toml`: `C901` (max-complexity 8), `PLR0913` (max-args 4), `PLR0915` (max-statements 20), `T20` (ban print), `E722` (ban bare except), `ERA001` (ban commented-out code).
-- Verified line count of all `.py` files (all â‰¤ 104 lines, well within 250 line limit).
+- Verified line count of all `.py` files (all <= 104 lines, well within 250 line limit).
 - Documented ADRs 005-008 in `docs/DECISIONS.md`.
 - Added `docs/IMPLEMENTATION_BRIEF.md` covering all 16 architecture and engineering sections.
 - Re-verified all gate checks: Pytest, Coverage, Ruff check, Ruff format, makemigrations, fresh database migration, check, and pip check.
@@ -70,3 +70,14 @@ Status: B0 and B1 approved; B2 gate passed and report delivered, awaiting approv
 - Login and signup throttling is not implemented (ADR 011, planned for B7).
 - HSTS is 3600 s; include-subdomains and preload are intentionally off until HTTPS is verified (B7).
 - Storage writes are not transactional; new files can remain unreferenced after an outer transaction rollback (ADR 021).
+
+## B2.1 pre-merge review (gate passed; awaiting approval)
+- [x] Confirmed initial profiles migrations shared one first commit; regenerated one clean 0001.
+- [x] Fixed source encoding, setup README and status-independent AGENTS instructions.
+- [x] Removed committed raw transcript from Git; local evidence is ignored.
+- [x] Enforced production HttpOnly CSRF cookie and image decompression limits.
+- [x] Preserved retired skills and recovered account email database races.
+- [x] Added 1/10-child query counts and covered both inherited account view branches.
+- [x] Final gate: 532 tests passed; 898/898 statements and 120/120 branches covered.
+- [x] Delivered docs/B21_REPORT.md with requested source and real verification output.
+- [ ] Await user approval; no merge, tag or B3 work.

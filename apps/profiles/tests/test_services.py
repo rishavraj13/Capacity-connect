@@ -50,8 +50,8 @@ def test_trainee_skills_and_mass_assignment() -> None:
     services.update_trainee_profile(profile, {"interests": "Science"})
     skill.subject.is_active = False
     skill.subject.save()
-    with pytest.raises(ValidationError):
-        services.update_trainee_profile(profile, {"skills": [skill]})
+    services.update_trainee_profile(profile, {"skills": [skill]})
+    assert list(profile.skills.all()) == [skill]
 
 
 def test_photo_replacement_and_clear_cleanup(
