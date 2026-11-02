@@ -136,3 +136,10 @@
 - Fix: Convert cleanup OSError to CertificateGenerationError too; the existing completion savepoint/logger handles it. A denied filesystem delete requires operator cleanup, but no partial certificate row persists.
 - Test: test_cleanup_storage_failure_still_raises_generation_domain_error failed before the fix.
 - Commit: feat: add B5 feedback completion and private certificates.
+
+## BUG 020: Draft questionnaires diluted certificate averages
+- Symptom: A ready quiz scored 100 plus an empty draft issued a 50.00 certificate; missing ready grades silently became zero.
+- Root cause: Issuance averaged all questionnaires instead of completion's readiness-scoped set.
+- Fix: Reuse readiness in the submitted-grade selector and reject missing ready submissions with a domain error.
+- Tests: test_ready_quiz_and_empty_draft_average_is_100 and test_missing_ready_quiz_submission_is_domain_error (both failed first).
+- Commit: fix(certificates): align ready-quiz averages and close B5 carry-over.

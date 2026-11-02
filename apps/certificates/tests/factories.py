@@ -27,3 +27,19 @@ class CertificateFactory(DjangoModelFactory):
     pdf = factory.LazyAttribute(
         lambda row: ContentFile(b"%PDF-1.4\n%%EOF\n", name="certificate.pdf")
     )
+
+
+def certifiable_enrollment(**changes: object) -> object:
+    """Build a completed record with the ready submitted history issuance requires."""
+    from apps.assessments.tests.factories import AttemptFactory, QuestionFactory
+
+    enrollment = EnrollmentFactory(status="COMPLETED", **changes)
+    quiz = QuestionFactory(questionnaire__course=enrollment.course).questionnaire
+    AttemptFactory(
+        questionnaire=quiz,
+        trainee=enrollment.trainee,
+        status="SUBMITTED",
+        percent=100,
+        passed=True,
+    )
+    return enrollment

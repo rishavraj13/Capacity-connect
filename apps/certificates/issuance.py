@@ -12,7 +12,10 @@ from apps.certificates.constants import (
     ZERO_PERCENT,
 )
 from apps.certificates.dataclasses import CertificateData
-from apps.certificates.exceptions import CertificateGenerationError
+from apps.certificates.exceptions import (
+    CertificateGenerationError,
+    CertificateRuleError,
+)
 from apps.certificates.models import Certificate
 
 
@@ -22,17 +25,16 @@ def grade_for(percent: Decimal) -> str:
 
 
 def average_for(enrollment: object) -> Decimal:
-    """Include all course quizzes, using zero for a missing submitted attempt."""
+    """Average each ready quiz's best submitted grade without inventing zeros."""
     from apps.assessments.selectors import best_submitted_percents
 
     values = best_submitted_percents(enrollment)
-    total = sum(
-        (value if value is not None else ZERO_PERCENT for value in values), ZERO_PERCENT
-    )
-    return (
-        (total / Decimal(len(values))).quantize(PERCENT_QUANTUM, rounding=ROUND_HALF_UP)
-        if values
-        else ZERO_PERCENT
+    if not values or any(value is None for value in values):
+        raise CertificateRuleError(
+            "Every ready questionnaire needs a submitted attempt."
+        )
+    return (sum(values, ZERO_PERCENT) / Decimal(len(values))).quantize(
+        PERCENT_QUANTUM, rounding=ROUND_HALF_UP
     )
 
 

@@ -8,14 +8,14 @@ import pytest
 from apps.certificates.exceptions import CertificateGenerationError
 from apps.certificates.models import Certificate
 from apps.certificates.services import issue_certificate
-from apps.courses.tests.factories import EnrollmentFactory
+from apps.certificates.tests.factories import certifiable_enrollment
 
 pytestmark = pytest.mark.django_db
 
 
 def test_pdf_reference_save_failure_removes_new_file(settings: object) -> None:
     """Undo the just-created private file if persisting its reference fails."""
-    enrollment = EnrollmentFactory(status="COMPLETED")
+    enrollment = certifiable_enrollment()
     original = Certificate.save
 
     def fail_reference(row: Certificate, *args: object, **kwargs: object) -> None:
@@ -35,7 +35,7 @@ def test_cleanup_storage_failure_still_raises_generation_domain_error() -> None:
     """Keep a secondary cleanup I/O failure from escaping the completion savepoint."""
     from apps.core.storage import PrivateStorage
 
-    enrollment = EnrollmentFactory(status="COMPLETED")
+    enrollment = certifiable_enrollment()
     original = Certificate.save
 
     def fail_reference(row: Certificate, *args: object, **kwargs: object) -> None:

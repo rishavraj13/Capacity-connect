@@ -7,7 +7,10 @@ from unittest.mock import patch
 import pytest
 
 from apps.assessments.constants import AttemptStatus
-from apps.assessments.tests.factories import AttemptFactory, QuestionnaireFactory
+from apps.assessments.tests.factories import (
+    AttemptFactory,
+    QuestionFactory,
+)
 from apps.certificates.constants import ID_RETRY_LIMIT
 from apps.certificates.exceptions import (
     CertificateGenerationError,
@@ -16,7 +19,7 @@ from apps.certificates.exceptions import (
 from apps.certificates.issuance import grade_for
 from apps.certificates.models import Certificate
 from apps.certificates.services import issue_certificate
-from apps.certificates.tests.factories import CertificateFactory
+from apps.certificates.tests.factories import CertificateFactory, certifiable_enrollment
 from apps.core import clock
 from apps.courses.tests.factories import EnrollmentFactory
 
@@ -39,10 +42,13 @@ def test_certificate_grade_boundaries(percent: str, grade: str) -> None:
     assert grade_for(Decimal(percent)) == grade
 
 
-def test_average_best_submitted_is_half_up_over_all_questionnaires() -> None:
+def test_average_best_submitted_is_half_up_over_ready_questionnaires() -> None:
     """Average 100 and 66.67 as 83.34, ignoring inferior/non-submitted grades."""
     enrollment = EnrollmentFactory(status="COMPLETED")
-    first, second = [QuestionnaireFactory(course=enrollment.course) for _ in range(2)]
+    first, second = [
+        QuestionFactory(questionnaire__course=enrollment.course).questionnaire
+        for _ in range(2)
+    ]
     for quiz, percent in ((first, "100.00"), (first, "50.00"), (second, "66.67")):
         AttemptFactory(
             questionnaire=quiz,
@@ -60,25 +66,9 @@ def test_average_best_submitted_is_half_up_over_all_questionnaires() -> None:
     assert row.average_percent == Decimal("83.34") and row.grade == "A"
 
 
-def test_missing_submitted_grade_contributes_zero() -> None:
-    """Keep ignored draft questionnaires in the certificate denominator as agreed."""
-    enrollment = EnrollmentFactory(status="COMPLETED")
-    quiz = QuestionnaireFactory(course=enrollment.course)
-    QuestionnaireFactory(course=enrollment.course)
-    AttemptFactory(
-        questionnaire=quiz,
-        trainee=enrollment.trainee,
-        status=AttemptStatus.SUBMITTED,
-        percent=100,
-    )
-    assert issue_certificate(enrollment).average_percent == Decimal("50.00")
-
-
 def test_idempotent_issuance_preserves_file_and_snapshot() -> None:
     """Avoid new files and preserve the original rendered names after edits."""
-    enrollment = EnrollmentFactory(
-        status="COMPLETED", trainee__first_name="OriginalName"
-    )
+    enrollment = certifiable_enrollment(trainee__first_name="OriginalName")
     row = issue_certificate(enrollment)
     payload = row.pdf.read()
     enrollment.trainee.first_name = "ChangedName"
@@ -93,14 +83,14 @@ def test_idempotent_issuance_preserves_file_and_snapshot() -> None:
 
 def test_identifier_sequence_and_year_rollover(monkeypatch: object) -> None:
     """Start a new local-year sequence while retaining older issued identifiers."""
-    first = issue_certificate(EnrollmentFactory(status="COMPLETED"))
-    second = issue_certificate(EnrollmentFactory(status="COMPLETED"))
+    first = issue_certificate(certifiable_enrollment())
+    second = issue_certificate(certifiable_enrollment())
     assert (
         first.certificate_id == "CC-2026-00001"
         and second.certificate_id == "CC-2026-00002"
     )
     monkeypatch.setattr(clock, "today", lambda: date(2027, 1, 1))
-    next_year = issue_certificate(EnrollmentFactory(status="COMPLETED"))
+    next_year = issue_certificate(certifiable_enrollment())
     assert next_year.certificate_id == "CC-2027-00001" and next_year.issued_on == date(
         2027, 1, 1
     )
@@ -109,7 +99,7 @@ def test_identifier_sequence_and_year_rollover(monkeypatch: object) -> None:
 def test_identifier_collision_retries_real_unique_constraint() -> None:
     """Recover an actual duplicate identifier insert within a savepoint."""
     existing = CertificateFactory()
-    enrollment = EnrollmentFactory(status="COMPLETED")
+    enrollment = certifiable_enrollment()
     with patch(
         "apps.certificates.services.next_identifier",
         side_effect=[existing.certificate_id, "CC-2026-90001"],
@@ -121,7 +111,7 @@ def test_identifier_collision_retries_real_unique_constraint() -> None:
 def test_identifier_retry_exhaustion_is_domain_error() -> None:
     """Leave no partial record when bounded unique collision recovery is exhausted."""
     existing = CertificateFactory()
-    enrollment = EnrollmentFactory(status="COMPLETED")
+    enrollment = certifiable_enrollment()
     with patch(
         "apps.certificates.services.next_identifier",
         return_value=existing.certificate_id,

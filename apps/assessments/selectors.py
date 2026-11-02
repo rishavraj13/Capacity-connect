@@ -221,11 +221,13 @@ def completion_questionnaires(enrollment: object) -> QuerySet[Questionnaire]:
 
 
 def best_submitted_percents(enrollment: object) -> list:
-    """Keep all quizzes in certificate averaging, including missing submitted grades."""
+    """Average only ready quizzes and retain missing grades for invariant checking."""
     from django.db.models import Max
 
+    from apps.assessments.readiness import ready_questionnaires
+
     return list(
-        Questionnaire.objects.filter(course_id=enrollment.course_id)
+        ready_questionnaires(enrollment.course_id)
         .order_by()
         .annotate(
             best=Max(

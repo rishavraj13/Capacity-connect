@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 gate passed and awaiting review; B6 through B7 not started. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 in progress; B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -124,4 +124,12 @@ Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged;
 - [x] Sample PDF generated and visually inspected in ignored .local/samples/.
 - [x] Final gate: 1486 passed; 99% combined coverage (2847 statements, 6 missed; 374/382 branches covered), clean Ruff/fresh migrations/check/pip; existing HSTS warnings remain.
 - [x] Compact report docs/B5_REPORT.md; raw transcript/import evidence ignored in .local/reports/.
-- [ ] User B5 approval; do not start B6.
+- [x] User B5 approval; merged/tagged b5-approved and authorized B6.
+
+## B6 Step 0 and Competency/Announcements/Dashboards
+- [x] B5 merged/tagged; phase/b6-competency-announcements-dashboards created.
+- [x] READY-only certificate average regressions failed first then passed; no model/migration changes.
+- [x] All six reviewed branches covered; Helvetica/Times-only font inventory and test.
+- [x] Step 0: 1492 passed; 2849 statements, zero missed, 384 branches, two partial; 99% combined coverage. Remaining partial branches: absent active enrollment trigger and retry-command candidate that cannot complete.
+- [ ] B6 implementation, full gate and compact report.
+- [ ] User B6 approval; do not start B7.
