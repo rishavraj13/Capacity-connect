@@ -299,3 +299,8 @@
 ## ADR 068: Testing-stage carry-over and explicit seed credentials
 - **Decision:** Proposed by agent, implementing the reviewer's Step 0: seed three qualifications, three work experiences and two external certificates through profile services, using approved demo trainees and valid generated PDF/PNG. Force in a non-debug environment requires an explicit DEMO_PASSWORD environment value before any writes or marker short circuit.
 - **Consequences:** Development retains the public default. Repeating a complete seed preserves every value. Behind one trusted reverse proxy, operators must set TRUSTED_PROXY_COUNT=1; otherwise per-IP throttles share the proxy IP across all visitors. Forwarding headers must be safely managed by that proxy.
+
+## ADR 069: Approved R4 subject discovery requirement fix
+- **User quotation (2026-11-02):** "Add subject filter, then continue (Recommended)"
+- **Decision:** Proposed by agent, with the quoted answer: add a GET subject filter to My assessments. Choices come only from subjects in the trainee's existing ACTIVE/COMPLETED questionnaire scope; apply the choice to both questionnaires and departures. Invalid/foreign IDs show a form error and no rows. Empty selection retains existing defaults; no enrollment/ownership rule changes.
+- **Consequences:** Three new HTTP cases failed before implementation, then all four passed. This is a separately authorised requirement fix during testing, not an unapproved feature addition.

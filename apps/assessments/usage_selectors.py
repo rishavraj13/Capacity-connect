@@ -75,15 +75,11 @@ def startable_questionnaires(trainee: User) -> QuerySet[Questionnaire]:
 
 
 def next_deadlines_for(
-    trainee: User, limit: int = DEPARTURE_LIMIT
+    trainee: User, limit: int = DEPARTURE_LIMIT, subject_id: int | None = None
 ) -> tuple[Departure, ...]:
     """Build upcoming departures in a single annotated joined query."""
+    quizzes = _upcoming_quizzes(trainee, limit, subject_id)
     instant = clock.now()
-    quizzes = (
-        startable_questionnaires(trainee)
-        .filter(deadline__gt=instant, attempts_left__gt=0, already_passed=False)
-        .order_by("deadline", "pk")[: max(0, limit)]
-    )
     return tuple(
         Departure(
             q.pk,
@@ -97,3 +93,13 @@ def next_deadlines_for(
         )
         for q in quizzes
     )
+
+
+def _upcoming_quizzes(trainee: User, limit: int, subject_id: int | None) -> QuerySet:
+    """Apply subject and time filters before the bounded deadline query."""
+    available = startable_questionnaires(trainee)
+    if subject_id is not None:
+        available = available.filter(subject_id=subject_id)
+    return available.filter(
+        deadline__gt=clock.now(), attempts_left__gt=0, already_passed=False
+    ).order_by("deadline", "pk")[: max(0, limit)]

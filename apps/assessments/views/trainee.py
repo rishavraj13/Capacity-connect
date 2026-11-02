@@ -12,6 +12,7 @@ from apps.accounts.constants import UserRole
 from apps.accounts.permissions import role_required
 from apps.assessments import selectors, services
 from apps.assessments.constants import AttemptStatus
+from apps.assessments.filter_forms import AssessmentFilterForm
 from apps.assessments.forms import AnswerForm
 from apps.assessments.models import Attempt
 from apps.assessments.paper_selectors import seconds_left
@@ -22,14 +23,26 @@ from apps.core.exceptions import CapacityConnectError
 @require_safe
 def mine(request: HttpRequest) -> HttpResponse:
     """Combine safe departures and annotated questionnaire metadata in one page."""
-    return render(
-        request,
-        "assessments/mine.html",
-        {
-            "departures": selectors.next_deadlines_for(request.user),
-            "questionnaires": selectors.trainee_questionnaires(request.user),
-        },
-    )
+    form = AssessmentFilterForm(request.user, request.GET)
+    context = _listing_context(request.user, form)
+    return render(request, "assessments/mine.html", context)
+
+
+def _listing_context(user: object, form: AssessmentFilterForm) -> dict:
+    """Apply validated filters only inside the existing enrollment scope."""
+    quizzes = selectors.trainee_questionnaires(user)
+    if not form.is_valid():
+        return {"filter_form": form, "questionnaires": quizzes.none(), "departures": ()}
+    subject = form.cleaned_data["subject"]
+    if subject is not None:
+        quizzes = quizzes.filter(subject=subject)
+    return {
+        "filter_form": form,
+        "questionnaires": quizzes,
+        "departures": selectors.next_deadlines_for(
+            user, subject_id=subject.pk if subject else None
+        ),
+    }
 
 
 @role_required(UserRole.TRAINEE)
