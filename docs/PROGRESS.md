@@ -2,14 +2,18 @@
 
 ## Phase Tracking
 
-| Phase | Description | Status | Gate Passed |
-|---|---|---|---|
-| **B0** | Foundations (layout, custom User, settings, tooling, base tests) | Merged & Tagged `b0-approved` | Yes |
-| **B0.1** | Foundations Fix Round (Django 5.2 LTS, Ruff rules, Coverage config, ADRs) | Approved | Yes |
-| **B1** | Accounts (Signup, Approval Gate, Login/Logout, Roles, Admin Management) | Fix Round B1.1 Complete | Yes |
-| **B2** | Course & Competency Management | Not Started | No |
-| **B3** | Assessment Engine | Not Started | No |
-| **B4** | Verification & Certification | Not Started | No |
+| Phase | Scope | Gate (acceptance criteria) |
+|---|---|---|
+| **B0 Foundations** | Repo, virtualenv, split settings, `.env`, ruff, pytest, `core` app, custom `User` model and first migration | `pytest` runs, `ruff` clean, migrations apply on a fresh DB |
+| **B1 Accounts** | Signup with role choice, approval gate at login, role mixins, admin user management (approve, reject, change role) | Unapproved login blocked; role isolation tests pass |
+| **B2 Catalog and Profiles** | Subjects, skills, both profiles, qualifications, experience, external certificates, upload validation | Profile CRUD works per role; invalid uploads rejected |
+| **B3 Courses and Library** | Courses, modules, enrollment, progress, library uploads and listing | Ownership enforced; duplicate enrollment impossible; `station_map_for` correct |
+| **B4 Assessments** | Questionnaires, questions, options, attempt flow, auto-grading, deadlines, results, trainer participation view | All business rules 2 to 4 proven by tests, including boundary times |
+| **B5 Feedback and Certificates** | Ratings, completion logic, certificate issuance, PDF, public verification by ID | Certificate issued exactly once; PDF opens; verification works |
+| **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
+| **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
+
+Status: B0 and B1 approved; B2 through B7 not started. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 

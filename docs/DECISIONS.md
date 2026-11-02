@@ -78,3 +78,8 @@
 - **Context:** The login view supports a `next` query/POST parameter to return users to requested protected pages after authentication. Unsanitized redirection can introduce open-redirect vulnerabilities.
 - **Decision:** Validate `next` URLs using `django.utils.http.url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()})`. If `next` points to an untrusted external host, it is discarded and the user is redirected to their default role landing page.
 - **Consequences:** Preserves seamless post-login navigation while mitigating phishing and open-redirect vectors.
+
+## ADR 015: Binding phase definitions
+- **Context:** PROGRESS.md was generated from a reconstructed brief.
+- **Decision:** Corrected the phase table to section 8; the implementation brief is the single source of truth for phase names and scope.
+- **Consequences:** Historical entries remain intact; phase planning follows section 8 exactly.
