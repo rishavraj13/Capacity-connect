@@ -6,7 +6,7 @@
         {% for field in form %}
             {% if field.errors %}
                 <li>
-                    <a href="#{{ field.id_for_label }}">{{ field.label }}</a>
+                    <a href="#{{ field.id_for_label|default:field.auto_id }}">{{ field.label }}</a>
                     {% for error in field.errors %}<span> — {{ error }}</span>{% endfor %}
                 </li>
             {% endif %}

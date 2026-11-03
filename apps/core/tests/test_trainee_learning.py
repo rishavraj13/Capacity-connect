@@ -150,17 +150,22 @@ def test_enrollment_actions_are_csrf_protected_post_forms(
             "courses:complete_module", args=[enrollment.pk, module.pk]
         )
     for name, url in urls.items():
-        assert f'href="{url}"' not in html
-        forms = re.findall(
-            r'<form method="post" action="' + re.escape(url) + r'">(.*?)</form>',
-            html,
-            re.S,
-        )
         assert client.get(url).status_code == 405
-        assert len(forms) == (name in buttons)
-        if forms:
-            assert 'name="csrfmiddlewaretoken"' in forms[0]
-            assert f">{buttons[name]}</button>" in forms[0]
+        _assert_action_form(html, url, buttons.get(name))
+
+
+def _assert_action_form(html: str, url: str, label: str | None) -> None:
+    """Check the rendered action shape without depending on the CSRF value."""
+    assert f'href="{url}"' not in html
+    forms = re.findall(
+        r'<form method="post" action="' + re.escape(url) + r'">(.*?)</form>',
+        html,
+        re.S,
+    )
+    assert len(forms) == (label is not None)
+    if label:
+        assert 'name="csrfmiddlewaretoken"' in forms[0]
+        assert f">{label}</button>" in forms[0]
 
 
 def test_course_enrollment_controls_are_trainee_only(client: object) -> None:

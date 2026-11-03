@@ -1,5 +1,6 @@
 """Keep trainee assessment metadata, paper and results in distinct safe contexts."""
 
+from django.db.models import Exists, OuterRef
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import (
@@ -16,6 +17,9 @@ from apps.assessments.filter_forms import AssessmentFilterForm
 from apps.assessments.forms import AnswerForm
 from apps.assessments.models import Attempt
 from apps.assessments.paper_selectors import seconds_left
+from apps.assessments.readiness import ready_questionnaires
+from apps.assessments.rules import expires_at
+from apps.core import clock
 from apps.core.exceptions import CapacityConnectError
 
 
@@ -49,8 +53,32 @@ def _listing_context(user: object, form: AssessmentFilterForm) -> dict:
 @require_safe
 def detail(request: HttpRequest, pk: int) -> HttpResponse:
     """Show timing/quota only, with no question or option context."""
-    quiz = get_object_or_404(selectors.trainee_questionnaires(request.user), pk=pk)
-    return render(request, "assessments/detail.html", {"questionnaire": quiz})
+    ready = ready_questionnaires(OuterRef("course_id")).filter(pk=OuterRef("pk"))
+    quizzes = selectors.trainee_questionnaires(request.user).annotate(
+        ready=Exists(ready)
+    )
+    quiz = get_object_or_404(quizzes, pk=pk)
+    return render(
+        request,
+        "assessments/detail.html",
+        {"questionnaire": quiz, "start_reason": _start_reason(quiz)},
+    )
+
+
+def _start_reason(quiz: object) -> str:
+    """Explain the current start state while the service remains authoritative."""
+    instant = clock.now()
+    if quiz.enrollment_status != "ACTIVE":
+        return "An active enrollment is required."
+    if instant < quiz.opens_at:
+        return "Upcoming. The start window has not opened yet."
+    if instant >= quiz.deadline:
+        return "Closed. The start window has ended."
+    if not quiz.attempts_left:
+        return "Maximum attempts reached."
+    if not quiz.ready:
+        return "Questionnaire is not ready."
+    return ""
 
 
 @role_required(UserRole.TRAINEE)
@@ -97,7 +125,13 @@ def _take_response(request: HttpRequest, attempt: Attempt) -> HttpResponse:
     return render(
         request,
         "assessments/take.html",
-        {"form": form, "seconds_left": seconds_left(attempt)},
+        {
+            "form": form,
+            "seconds_left": seconds_left(attempt),
+            "paper_rows": tuple(zip(paper, form, strict=True)),
+            "paper_title": attempt.questionnaire.title,
+            "submission_deadline": expires_at(attempt),
+        },
     )
 
 

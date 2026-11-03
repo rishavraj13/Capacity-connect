@@ -1,1 +1,17 @@
-{% extends "base.html" %}{% block content %}<h1>My certificates</h1><ul>{% for certificate in certificates %}<li>{{ certificate.enrollment.course.title }} - {{ certificate.certificate_id }} <a href="{% url 'certificates:download' certificate.pk %}">Download PDF</a> <a href="{% url 'certificates:verify' certificate.certificate_id %}">Verify</a></li>{% empty %}<li>No certificates issued.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block page_styles %}{% include "components/trainee_styles.html" %}{% endblock %}
+{% block content %}
+<h1>My certificates</h1>
+{% for certificate in certificates %}
+<article class="card earned-certificate">
+    <h2>{{ certificate.enrollment.course.title }}</h2>
+    <dl>
+        <dt>Certificate ID</dt><dd>{{ certificate.certificate_id }}</dd>
+        <dt>Grade</dt><dd>{{ certificate.get_grade_display }}</dd>
+        <dt>Issue date</dt><dd>{{ certificate.issued_on }}</dd>
+    </dl>
+    <p class="actions"><a class="button" href="{% url 'certificates:download' certificate.pk %}">Download PDF</a>
+        <a href="{% url 'certificates:verify' certificate.certificate_id %}">Verify</a></p>
+</article>
+{% empty %}<p class="empty-state">Complete a course to earn your first certificate.</p>{% endfor %}
+{% endblock %}

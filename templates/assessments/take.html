@@ -1,2 +1,29 @@
-{% extends "base.html" %}{% block content %}<h1>Assessment paper</h1><p>Time remaining at page load: {{ seconds_left }} seconds.</p>
-<form method="post">{% csrf_token %}{% include "components/form_fields.html" %}<button>Submit attempt</button></form>{% endblock %}
+{% extends "base.html" %}
+{% block page_styles %}{% include "components/trainee_styles.html" %}{% endblock %}
+{% block content %}
+<article class="ticket">
+    <header class="ticket-header">
+        <p class="eyebrow">Assessment paper</p>
+        <h1>{{ paper_title }}</h1>
+        <p>Submission deadline: {{ submission_deadline }}.</p>
+        <p>Time remaining at page load: {{ seconds_left }} seconds.</p>
+        <p>Time shown is approximate; the server decides.</p>
+    </header>
+    <ul class="actions" aria-hidden="true">
+        {% for question, field in paper_rows %}<li class="badge">{{ forloop.counter }}</li>{% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {% include "components/error_summary.html" %}
+        {% for question, field in paper_rows %}
+        <fieldset class="card choice-group" id="{{ field.auto_id }}-group" {% if field.errors %}aria-describedby="{{ field.auto_id }}_error"{% endif %}>
+            <legend>Question {{ forloop.counter }} of {{ paper_rows|length }}, {{ question.marks }} mark{{ question.marks|pluralize }}</legend>
+            <p>{{ question.text }}</p>
+            {{ field.errors }}
+            {{ field }}
+        </fieldset>
+        {% endfor %}
+        <button type="submit">Submit attempt</button>
+    </form>
+</article>
+{% endblock %}

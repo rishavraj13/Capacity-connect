@@ -1,5 +1,28 @@
-{% extends "base.html" %}{% block content %}<h1>{{ questionnaire.title }}</h1>
-<p>{{ questionnaire.course.title }} - {{ questionnaire.subject.name }}</p>
-<p>Opens {{ questionnaire.opens_at }}; deadline {{ questionnaire.deadline }}; duration {{ questionnaire.duration_minutes }} minutes.</p><p>Attempts used: {{ questionnaire.attempts_used }}; left: {{ questionnaire.attempts_left }}.</p>
-{% if questionnaire.open_attempt_id %}<a href="{% url 'assessments:take' questionnaire.open_attempt_id %}">Resume attempt</a>{% elif questionnaire.enrollment_status == "ACTIVE" %}<form method="post" action="{% url 'assessments:start' questionnaire.pk %}">{% csrf_token %}<button>Start attempt</button></form>{% endif %}
-<p><a href="{% url 'assessments:history' %}">My history</a></p>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<article class="ticket">
+    <header class="ticket-header">
+        <p class="eyebrow">Assessment ticket</p>
+        <h1>{{ questionnaire.title }}</h1>
+        <p>{{ questionnaire.course.title }} · {{ questionnaire.subject.name }}</p>
+    </header>
+    <dl>
+        <dt>Opens</dt><dd>{{ questionnaire.opens_at }}</dd>
+        <dt>Deadline</dt><dd>{{ questionnaire.deadline }}</dd>
+        <dt>Duration</dt><dd>{{ questionnaire.duration_minutes }} minutes</dd>
+        <dt>Pass mark</dt><dd>{{ questionnaire.pass_percent }}%</dd>
+        <dt>Attempts used</dt><dd>{{ questionnaire.attempts_used }}</dd>
+        <dt>Attempts left</dt><dd>{{ questionnaire.attempts_left }}</dd>
+    </dl>
+    {% if questionnaire.open_attempt_id %}
+        <a class="button" href="{% url 'assessments:take' questionnaire.open_attempt_id %}">Resume attempt</a>
+    {% elif start_reason %}
+        <p class="alert">{{ start_reason }}</p>
+    {% else %}
+        <form method="post" action="{% url 'assessments:start' questionnaire.pk %}">
+            {% csrf_token %}<button type="submit">Start attempt</button>
+        </form>
+    {% endif %}
+</article>
+<p><a href="{% url 'assessments:history' %}">My history</a></p>
+{% endblock %}

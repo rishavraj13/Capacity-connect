@@ -1,16 +1,29 @@
 {% extends "base.html" %}
-{% block content %}<h1>{{ profile.user.username }}</h1><p>{{ profile.bio }}</p><p>{{ profile.interests }}</p>
+{% block content %}<h1>{{ profile.user.username }}</h1><p>{{ profile.bio }}</p>
+<h2>Interests</h2><p>{{ profile.interests|default:"No interests listed." }}</p>
 {% if profile.photo %}<a href="{% url 'profiles:private_file' 'trainee' profile.pk %}">Download photo</a>{% endif %}
-<ul>{% for skill in profile.skills.all %}<li>{{ skill.name }} — {{ skill.subject.name }}</li>{% endfor %}</ul>
+<h2>Skills</h2><ul>{% for skill in profile.skills.all %}<li><span class="badge">{{ skill.name }} — {{ skill.subject.name }}</span></li>{% empty %}<li>No skills listed.</li>{% endfor %}</ul>
 {% if user.pk == profile.user_id and user.role == "TRAINEE" %}<p><a href="{% url 'profiles:trainee_edit' %}">Edit profile</a> <a href="{% url 'profiles:qualification_create' %}">Add qualification</a> <a href="{% url 'profiles:experience_create' %}">Add experience</a> <a href="{% url 'profiles:certificate_create' %}">Add certificate</a></p>{% endif %}
-<h2>Qualifications</h2><ul>{% for record in profile.qualifications.all %}<li>{{ record.degree }}
-{% if user.pk == profile.user_id and user.role == "TRAINEE" %}<a href="{% url 'profiles:qualification_edit' record.pk %}">Edit</a><form method="post" action="{% url 'profiles:qualification_delete' record.pk %}">{% csrf_token %}<button>Delete</button></form>{% endif %}
+<h2>Qualifications</h2><ul>{% for record in profile.qualifications.all %}<li class="card">{{ record.degree }} · {{ record.institution }} · {{ record.year }}
+{% if user.pk == profile.user_id and user.role == "TRAINEE" %}
+    <a href="{% url 'profiles:qualification_edit' record.pk %}">Edit qualification</a>
+    {% url 'profiles:qualification_delete' record.pk as delete_url %}
+    {% include "components/confirm_delete.html" with prompt="Delete qualification" %}
+{% endif %}
 </li>{% empty %}<li>No records yet.</li>{% endfor %}</ul>
-<h2>Work Experiences</h2><ul>{% for record in profile.work_experiences.all %}<li>{{ record.organisation }}
-{% if user.pk == profile.user_id and user.role == "TRAINEE" %}<a href="{% url 'profiles:experience_edit' record.pk %}">Edit</a><form method="post" action="{% url 'profiles:experience_delete' record.pk %}">{% csrf_token %}<button>Delete</button></form>{% endif %}
+<h2>Work Experiences</h2><ul>{% for record in profile.work_experiences.all %}<li class="card">{{ record.role }} · {{ record.organisation }}<p>{{ record.start_date }} to {{ record.end_date|default:"Present" }}</p><p>{{ record.description }}</p>
+{% if user.pk == profile.user_id and user.role == "TRAINEE" %}
+    <a href="{% url 'profiles:experience_edit' record.pk %}">Edit experience</a>
+    {% url 'profiles:experience_delete' record.pk as delete_url %}
+    {% include "components/confirm_delete.html" with prompt="Delete experience" %}
+{% endif %}
 </li>{% empty %}<li>No records yet.</li>{% endfor %}</ul>
-<h2>External Certificates</h2><ul>{% for record in profile.external_certificates.all %}<li>{{ record.title }}
+<h2>External Certificates</h2><ul>{% for record in profile.external_certificates.all %}<li class="card">{{ record.title }} · {{ record.issuer }} · {{ record.issued_on }}
 <a href="{% url 'profiles:private_file' 'certificate' record.pk %}">Download evidence</a>
-{% if user.pk == profile.user_id and user.role == "TRAINEE" %}<a href="{% url 'profiles:certificate_edit' record.pk %}">Edit</a><form method="post" action="{% url 'profiles:certificate_delete' record.pk %}">{% csrf_token %}<button>Delete</button></form>{% endif %}
+{% if user.pk == profile.user_id and user.role == "TRAINEE" %}
+    <a href="{% url 'profiles:certificate_edit' record.pk %}">Edit external certificate</a>
+    {% url 'profiles:certificate_delete' record.pk as delete_url %}
+    {% include "components/confirm_delete.html" with prompt="Delete external certificate" %}
+{% endif %}
 </li>{% empty %}<li>No records yet.</li>{% endfor %}</ul>
 {% endblock %}

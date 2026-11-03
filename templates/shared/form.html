@@ -1,7 +1,14 @@
 {% extends "base.html" %}
+{% block page_styles %}{% include "components/trainee_styles.html" %}{% endblock %}
 {% block content %}
 <h1>{{ title }}</h1>
 <form method="post" enctype="multipart/form-data">
-{% csrf_token %}{% include "components/form_fields.html" %}<button type="submit">Save</button>
+{% csrf_token %}
+{% if form.rating and form.comment %}
+    {% include "components/feedback_fields.html" %}
+{% else %}
+    {% include "components/form_fields.html" %}
+{% endif %}
+<button type="submit">Save</button>
 </form>
 {% endblock %}

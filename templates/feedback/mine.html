@@ -1,1 +1,18 @@
-{% extends "base.html" %}{% block content %}<h1>My feedback</h1><ul>{% for row in feedback %}<li>{{ row.course.title }}{{ row.resource.title }} - {{ row.rating }} / 5 - {{ row.comment }} {% if row.course_id %}<a href="{% url 'feedback:course_submit' row.course_id %}">Edit</a>{% else %}<a href="{% url 'feedback:resource_submit' row.resource_id %}">Edit</a>{% endif %}<form method="post" action="{% url 'feedback:delete' row.pk %}">{% csrf_token %}<button>Delete feedback</button></form></li>{% empty %}<li>No feedback yet.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h1>My feedback</h1>
+{% for row in feedback %}
+<article class="card">
+    <h2>{{ row.course.title }}{{ row.resource.title }}</h2>
+    <p class="badge">Rating: {{ row.rating }} of 5</p>
+    <p>{{ row.comment }}</p>
+    {% if row.course_id %}
+        <a href="{% url 'feedback:course_submit' row.course_id %}">Edit feedback</a>
+    {% else %}
+        <a href="{% url 'feedback:resource_submit' row.resource_id %}">Edit feedback</a>
+    {% endif %}
+    {% url 'feedback:delete' row.pk as delete_url %}
+    {% include "components/confirm_delete.html" with prompt="Delete feedback" %}
+</article>
+{% empty %}<p class="empty-state">No feedback yet.</p>{% endfor %}
+{% endblock %}

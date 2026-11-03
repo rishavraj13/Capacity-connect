@@ -1,1 +1,6 @@
-<div class="form-field-group">{{ field.as_field_group }}</div>
+{% load profile_uploads %}
+{% if field.field.widget.template_name == "core/private_file_input.html" %}
+    {% profile_upload field %}
+{% else %}
+    <div class="form-field-group">{{ field.as_field_group }}</div>
+{% endif %}

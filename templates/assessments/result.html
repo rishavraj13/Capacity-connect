@@ -1,2 +1,23 @@
-{% extends "base.html" %}{% block content %}<h1>Result: {{ result.title }}</h1><p>Status: {{ result.status }}; score: {{ result.score }}; percent: {{ result.percent }}%; {% if result.passed %}Passed{% else %}Not passed{% endif %}.</p>
-<ol>{% for row in result.questions %}<li>{{ row.text }} ({{ row.marks }} marks)<p>Selected: {{ row.selected_text|default:"No answer" }}; {% if row.is_correct %}Right{% else %}Wrong{% endif %}.</p>{% if row.correct_option %}<p>Correct option: {{ row.correct_option }}</p>{% endif %}</li>{% endfor %}</ol>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<article class="ticket">
+    <h1>Result: {{ result.title }}</h1>
+    <p class="badge">{% if result.passed %}PASS{% else %}FAIL{% endif %}</p>
+    <p><strong>{{ result.status }}</strong> · Score: {{ result.score }} · {{ result.percent|floatformat:"2u" }}%</p>
+    {% if result.status == "TIMED_OUT" %}
+        <p class="alert">Not passed. The submission was late and discarded.</p>
+    {% elif result.passed %}<p>Passed</p>{% else %}<p>Not passed</p>{% endif %}
+    {% if result.questions %}
+    <h2>Answer review</h2>
+    <ol>
+    {% for row in result.questions %}
+        <li>
+            <p>{{ row.text }} ({{ row.marks }} marks)</p>
+            <p>Selected: {{ row.selected_text|default:"No answer" }} · {% if row.is_correct %}Correct{% else %}Incorrect{% endif %}</p>
+            {% if row.correct_option %}<p>Correct option: {{ row.correct_option }}</p>{% endif %}
+        </li>
+    {% endfor %}
+    </ol>
+    {% endif %}
+</article>
+{% endblock %}

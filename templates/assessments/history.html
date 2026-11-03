@@ -1,3 +1,22 @@
-{% extends "base.html" %}{% block content %}<h1>My attempt history</h1>
-<ul>{% for attempt in attempts %}<li>{{ attempt.questionnaire.title }} - {{ attempt.questionnaire.course.title }} - {{ attempt.status }} - {{ attempt.started_at }}
-{% if attempt.status == "IN_PROGRESS" %}<a href="{% url 'assessments:take' attempt.pk %}">Resume</a>{% else %}<a href="{% url 'assessments:result' attempt.pk %}">Result</a>{% endif %}</li>{% empty %}<li>No attempts.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h1>My attempt history</h1>
+{% if attempts %}
+<div class="table-scroll">
+    <table>
+        <caption>Assessment attempts</caption>
+        <thead><tr><th scope="col">Assessment</th><th scope="col">Started</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+        <tbody>
+        {% for attempt in attempts %}
+        <tr>
+            <th scope="row">{{ attempt.questionnaire.title }} · {{ attempt.questionnaire.course.title }}</th>
+            <td>{{ attempt.started_at }}</td>
+            <td><span class="badge">{{ attempt.status }}</span></td>
+            <td>{% if attempt.status == "IN_PROGRESS" %}<a href="{% url 'assessments:take' attempt.pk %}">Resume</a>{% else %}<a href="{% url 'assessments:result' attempt.pk %}">Result</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}<p class="empty-state">No attempts.</p>{% endif %}
+{% endblock %}

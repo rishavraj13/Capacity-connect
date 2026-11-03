@@ -1,4 +1,29 @@
-{% extends "base.html" %}{% block content %}<h1>My assessments</h1><p><a href="{% url 'assessments:history' %}">My attempt history</a></p>
-<form method="get">{{ filter_form.as_p }}<button type="submit">Filter by subject</button></form>
-<h2>Departures</h2><ul>{% for departure in departures %}<li><a href="{% url 'assessments:detail' departure.questionnaire_id %}">{{ departure.title }}</a> - {{ departure.course_title }} - {{ departure.subject_name }} - {{ departure.status }} - deadline {{ departure.deadline }} - {{ departure.attempts_left }} attempts left</li>{% empty %}<li>No upcoming available assessments.</li>{% endfor %}</ul>
-<h2>Questionnaires</h2><ul>{% for quiz in questionnaires %}<li><a href="{% url 'assessments:detail' quiz.pk %}">{{ quiz.title }}</a> - {{ quiz.course.title }} - attempts {{ quiz.attempts_used }} used / {{ quiz.attempts_left }} left {% if quiz.open_attempt_id %}<a href="{% url 'assessments:take' quiz.open_attempt_id %}">Resume attempt</a>{% endif %}</li>{% empty %}<li>No enrolled assessments.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block page_styles %}{% include "components/trainee_styles.html" %}{% endblock %}
+{% block content %}
+<h1>My assessments</h1>
+<p><a href="{% url 'assessments:history' %}">My attempt history</a></p>
+<form method="get" class="card">{{ filter_form.as_p }}<button type="submit">Filter by subject</button></form>
+<section class="board">
+    <h2>Next departures</h2>
+    <ul>
+    {% for departure in departures %}
+        <li>
+            <strong>{{ departure.status }}</strong> ·
+            <a href="{% url 'assessments:detail' departure.questionnaire_id %}">{{ departure.title }}</a>
+            <p>{{ departure.course_title }} · {{ departure.subject_name }} · {{ departure.attempts_left }} attempts left</p>
+            <p>Opens {{ departure.opens_at }} · Deadline {{ departure.deadline }}</p>
+        </li>
+    {% empty %}<li>No upcoming available assessments.</li>{% endfor %}
+    </ul>
+</section>
+<h2>Questionnaires</h2>
+{% for quiz in questionnaires %}
+<article class="card">
+    <h3><a href="{% url 'assessments:detail' quiz.pk %}">{{ quiz.title }}</a></h3>
+    <p>{{ quiz.course.title }} · {{ quiz.subject.name }}</p>
+    <p>{{ quiz.attempts_used }} attempts used · {{ quiz.attempts_left }} left</p>
+    {% if quiz.open_attempt_id %}<a href="{% url 'assessments:take' quiz.open_attempt_id %}">Resume attempt</a>{% endif %}
+</article>
+{% empty %}<p class="empty-state">No enrolled assessments.</p>{% endfor %}
+{% endblock %}

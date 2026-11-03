@@ -360,3 +360,8 @@ The populated landing and course detail fixtures each use five additional querie
 Course detail retains the existing station-map selector. No existing course-scoped selector returns ordered station state and interchange. The completion summary contains aggregate counts and the existing module query does not include per-trainee progress. The populated detail fixture takes 14 queries with one module and with ten. Reusing the map keeps state definitions shared and query count independent of data size, with extra map rows read for trainees enrolled in several courses.
 
 Proposed by agent: a later backend mini-phase could add a visibility-filtered course resource selector and paginate the course list. Course detail currently has no linked resource panel, and the course list is unpaginated. Library videos currently have no captions or transcript field.
+
+
+## ADR 081: Assessment display context
+
+Assessment detail reuses the existing SQL readiness predicate in an EXISTS annotation on the existing enrollment-scoped query. Timing and quota annotations produce display-only explanations. The start service remains authoritative, and the existing out-of-scope 404 stays. The paper adds display metadata and pairs already-safe question rows with bound form fields without adding queries. The server supplies the time-left text. Proposed by agent: omit the optional client countdown.

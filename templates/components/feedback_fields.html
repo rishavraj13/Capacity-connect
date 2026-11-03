@@ -1,0 +1,17 @@
+{% include "components/error_summary.html" %}
+{% with field=form.rating %}
+<fieldset id="{{ field.id_for_label }}" class="card choice-group" tabindex="-1"
+    {% if field.errors %}aria-describedby="{{ field.auto_id }}_error" aria-invalid="true"{% endif %}>
+    <legend>Rating</legend>
+    {{ field.errors }}
+    {% for value in "12345" %}
+    <label for="{{ field.auto_id }}-{{ value }}">
+        <input type="radio" name="{{ field.html_name }}" id="{{ field.auto_id }}-{{ value }}" value="{{ value }}"
+            {% if field.value|stringformat:"s" == value %}checked{% endif %} required>
+        <span aria-hidden="true">★</span> {{ value }} of 5
+    </label>
+    {% endfor %}
+</fieldset>
+{% endwith %}
+<p>Comment limit: {{ form.comment.field.max_length }} characters.</p>
+{% include "components/form_field.html" with field=form.comment %}

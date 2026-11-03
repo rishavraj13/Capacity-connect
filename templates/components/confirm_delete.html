@@ -1,0 +1,7 @@
+<details>
+    <summary>{{ prompt }}</summary>
+    <form method="post" action="{{ delete_url }}">
+        {% csrf_token %}
+        <button type="submit">Confirm delete</button>
+    </form>
+</details>
