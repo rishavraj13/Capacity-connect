@@ -1,1 +1,33 @@
-{% extends "base.html" %}{% block content %}<h1>Feedback: {{ target.title }}</h1><p>{{ summary.count }} responses; average {{ summary.average }} / 5.</p><ul>{% for rating,count in summary.distribution.items %}<li>{{ rating }} stars: {{ count }}</li>{% endfor %}</ul><ul>{% for row in page %}<li>{{ row.rating }} / 5 - {{ row.comment }}{% if row.author_name %} - {{ row.author_name }}{% endif %}</li>{% empty %}<li>No feedback yet.</li>{% endfor %}</ul>{% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">Previous</a>{% endif %}{% if page.has_next %}<a href="?page={{ page.next_page_number }}">Next</a>{% endif %}{% endblock %}
+{% extends "base.html" %}
+{% block page_styles %}{% include "components/staff_stats_styles.html" %}{% endblock %}
+{% block content %}
+<h1>Feedback: {{ target.title }}</h1>
+<div class="staff-stats">
+    {% include "components/stat_tile.html" with label="Responses" value=summary.count %}
+    {% include "components/stat_tile.html" with label="Average rating" value=summary.average suffix=" of 5" %}
+</div>
+<h2>Rating distribution</h2>
+<ul>
+    {% for rating,count in summary.distribution.items %}
+    <li>
+        <label for="rating-{{ rating }}">{{ rating }} stars: {{ count }} response{{ count|pluralize }}</label>
+        <meter id="rating-{{ rating }}" min="0" max="{{ summary.count|default:1 }}" value="{{ count }}">{{ count }} response{{ count|pluralize }}</meter>
+    </li>
+    {% endfor %}
+</ul>
+<h2>Comments</h2>
+{% for row in page %}
+<article class="card">
+    <p class="badge">{{ row.rating }} of 5</p>
+    <p>{{ row.comment }}</p>
+    {% if row.author_name %}<p>{{ row.author_name }}</p>{% endif %}
+</article>
+{% empty %}<p class="empty-state">No feedback yet.</p>{% endfor %}
+{% if page.has_other_pages %}
+<nav class="actions" aria-label="Feedback pages">
+    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">Previous</a>{% endif %}
+    <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a href="?page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

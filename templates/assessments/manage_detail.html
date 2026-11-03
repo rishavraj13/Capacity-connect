@@ -1,8 +1,23 @@
-{% extends "base.html" %}{% block content %}<h1>{{ questionnaire.title }}</h1>
-<p>{{ questionnaire.opens_at }} to {{ questionnaire.deadline }}; {{ questionnaire.duration_minutes }} minutes; pass {{ questionnaire.pass_percent }}%; maximum {{ questionnaire.max_attempts }} attempts.</p>
-<p><a href="{% url 'assessments:edit' questionnaire.pk %}">Edit questionnaire</a> <a href="{% url 'assessments:question_add' questionnaire.pk %}">Add question</a> <a href="{% url 'assessments:participation' questionnaire.pk %}">Participation and results</a></p>
-<form method="post" action="{% url 'assessments:delete' questionnaire.pk %}">{% csrf_token %}<button>Delete questionnaire</button></form>
-<ol>{% for question in questionnaire.questions.all %}<li>{{ question.text }} ({{ question.marks }} marks)
-<ul>{% for option in question.options.all %}<li>{{ option.text }}{% if option.is_correct %} (correct){% endif %}</li>{% endfor %}</ul>
-<a href="{% url 'assessments:question_edit' question.pk %}">Edit question</a><form method="post" action="{% url 'assessments:question_delete' question.pk %}">{% csrf_token %}<button>Delete question</button></form>
-</li>{% empty %}<li>Add at least one valid question before trainees can start.</li>{% endfor %}</ol>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ questionnaire.title }}</h1>
+{% include "assessments/quiz_metadata.html" with quiz=questionnaire %}
+<div class="actions">
+    <a href="{% url 'assessments:edit' questionnaire.pk %}">Edit questionnaire</a>
+    <a href="{% url 'assessments:question_add' questionnaire.pk %}">Add question</a>
+    <a href="{% url 'assessments:participation' questionnaire.pk %}">Participation and results</a>
+</div>
+{% url 'assessments:delete' questionnaire.pk as delete_url %}
+{% include "components/confirm_delete.html" with prompt="Delete questionnaire" %}
+<h2>Questions</h2>
+{% for question in questionnaire.questions.all %}
+<article class="card">
+    <h3>{{ question.order }}. {{ question.text }}</h3>
+    <p>{{ question.marks }} mark{{ question.marks|pluralize }}</p>
+    <ol>{% for option in question.options.all %}<li>{{ option.text }}{% if option.is_correct %} <span class="badge">Correct</span>{% endif %}</li>{% endfor %}</ol>
+    <a href="{% url 'assessments:question_edit' question.pk %}">Edit question</a>
+    {% url 'assessments:question_delete' question.pk as delete_url %}
+    {% include "components/confirm_delete.html" with prompt="Delete question" %}
+</article>
+{% empty %}<p class="empty-state">Add at least one valid question before trainees can start.</p>{% endfor %}
+{% endblock %}

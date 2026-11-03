@@ -377,3 +377,10 @@ Proposed by agent: omit the optional countdown. The paper displays server-comput
 ## ADR 083: Trainer management presentation
 
 The staff module table uses existing prefetched skills and the interchange threshold. Course order freeze text is rendered from the existing domain error after an edit attempt. Course detail has no pre-emptive freeze flag. Resource upload hints use the same settings as validation. Trainer and Admin share the existing course and library templates and their respective bound form fields. Competency declarations remain Trainer-only, and published course and resource details retain their shared read access.
+
+
+## ADR 084: Staff assessment and analytics presentation
+
+Course questionnaire lists and staff detail annotate readiness with the existing SQL predicate and pass one server clock snapshot. Status labels use the shared start-window rule. The queries retain their existing round-trip counts. Question freeze wording comes from the existing domain error after a rejected change.
+
+Proposed by agent: show six optional numbered rows with server-side validation of the existing two-to-six option limit. The widget adapts row submissions to the existing line-oriented payload, and the legacy payload still works. Gaps in the numbered rows raise a field error to prevent a correct-option number from changing meaning. Participation uses the existing result list below the table because participant rows carry no attempt link. The heat strip is decorative and the table is the accessible source of participation detail.

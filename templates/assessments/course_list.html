@@ -1,3 +1,12 @@
-{% extends "base.html" %}{% block content %}<h1>Questionnaires: {{ course.title }}</h1>
-<p><a href="{% url 'assessments:create' course.pk %}">Create questionnaire</a></p>
-<ul>{% for quiz in questionnaires %}<li><a href="{% url 'assessments:manage_detail' quiz.pk %}">{{ quiz.title }}</a> - {{ quiz.opens_at }} to {{ quiz.deadline }}</li>{% empty %}<li>No questionnaires.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h1>Questionnaires: {{ course.title }}</h1>
+<p><a class="button" href="{% url 'assessments:create' course.pk %}">Create questionnaire</a></p>
+{% for quiz in questionnaires %}
+<article class="card">
+    <h2><a href="{% url 'assessments:manage_detail' quiz.pk %}">{{ quiz.title }}</a></h2>
+    {% include "assessments/quiz_metadata.html" %}
+    <a href="{% url 'assessments:participation' quiz.pk %}">Participation</a>
+</article>
+{% empty %}<p class="empty-state">No questionnaires.</p>{% endfor %}
+{% endblock %}

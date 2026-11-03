@@ -1,4 +1,43 @@
-{% extends "base.html" %}{% block content %}<h1>Participation: {{ questionnaire.title }}</h1>
-<p>Enrolled: {{ stats.enrolled }}; attempted: {{ stats.attempted }}; passed: {{ stats.passed }}; average best: {{ stats.average_best_percent }}%; pass rate: {{ stats.pass_rate_percent }}%.</p>
-<div class="table-scroll" tabindex="0" role="region" aria-label="Participation"><table><caption>Participation</caption><thead><tr><th scope="col">Trainee</th><th scope="col">Attempts used</th><th scope="col">Best percent</th><th scope="col">Passed</th><th scope="col">Last attempt</th></tr></thead><tbody>{% for row in rows %}<tr><td>{{ row.trainee_name }}</td><td>{{ row.attempts_used }}</td><td>{{ row.best_percent }}</td><td>{{ row.passed }}</td><td>{{ row.last_attempt_at|default:"Never" }}</td></tr>{% empty %}<tr><td colspan="5">No enrolled trainees.</td></tr>{% endfor %}</tbody></table></div>
-<h2>Submitted and timed-out results</h2><ul>{% for attempt in results %}<li>{{ attempt.trainee.username }} - <a href="{% url 'assessments:result' attempt.pk %}">Attempt {{ attempt.pk }}: {{ attempt.status }}</a></li>{% empty %}<li>No finalized results.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block page_styles %}{% include "components/staff_stats_styles.html" %}{% endblock %}
+{% block content %}
+<h1>Participation: {{ questionnaire.title }}</h1>
+<div class="staff-stats">
+    {% include "components/stat_tile.html" with label="Enrolled" value=stats.enrolled %}
+    {% include "components/stat_tile.html" with label="Attempted" value=stats.attempted %}
+    {% include "components/stat_tile.html" with label="Passed" value=stats.passed %}
+    {% include "components/stat_tile.html" with label="Average best percent" value=stats.average_best_percent|floatformat:"2u" suffix="%" %}
+    {% include "components/stat_tile.html" with label="Pass rate" value=stats.pass_rate_percent|floatformat:"2u" suffix="%" %}
+</div>
+{% if not stats.attempted %}<p>No trainees have attempted this questionnaire yet.</p>{% endif %}
+{% if rows %}
+<h2>Participation at a glance</h2>
+<ul class="heat-strip" aria-hidden="true">
+    {% for row in rows %}
+    <li><span role="img" class="heat-cell {% if row.passed %}heat-passed{% elif row.attempts_used %}heat-attempted{% else %}heat-none{% endif %}" aria-label="{% if row.passed %}Passed{% elif row.attempts_used %}Attempted, not passed{% else %}Not attempted{% endif %}"></span></li>
+    {% endfor %}
+</ul>
+<ul class="heat-legend" aria-label="Participation legend">
+    <li><span class="heat-cell heat-none" aria-hidden="true"></span> Not attempted</li>
+    <li><span class="heat-cell heat-attempted" aria-hidden="true"></span> Attempted, not passed</li>
+    <li><span class="heat-cell heat-passed" aria-hidden="true"></span> Passed</li>
+</ul>
+{% endif %}
+<div class="table-scroll" tabindex="0" role="region" aria-label="Participation">
+<table>
+    <caption>Trainee participation</caption>
+    <thead><tr><th scope="col">Trainee</th><th scope="col">Attempts used</th><th scope="col">Best percent</th><th scope="col">Passed</th><th scope="col">Last attempt</th></tr></thead>
+    <tbody>
+    {% for row in rows %}
+    <tr><th scope="row">{{ row.trainee_name }}</th><td>{{ row.attempts_used }}</td><td>{{ row.best_percent|floatformat:"2u" }}%</td><td>{{ row.passed|yesno:"Yes,No" }}</td><td>{{ row.last_attempt_at|default:"Never" }}</td></tr>
+    {% empty %}<tr><td colspan="5">No enrolled trainees.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+<h2>Submitted and timed-out results</h2>
+<ul>
+    {% for attempt in results %}
+    <li>{{ attempt.trainee.username }} · <a href="{% url 'assessments:result' attempt.pk %}">Attempt {{ attempt.pk }}: {{ attempt.status }}</a></li>
+    {% empty %}<li>No finalized results.</li>{% endfor %}
+</ul>
+{% endblock %}

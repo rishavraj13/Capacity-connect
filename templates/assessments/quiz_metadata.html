@@ -1,0 +1,9 @@
+{% load assessment_display %}
+<p class="badge">{{ quiz|questionnaire_status:status_instant }}</p>
+<dl>
+    <dt>Opens</dt><dd>{{ quiz.opens_at }}</dd>
+    <dt>Deadline</dt><dd>{{ quiz.deadline }}</dd>
+    <dt>Duration</dt><dd>{{ quiz.duration_minutes }} minutes</dd>
+    <dt>Pass mark</dt><dd>{{ quiz.pass_percent }}%</dd>
+    <dt>Maximum attempts</dt><dd>{{ quiz.max_attempts }}</dd>
+</dl>

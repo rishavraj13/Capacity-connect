@@ -198,8 +198,8 @@ Testing stage is active; frontend has not started.
 | F1 | Public pages | Engineering accepted and tagged f1-approved. Visual review pending. |
 | F2a | Trainee learning pages | Engineering accepted and tagged f2a-approved. Visual review pending. |
 | F2b | Trainee assessments, certificates, feedback and profiles | Engineering accepted and tagged f2b-approved. Visual review pending. |
-| F3a | Trainer management pages | Implemented. Awaiting review. |
-| F3b | Other trainer pages | Pending. |
+| F3a | Trainer management pages | Engineering accepted and tagged f3a-approved. Visual review pending. |
+| F3b | Trainer assessments, dashboard and feedback | Implemented. Awaiting review. |
 | F4 | Admin pages | Pending. |
 | F5 | Responsive and accessibility sweep | Pending. |
 
@@ -216,4 +216,5 @@ Testing stage is active; frontend has not started.
 - [x] F2a responsive navigation, trainee learning pages and station geometry.
 - [x] F2a engineering accepted. Visual review pending.
 - [x] F2b engineering accepted. Visual review pending.
-- [ ] Reviewer approval for F3a.
+- [x] F3a engineering accepted. Visual review pending.
+- [ ] Reviewer approval for F3b.

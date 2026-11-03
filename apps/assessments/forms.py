@@ -14,11 +14,13 @@ from apps.assessments.constants import (
     MIN_ATTEMPTS,
     MIN_DURATION_MINUTES,
     MIN_MARKS,
+    MIN_OPTIONS,
     MIN_PASS_PERCENT,
 )
 from apps.assessments.dataclasses import PaperQuestion, QuestionInput
 from apps.assessments.exceptions import AssessmentRuleError
 from apps.assessments.models import Question, Questionnaire
+from apps.assessments.widgets import OptionRows
 
 QUESTION_FIELD_PREFIX = "question_"
 OPTION_NUMBER_BASE = 1
@@ -28,21 +30,30 @@ class QuestionnaireForm(forms.ModelForm):
     """Leave parent course, subject and trainer ownership to the service."""
 
     duration_minutes = forms.IntegerField(
-        min_value=MIN_DURATION_MINUTES, max_value=MAX_DURATION_MINUTES
+        min_value=MIN_DURATION_MINUTES,
+        max_value=MAX_DURATION_MINUTES,
+        help_text=f"{MIN_DURATION_MINUTES} to {MAX_DURATION_MINUTES} minutes.",
     )
     pass_percent = forms.IntegerField(
         min_value=MIN_PASS_PERCENT,
         max_value=MAX_PASS_PERCENT,
         initial=DEFAULT_PASS_PERCENT,
+        help_text=f"{MIN_PASS_PERCENT} to {MAX_PASS_PERCENT} percent.",
     )
     max_attempts = forms.IntegerField(
-        min_value=MIN_ATTEMPTS, max_value=MAX_ATTEMPTS, initial=MIN_ATTEMPTS
+        min_value=MIN_ATTEMPTS,
+        max_value=MAX_ATTEMPTS,
+        initial=MIN_ATTEMPTS,
+        help_text=f"{MIN_ATTEMPTS} to {MAX_ATTEMPTS} attempts.",
     )
 
     class Meta:
         """Expose only author-editable descriptive and timing fields."""
 
         model = Questionnaire
+        help_texts = dict.fromkeys(
+            ("opens_at", "deadline"), "Date and time format: YYYY-MM-DD HH:MM."
+        )
         fields = (
             "title",
             "opens_at",
@@ -67,13 +78,21 @@ class QuestionForm(forms.ModelForm):
     """Edit a question and its complete choice set in one validated form."""
 
     options = forms.CharField(
-        widget=forms.Textarea, help_text="One option per line; provide 2 to 6 options."
+        widget=OptionRows,
+        help_text=f"Provide {MIN_OPTIONS} to {MAX_OPTIONS} options without gaps.",
     )
     correct_option = forms.IntegerField(
         min_value=OPTION_NUMBER_BASE,
         max_value=MAX_OPTIONS,
         initial=OPTION_NUMBER_BASE,
-        help_text="Number of the correct option, starting at 1.",
+        label="Correct option",
+        widget=forms.RadioSelect(
+            choices=[
+                (number, f"Option {number}")
+                for number in range(OPTION_NUMBER_BASE, MAX_OPTIONS + 1)
+            ]
+        ),
+        help_text="Choose the row that contains the correct answer.",
     )
     marks = forms.IntegerField(min_value=MIN_MARKS, initial=MIN_MARKS)
 
@@ -85,11 +104,13 @@ class QuestionForm(forms.ModelForm):
 
     def clean_options(self) -> tuple[str, ...]:
         """Normalize line-separated choices before validating their count."""
-        return tuple(
-            line.strip()
-            for line in self.cleaned_data["options"].splitlines()
-            if line.strip()
+        lines = tuple(
+            line.strip() for line in self.cleaned_data["options"].splitlines()
         )
+        options = tuple(line for line in lines if line)
+        if "options" not in self.data and lines[: len(options)] != options:
+            raise forms.ValidationError("Fill the option rows in order without gaps.")
+        return options
 
     def clean(self) -> dict:
         """Reuse the service's exact single-correct-choice input contract."""

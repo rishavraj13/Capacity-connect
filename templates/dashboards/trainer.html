@@ -1,1 +1,43 @@
-{% extends "base.html" %}{% block content %}<h1>My trainer dashboard</h1><p>Courses {{ dashboard.totals.courses_total }} ({{ dashboard.totals.courses_published }} published); non-dropped enrollments {{ dashboard.totals.enrolled }}; active {{ dashboard.totals.active }}; completed {{ dashboard.totals.completed }}; certificates {{ dashboard.totals.certificates }}; questionnaires {{ dashboard.totals.questionnaires }}; rating {{ dashboard.totals.avg_rating|default_if_none:"No ratings" }} from {{ dashboard.totals.rating_count }} opinions.</p><div class="table-scroll" tabindex="0" role="region" aria-label="Dashboard figures"><table><caption>Dashboard figures</caption><thead><tr><th scope="col">Course</th><th scope="col">Published</th><th scope="col">Enrolled</th><th scope="col">Active</th><th scope="col">Completed</th><th scope="col">Certificates</th><th scope="col">Rating</th><th scope="col">Ratings</th><th scope="col">Quizzes</th></tr></thead><tbody>{% for row in dashboard.courses %}<tr><td><a href="{% url 'courses:detail' row.course_id %}">{{ row.title }}</a></td><td>{{ row.is_published }}</td><td>{{ row.enrolled }}</td><td>{{ row.active }}</td><td>{{ row.completed }}</td><td>{{ row.certificates }}</td><td>{{ row.avg_rating|default_if_none:"No ratings" }}</td><td>{{ row.rating_count }}</td><td>{{ row.questionnaires }}</td></tr>{% empty %}<tr><td colspan="9">No own courses.</td></tr>{% endfor %}</tbody></table></div><h2>Questionnaire participation</h2><ul>{% for quiz in dashboard.questionnaires %}<li><a href="{% url 'assessments:participation' quiz.questionnaire_id %}">{{ quiz.course_title }}: {{ quiz.title }}</a></li>{% empty %}<li>No own questionnaires.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block page_styles %}{% include "components/staff_stats_styles.html" %}{% endblock %}
+{% block content %}
+<p class="eyebrow">Station master</p>
+<h1>My trainer dashboard</h1>
+{% with totals=dashboard.totals %}
+<div class="staff-stats">
+    {% include "components/stat_tile.html" with label="Courses" value=totals.courses_total %}
+    {% include "components/stat_tile.html" with label="Published" value=totals.courses_published %}
+    {% include "components/stat_tile.html" with label="Enrolled" value=totals.enrolled %}
+    {% include "components/stat_tile.html" with label="Active" value=totals.active %}
+    {% include "components/stat_tile.html" with label="Completed" value=totals.completed %}
+    {% include "components/stat_tile.html" with label="Certificates" value=totals.certificates %}
+    {% include "components/stat_tile.html" with label="Questionnaires" value=totals.questionnaires %}
+    {% include "components/stat_tile.html" with label="Average rating" value=totals.avg_rating|default_if_none:"No ratings" %}
+    {% include "components/stat_tile.html" with label="Rating count" value=totals.rating_count %}
+</div>
+{% endwith %}
+<h2>My courses</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Course statistics">
+<table>
+    <caption>Trainer course statistics</caption>
+    <thead><tr><th scope="col">Course</th><th scope="col">Status</th><th scope="col">Enrolled</th><th scope="col">Active</th><th scope="col">Completed</th><th scope="col">Certificates</th><th scope="col">Rating</th><th scope="col">Ratings</th><th scope="col">Questionnaires</th></tr></thead>
+    <tbody>
+    {% for row in dashboard.courses %}
+    <tr>
+        <th scope="row"><a href="{% url 'courses:detail' row.course_id %}">{{ row.title }}</a></th>
+        <td>{% include "components/publication_badge.html" with published=row.is_published %}</td>
+        <td>{{ row.enrolled }}</td><td>{{ row.active }}</td><td>{{ row.completed }}</td><td>{{ row.certificates }}</td>
+        <td>{% if row.rating_count %}<meter class="rating-meter" min="0" max="5" value="{{ row.avg_rating|floatformat:"2u" }}" aria-label="{{ row.avg_rating }} of 5">{{ row.avg_rating }} of 5</meter> {{ row.avg_rating }} of 5{% else %}No ratings{% endif %}</td>
+        <td>{{ row.rating_count }}</td>
+        <td><a href="{% url 'assessments:course_list' row.course_id %}">{{ row.questionnaires }} questionnaires</a></td>
+    </tr>
+    {% empty %}<tr><td colspan="9">No own courses.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+<h2>Questionnaire participation</h2>
+<ul>
+    {% for quiz in dashboard.questionnaires %}<li><a href="{% url 'assessments:participation' quiz.questionnaire_id %}">{{ quiz.course_title }}: {{ quiz.title }}</a></li>
+    {% empty %}<li>No own questionnaires.</li>{% endfor %}
+</ul>
+{% endblock %}

@@ -138,3 +138,13 @@ def test_station_pulse_only_runs_when_motion_is_allowed() -> None:
     assert not re.search(
         r"animation(?:-name)?:[^;{}]*station-pulse", allowed.sub("", css)
     )
+
+
+@pytest.mark.parametrize("theme", THEMES)
+def test_staff_chart_contrast(theme: str) -> None:
+    """Check chart graphics against their card and page surfaces."""
+    colors = theme_colors(theme)
+    for token in ("ink", "line-2", "line-3"):
+        for surface in ("paper", "card"):
+            assert contrast(colors, token, surface) >= 3
+    assert contrast(colors, "accent", "card") >= 3

@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from functools import partial
 
+from django.db.models import Exists, OuterRef, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -12,6 +13,9 @@ from apps.accounts.constants import UserRole
 from apps.accounts.permissions import role_required
 from apps.assessments import selectors, services
 from apps.assessments.forms import QuestionForm, QuestionnaireForm, question_input
+from apps.assessments.models import Questionnaire
+from apps.assessments.readiness import ready_questionnaires
+from apps.core import clock
 from apps.core.form_views import FormAction, action_response, form_response
 from apps.courses.selectors import managed_courses
 
@@ -28,11 +32,11 @@ def _write_question(
 def course_list(request: HttpRequest, course_id: int) -> HttpResponse:
     """Hide other trainers' quiz lists through the parent course selector."""
     course = get_object_or_404(managed_courses(request.user), pk=course_id)
-    quizzes = selectors.questionnaires_for_course(request.user, course)
+    quizzes = _with_readiness(selectors.questionnaires_for_course(request.user, course))
     return render(
         request,
         "assessments/course_list.html",
-        {"course": course, "questionnaires": quizzes},
+        {"course": course, "questionnaires": quizzes, "status_instant": clock.now()},
     )
 
 
@@ -79,8 +83,23 @@ def delete(request: HttpRequest, pk: int) -> HttpResponse:
 @require_safe
 def manage_detail(request: HttpRequest, pk: int) -> HttpResponse:
     """Expose correct choices only on the role/owner-restricted authoring page."""
-    quiz = get_object_or_404(selectors.authoring_detail(request.user, pk))
-    return render(request, "assessments/manage_detail.html", {"questionnaire": quiz})
+    quiz = get_object_or_404(
+        _with_readiness(selectors.authoring_detail(request.user, pk))
+    )
+    return render(
+        request,
+        "assessments/manage_detail.html",
+        {
+            "questionnaire": quiz,
+            "status_instant": clock.now(),
+        },
+    )
+
+
+def _with_readiness(quizzes: QuerySet[Questionnaire]) -> QuerySet[Questionnaire]:
+    """Reuse the service readiness predicate within the existing read query."""
+    ready = ready_questionnaires(OuterRef("course_id")).filter(pk=OuterRef("pk"))
+    return quizzes.annotate(ready=Exists(ready))
 
 
 @role_required(UserRole.TRAINER, UserRole.ADMIN)
