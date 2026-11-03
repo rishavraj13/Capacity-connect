@@ -1,0 +1,15 @@
+body > header, body > footer, body > .skip-link, nav { display: none; }
+body, main, .card, .ticket, .badge {
+  background: var(--print-paper);
+  color: var(--print-ink);
+}
+body { display: block; min-height: 0; }
+main.shell { width: 100%; padding: 0; }
+main :is(h1, h2, h3, p, a, dt, dd, span, strong) { color: var(--print-ink); }
+.card, .ticket {
+  break-inside: avoid;
+  border-color: var(--print-ink);
+  box-shadow: none;
+}
+.ticket::before, .ticket::after { display: none; }
+.verification-mark { stroke: var(--print-ink); }

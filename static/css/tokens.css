@@ -135,3 +135,5 @@
     --gold-text: #ffda8a;
   }
 }
+
+:root { --print-ink: #000000; --print-paper: #ffffff; }

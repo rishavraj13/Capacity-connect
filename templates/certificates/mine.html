@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block page_styles %}{% include "components/trainee_styles.html" %}{% endblock %}
+{% block page_styles %}{% load static %}<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">{% include "components/trainee_styles.html" %}{% endblock %}
 {% block content %}
 <h1>My certificates</h1>
 {% for certificate in certificates %}

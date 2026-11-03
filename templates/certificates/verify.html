@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Valid certificate | Capacity Connect{% endblock %}
-{% block page_styles %}{% include "components/public_styles.html" %}{% endblock %}
+{% block page_styles %}{% load static %}<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">{% include "components/public_styles.html" %}{% endblock %}
 {% block content %}
 <article class="card verification-card">
     <svg class="verification-mark" viewBox="0 0 44 44" role="img" aria-label="Verified">

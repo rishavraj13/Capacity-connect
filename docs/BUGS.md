@@ -195,3 +195,11 @@
 - Fix: Leave the attribute unset and apply the night palette only to the unset root under the dark media preference.
 - Tests: test_no_js_dark_fallback_preserves_explicit_themes and test_theme_controls_bootstrap_from_local_assets failed first and passed after the fix.
 - Commit: fix(frontend): close F0 contrast and theme gaps.
+
+
+## BUG 028: Printable records inherited portal chrome
+
+- Reproduction: render certificate list, verification result or assessment result.
+- Failing test first: the seeded template audit found no print stylesheet on eight route-role responses.
+- Root cause: record templates inherited the screen shell without print overrides.
+- Fix: load a shared print stylesheet for those three templates with monochrome tokens, hidden portal chrome and card break protection.

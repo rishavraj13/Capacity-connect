@@ -150,3 +150,16 @@ def test_staff_chart_contrast(theme: str) -> None:
     assert contrast(colors, "accent", "card") >= 3
     assert contrast(colors, "card", "line-2") >= 3  # Diagonal cue.
     assert contrast(colors, "card", "line-3") >= 3  # Check cue.
+
+
+def test_all_motion_is_inside_no_preference_blocks() -> None:
+    """Reject opt-out motion anywhere in the shipped CSS."""
+    media = "@media (prefers-reduced-motion: no-preference)"
+    declarations = re.compile(
+        r"(?:animation|transition)(?:-[\w-]+)?\s*:\s*(?!none\b)[^;}]+"
+    )
+    for path in (ROOT / "static").rglob("*.css"):
+        css = path.read_text(encoding="utf-8")
+        remainder = re.sub(re.escape(media) + r"\s*\{(?:[^{}]|\{[^{}]*\})*\}", "", css)
+        remainder = re.sub(r"(?:animation|transition)\s*:\s*none\s*;", "", remainder)
+        assert not declarations.search(remainder), path

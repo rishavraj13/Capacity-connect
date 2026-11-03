@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block page_styles %}{% load static %}<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">{% endblock %}
 {% block content %}
 <article class="ticket">
     <h1>Result: {{ result.title }}</h1>
