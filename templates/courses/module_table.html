@@ -1,0 +1,25 @@
+{% load station_maps %}
+<h2>Modules</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Course modules">
+<table>
+    <caption>Course modules in station order</caption>
+    <thead><tr><th scope="col">Order</th><th scope="col">Title</th><th scope="col">Skills</th><th scope="col">Station type</th><th scope="col">Actions</th></tr></thead>
+    <tbody>
+    {% for module in course.modules.all %}
+    {% with skills=module.skills.all %}
+    <tr>
+        <td>{{ module.order }}</td>
+        <th scope="row">{{ module.title }}</th>
+        <td>{% for skill in skills %}<span class="badge">{{ skill.name }} · {{ skill.subject.name }}</span> {% empty %}No skills{% endfor %}</td>
+        <td>{% if skills|interchange %}Interchange{% else %}Station{% endif %}</td>
+        <td>
+            <a href="{% url 'courses:module_edit' module.pk %}">Edit module</a>
+            {% url 'courses:module_delete' module.pk as delete_url %}
+            {% include "components/confirm_delete.html" with prompt="Delete module" %}
+        </td>
+    </tr>
+    {% endwith %}
+    {% empty %}<tr><td colspan="5">No modules yet.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>

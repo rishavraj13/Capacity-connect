@@ -6,7 +6,7 @@
 <article class="card">
     <h2><a href="{% url 'courses:detail' course.pk %}">{{ course.title }}</a></h2>
     {% include "components/course_metadata.html" %}
-    <p class="badge">{% if course.is_published %}Published{% else %}Draft{% endif %}</p>
+    <p>{% include "components/publication_badge.html" with published=course.is_published %}</p>
 </article>
 {% empty %}<p class="empty-state">No visible courses.</p>{% endfor %}
 {% endblock %}

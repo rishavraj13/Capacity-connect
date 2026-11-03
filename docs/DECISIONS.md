@@ -372,3 +372,8 @@ Assessment detail reuses the existing SQL readiness predicate in an EXISTS annot
 The start service and assessment detail use the same start-window and quota predicates, the grace-inclusive attempt deadline and the same readiness SQL. Detail annotates the open attempt's start time in the existing read query. A resumable attempt has a Resume link. An expired attempt is evaluated as a fresh start on the page, while the service retains responsibility for persisting expiry. The existing dropped-enrollment 404 is preserved.
 
 Proposed by agent: omit the optional countdown. The paper displays server-computed time-left text only.
+
+
+## ADR 083: Trainer management presentation
+
+The staff module table uses existing prefetched skills and the interchange threshold. Course order freeze text is rendered from the existing domain error after an edit attempt. Course detail has no pre-emptive freeze flag. Resource upload hints use the same settings as validation. Trainer and Admin share the existing course and library templates and their respective bound form fields. Competency declarations remain Trainer-only, and published course and resource details retain their shared read access.

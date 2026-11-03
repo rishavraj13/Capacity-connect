@@ -1,5 +1,9 @@
 {% load profile_uploads %}
-{% if field.field.widget.template_name == "core/private_file_input.html" %}
+{% if form.kind and field.name == "file" %}
+    {% library_upload field %}
+{% elif field.name == "start_date" or field.name == "end_date" %}
+    {% format_date_field field %}
+{% elif field.field.widget.template_name == "core/private_file_input.html" %}
     {% profile_upload field %}
 {% else %}
     <div class="form-field-group">{{ field.as_field_group }}</div>

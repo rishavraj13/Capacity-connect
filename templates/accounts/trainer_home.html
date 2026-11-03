@@ -1,15 +1,21 @@
 {% extends "base.html" %}
-
 {% block title %}Trainer Dashboard - Capacity Connect{% endblock %}
-
 {% block content %}
-<section>
-    <h1>Trainer Dashboard</h1>
-    <p>Welcome, {{ user.first_name|default:user.username }}. Your trainer account is active and approved.</p>
+<h1>Station master</h1>
+<p>Welcome, {{ user.first_name|default:user.username }}.</p>
+<section class="card">
+    <h2>Trainer shortcuts</h2>
+    <ul>
+        <li><a href="{% url 'courses:list' %}">My courses</a></li>
+        <li><a href="{% url 'library:list' %}">Library</a></li>
+        <li><a href="{% url 'courses:list' %}">Questionnaires</a> · Choose a course to manage its questionnaires.</li>
+        <li><a href="{% url 'competency:mine' %}">Competencies</a></li>
+        <li><a href="{% url 'dashboards:trainer' %}">Dashboard</a></li>
+    </ul>
 </section>
-<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
-<p><a href="{% url 'courses:list' %}">Choose a course to manage assessments</a></p>
+<section class="empty-state">
+    <h2>Planning a new course?</h2>
+    <p><a href="{% url 'courses:create' %}">Create a draft course</a> to start adding modules.</p>
+</section>
 <p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
-<p><a href="{% url 'competency:mine' %}">My competencies</a></p>
-<p><a href="{% url 'dashboards:trainer' %}">My statistics</a></p>
 {% endblock %}

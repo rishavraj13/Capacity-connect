@@ -1,0 +1,8 @@
+<div class="form-field-group">
+    {{ field.label_tag }}
+    <ul id="{{ help_id }}">
+        {% for kind, extensions, size in limits %}<li>{{ kind }}: {{ extensions }} up to {{ size }}</li>{% endfor %}
+    </ul>
+    {{ field.errors }}
+    {{ widget }}
+</div>

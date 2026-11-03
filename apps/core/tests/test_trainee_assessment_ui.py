@@ -154,13 +154,7 @@ def _start_fixture(instant: object, state: str) -> tuple:
         deadline=deadline,
         max_attempts=1 if state == "exhausted" else 2,
     )
-    if state in ("resumable", "expired", "exhausted"):
-        AttemptFactory(
-            questionnaire=quiz,
-            trainee=trainee,
-            started_at=instant - hour if state == "expired" else instant,
-            status="TIMED_OUT" if state == "exhausted" else "IN_PROGRESS",
-        )
+    _seed_start_attempt(quiz, trainee, state, instant)
     if state == "unready":
         question.options.all().delete()
     if state == "dropped":
@@ -171,6 +165,20 @@ def _start_fixture(instant: object, state: str) -> tuple:
         quiz.course.is_published = False
         quiz.course.save(update_fields=["is_published"])
     return quiz, trainee
+
+
+def _seed_start_attempt(
+    quiz: object, trainee: object, state: str, instant: object
+) -> None:
+    """Create only the attempt state needed by the parity fixture."""
+    hour = timedelta(hours=1)
+    if state in ("resumable", "expired", "exhausted"):
+        AttemptFactory(
+            questionnaire=quiz,
+            trainee=trainee,
+            started_at=instant - hour if state == "expired" else instant,
+            status="TIMED_OUT" if state == "exhausted" else "IN_PROGRESS",
+        )
 
 
 def test_quiz_paper_html_unchanged_when_correct_option_changes(client: object) -> None:

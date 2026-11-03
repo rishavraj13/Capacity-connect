@@ -8,7 +8,9 @@
     <h2><a href="{% url 'library:detail' resource.pk %}">{{ resource.title }}</a></h2>
     <p><span class="badge">{{ resource.get_kind_display }}</span> · {{ resource.subject.name }} · {{ resource.trainer.get_full_name|default:resource.trainer.username }}</p>
     <p>{{ resource.description|truncatechars:160 }}</p>
-    {% if not resource.is_published %}<p class="badge">Unpublished</p>{% endif %}
+    {% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == resource.trainer_id %}
+    <p>{% include "components/publication_badge.html" with published=resource.is_published %}</p>
+    {% endif %}
 </article>
 {% empty %}<p class="empty-state">No visible resources.</p>{% endfor %}
 {% include "components/library_pagination.html" %}

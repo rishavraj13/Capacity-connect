@@ -3,6 +3,7 @@
 {% block content %}
 <h1>{{ course.title }}</h1>
 {% include "components/course_metadata.html" %}
+<p>{% include "components/publication_badge.html" with published=course.is_published %}</p>
 <p>{{ course.description }}</p>
 {% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}
 <p><a href="{% url 'courses:edit' course.pk %}">Edit course</a> <a href="{% url 'courses:module_add' course.pk %}">Add module</a> <a href="{% url 'courses:participants' course.pk %}">Participants</a> <a href="{% url 'assessments:course_list' course.pk %}">Manage questionnaires</a></p>
@@ -19,6 +20,9 @@
 {% endif %}
 {% if enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:drop' enrollment.pk %}">{% csrf_token %}<button>Drop course</button></form>{% endif %}
 {% endif %}
+{% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}
+{% include "courses/module_table.html" %}
+{% else %}
 <h2>Module stations</h2>
 <ol class="station-list">{% for module in course.modules.all %}
 {% with station=stations|station_at:module.pk %}
@@ -28,9 +32,9 @@
     {% if station.is_interchange %}<span class="badge">Interchange</span>{% endif %}
 {% endif %}
 <ul>{% for skill in module.skills.all %}<li>{{ skill.name }} ({{ skill.subject.name }})</li>{% endfor %}</ul>
-{% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}<a href="{% url 'courses:module_edit' module.pk %}">Edit module</a><form method="post" action="{% url 'courses:module_delete' module.pk %}">{% csrf_token %}<button>Delete module</button></form>{% endif %}
 {% if enrollment.status == "ACTIVE" and station.state == "CURRENT" %}<form method="post" action="{% url 'courses:complete_module' enrollment.pk module.pk %}">{% csrf_token %}<button>Mark complete</button></form>{% endif %}
 </li>{% endwith %}{% empty %}<li>No modules yet.</li>{% endfor %}</ol>
+{% endif %}
 {% include "courses/completion.html" %}
 {% if certificate %}<p><a href="{% url 'certificates:download' certificate.pk %}">Download certificate</a></p>{% endif %}
 {% if user.role == "TRAINEE" and enrollment %}<p><a href="{% url 'feedback:course_submit' course.pk %}">Give or edit feedback</a></p>{% endif %}

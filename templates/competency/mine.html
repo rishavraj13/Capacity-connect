@@ -1,1 +1,27 @@
-{% extends "base.html" %}{% block content %}<h1>My competencies</h1><p><a href="{% url 'competency:add' %}">Declare competency</a></p><ul>{% for row in competencies %}<li>{{ row.subject.name }}{% if not row.subject.is_active %} (retired){% endif %}: proficiency {{ row.proficiency }} / 5; {{ row.years_experience }} years <a href="{% url 'competency:edit' row.pk %}">Edit</a><form method="post" action="{% url 'competency:remove' row.pk %}">{% csrf_token %}<button>Remove</button></form></li>{% empty %}<li>No declarations.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h1>My competencies</h1>
+<p><a href="{% url 'competency:add' %}">Declare competency</a></p>
+{% if competencies %}
+<div class="table-scroll" tabindex="0" role="region" aria-label="Competencies">
+<table>
+    <caption>Declared subjects and proficiency</caption>
+    <thead><tr><th scope="col">Subject</th><th scope="col">Proficiency</th><th scope="col">Years</th><th scope="col">Actions</th></tr></thead>
+    <tbody>
+    {% for row in competencies %}
+    <tr>
+        <th scope="row">{{ row.subject.name }}{% if not row.subject.is_active %} <span class="badge">Retired</span>{% endif %}</th>
+        <td><meter min="0" max="5" value="{{ row.proficiency }}" aria-label="Proficiency: {{ row.proficiency }} of 5">{{ row.proficiency }} of 5</meter> {{ row.proficiency }} of 5</td>
+        <td>{{ row.years_experience }}</td>
+        <td>
+            <a href="{% url 'competency:edit' row.pk %}">Edit competency</a>
+            {% url 'competency:remove' row.pk as delete_url %}
+            {% include "components/confirm_delete.html" with prompt="Remove competency" %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}<p class="empty-state">No declarations.</p>{% endif %}
+{% endblock %}
