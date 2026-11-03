@@ -1,1 +1,18 @@
-{% extends "base.html" %}{% block content %}<h1>Valid certificate</h1><dl><dt>Certificate ID</dt><dd>{{ record.certificate_id }}</dd><dt>Trainee</dt><dd>{{ record.trainee_name }}</dd><dt>Course</dt><dd>{{ record.course_title }}</dd><dt>Issued</dt><dd>{{ record.issued_on }}</dd></dl>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Valid certificate | Capacity Connect{% endblock %}
+{% block page_styles %}{% include "components/public_styles.html" %}{% endblock %}
+{% block content %}
+<article class="card verification-card">
+    <svg class="verification-mark" viewBox="0 0 44 44" role="img" aria-label="Verified">
+        <circle cx="22" cy="22" r="19"/>
+        <path d="m13 22 6 6 12-13"/>
+    </svg>
+    <h1>Valid certificate</h1>
+    <dl>
+        <dt>Certificate ID</dt><dd class="certificate-id">{{ record.certificate_id }}</dd>
+        <dt>Trainee</dt><dd>{{ record.trainee_name }}</dd>
+        <dt>Course</dt><dd>{{ record.course_title }}</dd>
+        <dt>Issued</dt><dd>{{ record.issued_on }}</dd>
+    </dl>
+</article>
+{% endblock %}

@@ -1,1 +1,13 @@
-{% extends "base.html" %}{% block content %}<h1>Verify a certificate</h1><form method="get">{% include "components/form_fields.html" %}<button>Verify</button></form>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Verify a certificate | Capacity Connect{% endblock %}
+{% block page_styles %}{% include "components/public_styles.html" %}{% endblock %}
+{% block content %}
+<section class="card auth-card public-form">
+    <h1>Verify a certificate</h1>
+    <form method="get">
+        {% include "components/error_summary.html" %}
+        {% include "components/text_input.html" with field=form.certificate_id hint_id="certificate-id-hint" hint="Enter the ID printed on the certificate in the format CC-YYYY-NNNNN." %}
+        <button type="submit">Verify</button>
+    </form>
+</section>
+{% endblock %}

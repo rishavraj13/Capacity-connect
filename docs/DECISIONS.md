@@ -336,3 +336,9 @@ The blocking local head script sets the theme before CSS paints. A valid stored 
 The F0.1 review requested contrast checks for station graphics, borders, focus outlines, buttons, board labels, badges and certificate text. Day and Signage now use darker coral and green line tokens. Night retains the original fills. Gold decoration retains its original color and certificate text has a separate high-contrast token.
 
 The shared HTML starts without a theme attribute. A CSS dark-preference rule applies the night palette only to that attribute-free root. A valid stored selection still takes priority when the local theme script runs.
+
+## ADR 077: Public page presentation
+
+The public templates use existing form fields, messages, context values and selector order. Board category aliases and body shortening are display formatting.
+
+Proposed by agent: retain the native navigation disclosure at all widths and omit username autofocus so the skip link is the first tab stop. Browser evidence uses a temporary database and temporary storage.

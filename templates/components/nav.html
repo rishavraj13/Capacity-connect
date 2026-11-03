@@ -30,16 +30,19 @@
                         <li><a href="{% url 'admin_pending_list' %}">Pending Approvals</a></li>
                     {% endif %}
                 {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                    <li><a href="{% url 'announcements:home' %}">Home</a></li>
+                    <li><a href="{% url 'certificates:verify_form' %}">Verify certificate</a></li>
+                    <li><a href="{% url 'login' %}">Log in</a></li>
+                    <li><a href="{% url 'signup' %}">Sign up</a></li>
                 {% endif %}
             </ul>
 
 
 {% if user.is_authenticated and user.role == "TRAINEE" %}<a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a>{% endif %}
+{% if user.is_authenticated %}
 <a href="{% url 'certificates:verify_form' %}">Verify certificate</a>
-
-<a href="{% url 'announcements:home' %}">Public announcements</a>
+<a href="{% url 'announcements:home' %}">Home</a>
+{% endif %}
 {% if user.is_approved and user.is_active %}{% if user.role == "TRAINER" %}<a href="{% url 'competency:mine' %}">My competencies</a> <a href="{% url 'dashboards:trainer' %}">My trainer statistics</a>{% elif user.role == "ADMIN" %}<a href="{% url 'competency:ranking' %}">Find trainers</a> <a href="{% url 'announcements:manage' %}">Manage announcements</a> <a href="{% url 'dashboards:admin' %}">Admin statistics</a>{% endif %}{% endif %}
 </details>
 </nav>

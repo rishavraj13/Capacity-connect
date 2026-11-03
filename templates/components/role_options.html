@@ -1,0 +1,12 @@
+<fieldset class="role-picker" id="{{ field.id_for_label }}" tabindex="-1">
+    <legend>{{ field.label }}</legend>
+    {{ field.errors }}
+    <div class="role-options">
+        {% for value, label in field.field.choices %}
+            <label class="role-option">
+                <input type="radio" name="{{ field.html_name }}" value="{{ value }}"{% if field.value == value %} checked{% endif %} required{% if field.errors %} aria-invalid="true" aria-describedby="{{ field.auto_id }}_error"{% endif %}>
+                <span>{{ label }}</span>
+            </label>
+        {% endfor %}
+    </div>
+</fieldset>

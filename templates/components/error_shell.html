@@ -13,7 +13,7 @@
         <p class="eyebrow">Service notice</p>
         <h1>{% block error_heading %}{% endblock %}</h1>
         <p>{% block error_message %}{% endblock %}</p>
-        <a class="button" href="/">Return to home</a>
+        {% block error_actions %}<a class="button" href="/">Return to home</a>{% endblock %}
     </main>
     <footer><div class="shell">&copy; Capacity Connect</div></footer>
 </body>

@@ -1,16 +1,29 @@
 {% extends "base.html" %}
-
 {% block title %}Sign Up - Capacity Connect{% endblock %}
-
+{% block page_styles %}{% include "components/public_styles.html" %}{% endblock %}
 {% block content %}
-<section class="card auth-card">
+<section class="card auth-card public-form">
     <h1>Sign Up for Capacity Connect</h1>
     <form method="post" action="{% url 'signup' %}">
         {% csrf_token %}
-        {% include "components/form_fields.html" %}
-        <div>
-            <button type="submit" id="submit-signup">Register Account</button>
-        </div>
+        {% include "components/error_summary.html" %}
+        {% include "components/form_field.html" with field=form.username %}
+        {% include "components/form_field.html" with field=form.email %}
+        {% include "components/form_field.html" with field=form.first_name %}
+        {% include "components/form_field.html" with field=form.last_name %}
+        {% include "components/role_options.html" with field=form.role %}
+        <fieldset class="password-guide" aria-describedby="password-help">
+            <legend>Choose a password</legend>
+            <ul id="password-help">
+                <li>Use at least eight characters.</li>
+                <li>Choose a password that differs from your personal information.</li>
+                <li>Avoid commonly used passwords.</li>
+                <li>Use more than just numbers.</li>
+            </ul>
+            {% include "components/form_field.html" with field=form.password %}
+            {% include "components/form_field.html" with field=form.confirm_password %}
+        </fieldset>
+        <button type="submit" id="submit-signup">Register Account</button>
     </form>
     <p>Already registered? <a href="{% url 'login' %}">Login here</a>.</p>
 </section>

@@ -1,20 +1,21 @@
 {% extends "base.html" %}
-
 {% block title %}Login - Capacity Connect{% endblock %}
-
+{% block page_styles %}{% include "components/public_styles.html" %}{% endblock %}
 {% block content %}
-<section class="card auth-card">
+<section class="card auth-card public-form">
     <h1>Portal Login</h1>
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        {% if request.GET.next %}
-            <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% firstof request.POST.next request.GET.next as next_path %}
+        {% if next_path %}
+            <input type="hidden" name="next" value="{{ next_path }}">
         {% endif %}
-        {% include "components/form_fields.html" %}
-        <div>
-            <button type="submit" id="submit-login">Log In</button>
-        </div>
+        {% include "components/error_summary.html" %}
+        {% include "components/text_input.html" with field=form.username autocomplete="username" %}
+        {% include "components/form_field.html" with field=form.password %}
+        <button type="submit" id="submit-login">Log In</button>
     </form>
     <p>Need an account? <a href="{% url 'signup' %}">Sign up here</a>.</p>
+    <p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
 </section>
 {% endblock %}

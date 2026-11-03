@@ -2,7 +2,7 @@
     <section aria-label="Notifications" id="system-messages" aria-live="polite">
         <ul>
             {% for message in messages %}
-                <li class="alert message message-{{ message.tags }}">{{ message }}</li>
+                <li class="alert message message-{{ message.tags }}"><strong>{% if message.level_tag == "error" %}Error{% else %}Notice{% endif %}</strong> {{ message }}</li>
             {% endfor %}
         </ul>
     </section>

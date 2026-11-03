@@ -1,0 +1,75 @@
+.public-hero {
+  display: grid;
+  align-items: center;
+  gap: var(--space-5);
+  padding-block: var(--space-3) var(--space-6);
+}
+.public-hero h1 {
+  margin: var(--space-2) 0 var(--space-4);
+  max-width: 14ch;
+  text-wrap: balance;
+}
+.public-hero p { max-width: 50ch; }
+.public-verify-link { display: inline-flex; align-items: center; min-height: 44px; }
+.metro-illustration { width: 100%; max-width: 32rem; justify-self: center; }
+.metro-coral { --metro-color: var(--line-1); }
+.metro-blue { --metro-color: var(--line-2); }
+.metro-interchange { --metro-color: var(--ink); }
+.metro-track {
+  stroke: var(--metro-color);
+  stroke-width: 12;
+  stroke-linecap: round;
+  fill: none;
+}
+.metro-stop { stroke: var(--metro-color); stroke-width: 5; fill: var(--card); }
+.board time span { display: block; }
+.board :is(td, th):first-child { white-space: nowrap; }
+.board :is(td, th):last-child { white-space: normal; }
+.public-steps { margin-block-start: var(--space-6); }
+.public-step-grid { display: grid; gap: var(--space-4); }
+.public-form h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+.public-form input:not([type=radio], [type=hidden]) { width: 100%; }
+.role-picker, .password-guide { margin: var(--space-5) 0; border-radius: var(--card-radius); }
+.role-options { display: grid; gap: var(--space-2); }
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  min-height: 52px;
+  border: var(--stroke);
+  border-radius: var(--space-2);
+}
+.role-option:has(:checked) { border-color: var(--accent); background: var(--paper); }
+.role-option input { accent-color: var(--accent); }
+.verification-card {
+  max-width: 43rem;
+  margin-inline: auto;
+  padding: clamp(var(--space-4), 5vw, var(--space-7));
+  border: 6px double var(--gold);
+}
+.verification-card h1 {
+  margin-block: var(--space-3) var(--space-5);
+  color: var(--gold-text);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+.verification-mark {
+  display: block;
+  width: 44px;
+  stroke: var(--gold-text);
+  stroke-width: 3;
+  fill: none;
+}
+.verification-card dl { display: grid; gap: var(--space-2) var(--space-4); }
+.verification-card dt { font-weight: 600; }
+.verification-card dd { margin: 0 0 var(--space-3); }
+.certificate-id { font-family: var(--font-label); }
+
+@media (min-width: 480px) {
+  .role-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .verification-card dl { grid-template-columns: max-content minmax(0, 1fr); }
+}
+@media (min-width: 768px) {
+  .public-hero { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+  .public-step-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

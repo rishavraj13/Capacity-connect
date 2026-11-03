@@ -1,1 +1,40 @@
-{% extends "base.html" %}{% block content %}<h1>Capacity Connect announcements</h1>{% if landing %}<p><a href="{% url landing %}">My role home</a></p>{% else %}<p><a href="{% url 'login' %}">Log in</a> <a href="{% url 'signup' %}">Sign up</a></p>{% endif %}<p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>{% for category,items in board.items %}<section><h2>{{ category }}</h2>{% for item in items %}<article><h3>{{ item.title }}</h3><p>{{ item.body|linebreaksbr }}</p><p>Published {{ item.published_at }}</p></article>{% empty %}<p>No published announcements.</p>{% endfor %}</section>{% endfor %}{% endblock %}
+{% extends "base.html" %}
+{% block title %}Capacity Connect | Find your route{% endblock %}
+{% block page_styles %}{% include "components/public_styles.html" %}{% endblock %}
+{% block content %}
+<section class="public-hero">
+    <div>
+        <p class="eyebrow">Line · Capacity Connect</p>
+        <h1>Every skill has a route. Find yours.</h1>
+        <p>Follow a course, practise a skill and carry your progress into the next stop.</p>
+        <div class="actions">
+            {% if landing %}
+                <a class="button" href="{% url landing %}">Go to your dashboard</a>
+            {% else %}
+                <a class="button" href="{% url 'login' %}">Log in</a>
+                <a class="button button-secondary" href="{% url 'signup' %}">Sign up</a>
+            {% endif %}
+            <a class="public-verify-link" href="{% url 'certificates:verify_form' %}">Verify a certificate</a>
+        </div>
+    </div>
+    {% include "components/metro_illustration.html" %}
+</section>
+{% include "components/board.html" %}
+<section class="public-steps">
+    <h2>How it works</h2>
+    <div class="public-step-grid">
+        <article class="card">
+            <h3>Trainee</h3>
+            <p>Join a course, work through its stations and check your progress.</p>
+        </article>
+        <article class="card">
+            <h3>Trainer</h3>
+            <p>Build courses, share resources and review how trainees are progressing.</p>
+        </article>
+        <article class="card">
+            <h3>Admin</h3>
+            <p>Review account requests, organise the catalogue and publish notices.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}

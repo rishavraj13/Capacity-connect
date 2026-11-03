@@ -1,0 +1,9 @@
+<div class="form-field-group">
+    {{ field.label_tag }}
+    {% if hint %}<p class="helptext" id="{{ hint_id }}">{{ hint }}</p>{% endif %}
+    {{ field.errors }}
+    <input type="text" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+           value="{{ field.value|default_if_none:'' }}"{% if field.field.max_length %} maxlength="{{ field.field.max_length }}"{% endif %}{% if field.field.required %} required{% endif %}
+           {% if autocomplete %}autocomplete="{{ autocomplete }}" autocapitalize="none"{% endif %}
+           {% if hint or field.errors %}aria-describedby="{% if hint %}{{ hint_id }}{% endif %}{% if hint and field.errors %} {% endif %}{% if field.errors %}{{ field.auto_id }}_error{% endif %}"{% endif %}{% if field.errors %} aria-invalid="true"{% endif %}>
+</div>

@@ -1,1 +1,5 @@
-{% extends "base.html" %}{% block content %}<h1>Certificate not found</h1><p>No certificate could be verified with that identifier.</p>{% endblock %}
+{% extends "components/error_shell.html" %}
+{% block error_title %}Certificate not found{% endblock %}
+{% block error_heading %}Certificate not found{% endblock %}
+{% block error_message %}No certificate could be verified with that identifier.{% endblock %}
+{% block error_actions %}<a class="button" href="{% url 'certificates:verify_form' %}">Try another certificate ID</a>{% endblock %}

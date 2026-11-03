@@ -194,8 +194,8 @@ Testing stage is active; frontend has not started.
 
 | Phase | Scope | Status |
 |---|---|---|
-| F0 | Design foundations | Gate passed. Awaiting review. |
-| F1 | Public pages | Awaiting approval to begin. |
+| F0 | Design foundations | Approved and tagged f0-approved. |
+| F1 | Public pages | Implemented. Awaiting review. |
 | F2 | Trainee pages | Pending. |
 | F3 | Trainer pages | Pending. |
 | F4 | Admin pages | Pending. |
@@ -207,4 +207,7 @@ Testing stage is active; frontend has not started.
 - [x] Shared shell, components, themes, strict CSP and development gallery. Route audit explicitly classifies the gallery.
 - [x] F0 gate recorded 2068 passes and TOTAL 3831 statements, 524 branches, 100% coverage. Ruff, migration, Django and pip checks passed. Static collection copied 143 files.
 - [x] Edge captured 18 screenshots across the requested widths and themes. Dev served the stylesheet and returned 404 for an existing private-file probe at each guessed URL.
-- [ ] Reviewer approval for F0.
+- [x] Engineering approval for F0.
+- [x] F0.1 contrast and no-JavaScript theme corrections.
+- [x] F1 public pages and 81 Edge captures from a temporary database.
+- [ ] Reviewer approval for F1.
