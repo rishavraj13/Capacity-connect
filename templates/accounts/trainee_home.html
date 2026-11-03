@@ -1,15 +1,37 @@
 {% extends "base.html" %}
-
 {% block title %}Trainee Dashboard - Capacity Connect{% endblock %}
-
 {% block content %}
-<section>
-    <h1>Trainee Dashboard</h1>
-    <p>Welcome, {{ user.first_name|default:user.username }}. Your trainee account is active and approved.</p>
+<header>
+    <h1>Welcome, {{ user.first_name|default:user.username }}</h1>
+    <p>Find your next departure and pick up where you left off.</p>
+</header>
+<section class="card">
+    <h2>Next departures</h2>
+    <ul>
+    {% for departure in departures %}
+        <li><a href="{% url 'assessments:detail' departure.questionnaire_id %}">{{ departure.title }}</a>
+            · {{ departure.course_title }} · Due {{ departure.deadline }} · {{ departure.attempts_left }} attempts left</li>
+    {% empty %}<li>No upcoming departures.</li>{% endfor %}
+    </ul>
 </section>
-<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
-<p><a href="{% url 'assessments:mine' %}">My assessments</a></p>
-<p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
-<p><a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a></p>
-<p><a href="{% url 'announcements:home' %}">Public announcements</a></p>
+<section class="card">
+    <h2>Your network</h2>
+    {% if lines %}
+        <ul>{% for line in lines %}<li>{{ line.subject_name }}</li>{% endfor %}</ul>
+    {% else %}
+        <p>You are not enrolled in a course yet. <a href="{% url 'courses:list' %}">Browse courses</a>.</p>
+    {% endif %}
+    <p><a href="{% url 'courses:station_map' %}">View station map</a></p>
+</section>
+<nav aria-label="Learning shortcuts">
+    <h2>Shortcuts</h2>
+    <ul>
+        <li><a href="{% url 'courses:my_courses' %}">My courses</a></li>
+        <li><a href="{% url 'courses:station_map' %}">Station map</a></li>
+        <li><a href="{% url 'library:list' %}">Library</a></li>
+        <li><a href="{% url 'assessments:mine' %}">Assessments</a></li>
+        <li><a href="{% url 'certificates:mine' %}">Certificates</a></li>
+        <li><a href="{% url 'feedback:mine' %}">My feedback</a></li>
+    </ul>
+</nav>
 {% endblock %}

@@ -1,0 +1,7 @@
+{% if page_obj.has_other_pages %}
+<nav aria-label="Library pages" class="actions">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&amp;subject={{ filter_form.subject.value|default:''|urlencode }}&amp;kind={{ filter_form.kind.value|default:''|urlencode }}">Previous</a>{% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&amp;subject={{ filter_form.subject.value|default:''|urlencode }}&amp;kind={{ filter_form.kind.value|default:''|urlencode }}">Next</a>{% endif %}
+</nav>
+{% endif %}

@@ -1,4 +1,17 @@
-{% extends "base.html" %}{% block content %}<h1>My courses</h1>
+{% extends "base.html" %}
+{% block content %}
+<h1>My courses</h1>
 <p><a href="{% url 'courses:station_map' %}">Station map</a></p>
-<ul>{% for enrollment in enrollments %}<li><a href="{% url 'courses:detail' enrollment.course_id %}">{{ enrollment.course.title }}</a> - {{ enrollment.status }} - {{ enrollment.modules_done }} / {{ enrollment.modules_total }} modules done.
-{% if enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:drop' enrollment.pk %}">{% csrf_token %}<button>Drop</button></form>{% endif %}</li>{% empty %}<li>No enrollments.</li>{% endfor %}</ul>{% endblock %}
+{% for enrollment in enrollments %}
+<article class="card">
+    <h2><a href="{% url 'courses:detail' enrollment.course_id %}">{{ enrollment.course.title }}</a></h2>
+    <p class="badge">{{ enrollment.get_status_display }}</p>
+    <p id="progress-{{ enrollment.pk }}">{{ enrollment.modules_done }} of {{ enrollment.modules_total }} modules</p>
+    {% if enrollment.modules_total %}
+        <progress aria-labelledby="progress-{{ enrollment.pk }}" value="{{ enrollment.modules_done }}" max="{{ enrollment.modules_total }}"></progress>
+    {% endif %}
+    <p><a href="{% url 'courses:detail' enrollment.course_id %}">View course</a></p>
+    {% if enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:drop' enrollment.pk %}">{% csrf_token %}<button>Drop</button></form>{% endif %}
+</article>
+{% empty %}<p class="empty-state">No enrollments. <a href="{% url 'courses:list' %}">Browse courses</a>.</p>{% endfor %}
+{% endblock %}

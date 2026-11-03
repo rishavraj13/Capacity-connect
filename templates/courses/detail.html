@@ -1,19 +1,38 @@
-{% extends "base.html" %}{% block content %}
-<h1>{{ course.title }}</h1><p>{{ course.description }}</p><p>{{ course.subject.name }} - {{ course.trainer.username }}</p><p>{{ course.start_date }} to {{ course.end_date }}</p>
+{% extends "base.html" %}
+{% load station_maps %}
+{% block content %}
+<h1>{{ course.title }}</h1>
+{% include "components/course_metadata.html" %}
+<p>{{ course.description }}</p>
 {% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}
 <p><a href="{% url 'courses:edit' course.pk %}">Edit course</a> <a href="{% url 'courses:module_add' course.pk %}">Add module</a> <a href="{% url 'courses:participants' course.pk %}">Participants</a> <a href="{% url 'assessments:course_list' course.pk %}">Manage questionnaires</a></p>
 {% if course.is_published %}<form method="post" action="{% url 'courses:unpublish' course.pk %}">{% csrf_token %}<button>Unpublish course</button></form>{% else %}<form method="post" action="{% url 'courses:publish' course.pk %}">{% csrf_token %}<button>Publish course</button></form>{% endif %}
 {% endif %}
 {% if user.role == "TRAINEE" %}
 {% if enrollment %}<p>Enrollment: {{ enrollment.status }}; {{ enrollment.modules_done }} / {{ enrollment.modules_total }} modules done.</p>{% endif %}
-{% if course.is_published %}<form method="post" action="{% url 'courses:enroll' course.pk %}">{% csrf_token %}<button>Enroll or resume</button></form>{% endif %}
+{% if course.is_published %}
+{% if not enrollment or enrollment.status == "DROPPED" %}
+<form method="post" action="{% url 'courses:enroll' course.pk %}">{% csrf_token %}
+    <button>{% if enrollment %}Resume{% else %}Enroll{% endif %}</button>
+</form>
+{% endif %}
+{% endif %}
 {% if enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:drop' enrollment.pk %}">{% csrf_token %}<button>Drop course</button></form>{% endif %}
 {% endif %}
-<ol>{% for module in course.modules.all %}<li>{{ module.order }}. {{ module.title }}<ul>{% for skill in module.skills.all %}<li>{{ skill.name }} ({{ skill.subject.name }})</li>{% endfor %}</ul>
+<h2>Module stations</h2>
+<ol class="station-list">{% for module in course.modules.all %}
+{% with station=stations|station_at:module.pk %}
+<li class="card">{{ module.order }}. {{ module.title }}
+{% if station %}
+    <span class="badge">{{ station.state }}</span>
+    {% if station.is_interchange %}<span class="badge">Interchange</span>{% endif %}
+{% endif %}
+<ul>{% for skill in module.skills.all %}<li>{{ skill.name }} ({{ skill.subject.name }})</li>{% endfor %}</ul>
 {% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == course.trainer_id %}<a href="{% url 'courses:module_edit' module.pk %}">Edit module</a><form method="post" action="{% url 'courses:module_delete' module.pk %}">{% csrf_token %}<button>Delete module</button></form>{% endif %}
-{% if user.role == "TRAINEE" and enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:complete_module' enrollment.pk module.pk %}">{% csrf_token %}<button>Complete module</button></form>{% endif %}
-</li>{% empty %}<li>No modules yet.</li>{% endfor %}</ol>
+{% if enrollment.status == "ACTIVE" and station.state == "CURRENT" %}<form method="post" action="{% url 'courses:complete_module' enrollment.pk module.pk %}">{% csrf_token %}<button>Mark complete</button></form>{% endif %}
+</li>{% endwith %}{% empty %}<li>No modules yet.</li>{% endfor %}</ol>
 {% include "courses/completion.html" %}
+{% if certificate %}<p><a href="{% url 'certificates:download' certificate.pk %}">Download certificate</a></p>{% endif %}
 {% if user.role == "TRAINEE" and enrollment %}<p><a href="{% url 'feedback:course_submit' course.pk %}">Give or edit feedback</a></p>{% endif %}
 {% if user.role == "ADMIN" or user.pk == course.trainer_id %}<p><a href="{% url 'feedback:course_summary' course.pk %}">Course feedback</a></p>{% endif %}
 {% endblock %}

@@ -70,7 +70,17 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 @role_required(UserRole.TRAINEE)
 def trainee_home(request: HttpRequest) -> HttpResponse:
     """Render trainee dashboard landing page."""
-    return render(request, "accounts/trainee_home.html")
+    from apps.assessments.usage_selectors import next_deadlines_for
+    from apps.courses.station_maps import station_map_for
+
+    return render(
+        request,
+        "accounts/trainee_home.html",
+        {
+            "departures": next_deadlines_for(request.user, limit=3),
+            "lines": station_map_for(request.user),
+        },
+    )
 
 
 @role_required(UserRole.TRAINER)

@@ -1,2 +1,10 @@
-{% extends "base.html" %}{% block content %}<h1>Station map</h1>
-<ul>{% for line in lines %}<li>{{ line.subject_name }}<ol>{% for station in line.stations %}<li><a href="{% url 'courses:detail' station.course_id %}">{{ station.course_title }}</a> - {{ station.order }}. {{ station.title }} - {{ station.state }}{% if station.is_interchange %} (interchange){% endif %}</li>{% empty %}<li>No stations.</li>{% endfor %}</ol></li>{% empty %}<li>No active or completed enrollments.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% load static %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'css/pages/learning.css' %}">{% endblock %}
+{% block content %}
+<h1>Station map</h1>
+<section aria-labelledby="network-title">
+    <h2 id="network-title">Your network</h2>
+    {% include "components/station_map.html" with map_id="trainee-network" %}
+</section>
+{% endblock %}

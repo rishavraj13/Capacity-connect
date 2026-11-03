@@ -1,5 +1,12 @@
-{% extends "base.html" %}{% block content %}
+{% extends "base.html" %}
+{% block content %}
 <h1>Courses</h1>
 {% if user.role == "TRAINER" or user.role == "ADMIN" %}<p><a href="{% url 'courses:create' %}">Create course</a></p>{% endif %}
-<ul>{% for course in courses %}<li><a href="{% url 'courses:detail' course.pk %}">{{ course.title }}</a> - {{ course.subject.name }} - {{ course.trainer.username }}{% if not course.is_published %} (unpublished){% endif %}</li>{% empty %}<li>No visible courses.</li>{% endfor %}</ul>
+{% for course in courses %}
+<article class="card">
+    <h2><a href="{% url 'courses:detail' course.pk %}">{{ course.title }}</a></h2>
+    {% include "components/course_metadata.html" %}
+    <p class="badge">{% if course.is_published %}Published{% else %}Draft{% endif %}</p>
+</article>
+{% empty %}<p class="empty-state">No visible courses.</p>{% endfor %}
 {% endblock %}

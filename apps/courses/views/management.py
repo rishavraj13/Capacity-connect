@@ -11,7 +11,9 @@ from apps.accounts.constants import UserRole
 from apps.accounts.permissions import role_required
 from apps.core.form_views import FormAction, action_response, form_response
 from apps.courses import selectors, services
+from apps.courses.constants import EnrollmentStatus
 from apps.courses.forms import CourseForm, ModuleForm
+from apps.courses.models import Enrollment
 
 
 @role_required(*UserRole.values)
@@ -30,9 +32,31 @@ def course_list(request: HttpRequest) -> HttpResponse:
 def course_detail(request: HttpRequest, pk: int) -> HttpResponse:
     """Resolve private course visibility before rendering any station data."""
     course = get_object_or_404(selectors.course_detail(request.user, pk))
-    return render(
-        request, "courses/detail.html", selectors.detail_context(request.user, course)
-    )
+    context = selectors.detail_context(request.user, course)
+    if context["enrollment"]:
+        context.update(_learning_detail(request, context["enrollment"]))
+    return render(request, "courses/detail.html", context)
+
+
+def _learning_detail(request: HttpRequest, enrollment: Enrollment) -> dict:
+    """Pass existing selector results through to the trainee presentation."""
+    from apps.assessments.attempt_selectors import completion_questionnaires
+    from apps.certificates.selectors import certificates_for_trainee
+
+    return {
+        "stations": {
+            station.module_id: station
+            for line in selectors.station_map_for(request.user)
+            for station in line.stations
+            if station.course_id == enrollment.course_id
+        },
+        "ready_quizzes": completion_questionnaires(enrollment),
+        "certificate": (
+            certificates_for_trainee(request.user).filter(enrollment=enrollment).first()
+            if enrollment.status == EnrollmentStatus.COMPLETED
+            else None
+        ),
+    }
 
 
 @role_required(UserRole.TRAINER, UserRole.ADMIN)

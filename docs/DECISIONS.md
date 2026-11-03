@@ -346,3 +346,10 @@ Proposed by agent: retain the native navigation disclosure at all widths and omi
 ## ADR 078: Responsive navigation without JavaScript
 
 Proposed by agent: use a labelled native checkbox below 768 px with a focus outline on its label. At desktop widths CSS hides the toggle and displays the same role-aware links. This keeps navigation operable without scripting and avoids duplicate links.
+
+
+## ADR 079: Trainee learning presentation context
+
+Trainee home calls the existing deadline and station-map selectors. Course detail reuses station-map state, ready-questionnaire annotations and the trainee certificate selector for links. The existing completion summary still supplies module counts. The library keeps the existing subject and kind filters. Course detail has no linked resource list in its context.
+
+The populated landing and course detail fixtures each use five additional queries. Four fetch the station map. The remaining query fetches departures on the landing or linkable quiz rows on course detail. Completed detail also fetches the certificate. Counts stay constant as fixtures grow.

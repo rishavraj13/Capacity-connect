@@ -1,0 +1,45 @@
+{% load station_maps %}
+{% with map=lines|station_layout %}
+{% if map.tracks %}
+<svg class="learning-map" viewBox="0 0 {{ map.width }} {{ map.height }}" role="img"
+     aria-labelledby="{{ map_id }}-title {{ map_id }}-desc">
+    <title id="{{ map_id }}-title">Station map</title>
+    <desc id="{{ map_id }}-desc">{% for track in map.tracks %}Line {{ track.line.subject_name }}: {{ track.done }} of {{ track.stops|length }} stations done. {% endfor %}</desc>
+    {% for track in map.tracks %}
+    <g class="map-track {{ track.color }}">
+        {% if track.path %}<path class="map-route" d="{{ track.path }}"/>{% endif %}
+        {% for stop in track.stops %}
+        {% with station=stop.station %}
+        <a href="{% url 'courses:detail' station.course_id %}" aria-label="{{ station.course_title }}, module {{ station.order }} of {{ track.line.subject_name }}, state: {{ station.state|lower }}">
+            <title>{{ station.title }}</title>
+            {% if station.state == 'CURRENT' %}<circle class="station-halo" cx="{{ stop.x }}" cy="{{ stop.y }}" r="22"/>{% endif %}
+            <circle class="map-stop station--{{ station.state|lower }}{% if station.is_interchange %} station--interchange{% endif %}" cx="{{ stop.x }}" cy="{{ stop.y }}" r="{{ stop.radius }}"/>
+            <text class="station-label" x="{{ stop.x }}" y="{{ stop.y }}" dy="-28" text-anchor="middle">{{ stop.label }}</text>
+        </a>
+        {% endwith %}
+        {% endfor %}
+    </g>
+    {% endfor %}
+</svg>
+<ul class="actions map-legend" aria-label="Station legend">
+    <li><span class="map-key station--done" aria-hidden="true"></span> DONE</li>
+    <li><span class="map-key station--current" aria-hidden="true"></span> CURRENT</li>
+    <li><span class="map-key station--locked" aria-hidden="true"></span> LOCKED</li>
+    <li><span class="map-key station--interchange" aria-hidden="true"></span> Interchange</li>
+</ul>
+{% for track in map.tracks %}
+<h3>{{ track.line.subject_name }}</h3>
+<ol class="station-list">
+    {% for stop in track.stops %}
+    {% with station=stop.station %}
+    <li><a href="{% url 'courses:detail' station.course_id %}">{{ station.course_title }} · {{ station.order }}. {{ station.title }}</a>
+        <span class="badge">{{ station.state }}</span>
+        {% if station.is_interchange %}<span class="badge">Interchange</span>{% endif %}</li>
+    {% endwith %}
+    {% empty %}<li>No stations.</li>{% endfor %}
+</ol>
+{% endfor %}
+{% else %}
+<p class="empty-state">No active or completed enrollments.</p>
+{% endif %}
+{% endwith %}

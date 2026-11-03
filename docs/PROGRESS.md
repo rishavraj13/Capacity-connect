@@ -195,8 +195,9 @@ Testing stage is active; frontend has not started.
 | Phase | Scope | Status |
 |---|---|---|
 | F0 | Design foundations | Approved and tagged f0-approved. |
-| F1 | Public pages | Implemented. Awaiting review. |
-| F2 | Trainee pages | Pending. |
+| F1 | Public pages | Engineering accepted and tagged f1-approved. Visual review pending. |
+| F2a | Trainee learning pages | Implemented. Awaiting review. |
+| F2b | Other trainee pages | Pending. |
 | F3 | Trainer pages | Pending. |
 | F4 | Admin pages | Pending. |
 | F5 | Responsive and accessibility sweep | Pending. |
@@ -210,4 +211,6 @@ Testing stage is active; frontend has not started.
 - [x] Engineering approval for F0.
 - [x] F0.1 contrast and no-JavaScript theme corrections.
 - [x] F1 public pages and 81 Edge captures from a temporary database.
-- [ ] Reviewer approval for F1.
+- [x] F1 engineering accepted. Visual review pending.
+- [x] F2a responsive navigation, trainee learning pages and station geometry.
+- [ ] Reviewer approval for F2a.

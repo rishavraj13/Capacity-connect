@@ -1,0 +1,25 @@
+.learning-map { display: block; width: 100%; height: auto; }
+.map-track, .map-legend { --track: var(--line-1); }
+.map-track.line-2 { --track: var(--line-2); }
+.map-track.line-3 { --track: var(--line-3); }
+.map-route { fill: none; stroke: var(--track); stroke-width: 4; }
+.map-stop, .map-key { fill: var(--paper); stroke: var(--track); stroke-width: 3; }
+.map-stop.station--done { fill: var(--track); }
+.map-stop.station--locked { stroke-dasharray: 4 3; }
+.map-stop.station--interchange { stroke-width: 5; }
+.learning-map a:focus-visible .map-stop { stroke: var(--focus); stroke-width: 5; }
+.map-legend { list-style: none; padding: 0; }
+.map-key {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--track);
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.map-key.station--done { background: var(--track); }
+.map-key.station--current { outline: 2px solid var(--track); outline-offset: 2px; }
+.map-key.station--locked { border-style: dashed; }
+.map-key.station--interchange { width: 1.25rem; height: 1.25rem; border-width: 3px; }
+.station-list li { margin-block: var(--space-2); }
+.resource-video { display: block; max-width: 100%; height: auto; }

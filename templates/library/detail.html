@@ -1,7 +1,18 @@
-{% extends "base.html" %}{% block content %}<h1>{{ resource.title }}</h1>
+{% extends "base.html" %}
+{% load static %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'css/pages/learning.css' %}">{% endblock %}
+{% block content %}<h1>{{ resource.title }}</h1>
 <p>{{ resource.description }}</p><p>{{ resource.kind }} - {{ resource.subject.name }} - {{ resource.trainer.username }}</p>
 {% if course_visible %}<p><a href="{% url 'courses:detail' resource.course_id %}">{{ resource.course.title }}</a></p>{% endif %}
-<a href="{% url 'library:download' resource.pk %}">Open or download file</a>
+{% url 'library:download' resource.pk as download_url %}
+{% if resource.kind == "VIDEO" %}
+<video class="resource-video" controls preload="metadata" src="{{ download_url }}" aria-label="{{ resource.title }}">
+    <a href="{{ download_url }}">Download video</a>
+</video>
+<p><a href="{{ download_url }}">Download video</a></p>
+{% else %}
+<p><a class="button" href="{{ download_url }}">Download</a></p>
+{% endif %}
 {% if user.role == "ADMIN" or user.role == "TRAINER" and user.pk == resource.trainer_id %}
 <p><a href="{% url 'library:edit' resource.pk %}">Edit resource</a></p>
 {% if resource.is_published %}<form method="post" action="{% url 'library:unpublish' resource.pk %}">{% csrf_token %}<button>Unpublish</button></form>{% else %}<form method="post" action="{% url 'library:publish' resource.pk %}">{% csrf_token %}<button>Publish</button></form>{% endif %}

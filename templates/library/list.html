@@ -1,7 +1,15 @@
-{% extends "base.html" %}{% block content %}<h1>Library</h1>
+{% extends "base.html" %}
+{% block content %}
+<h1>Library</h1>
 {% if user.role == "TRAINER" or user.role == "ADMIN" %}<p><a href="{% url 'library:create' %}">Create resource</a></p>{% endif %}
-<form method="get">{{ filter_form.as_p }}<button>Filter</button></form>
-<ul>{% for resource in page_obj %}<li><a href="{% url 'library:detail' resource.pk %}">{{ resource.title }}</a> - {{ resource.kind }} - {{ resource.subject.name }} - {{ resource.trainer.username }}{% if not resource.is_published %} (unpublished){% endif %}</li>{% empty %}<li>No visible resources.</li>{% endfor %}</ul>
-{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&amp;subject={{ filter_form.subject.value|default:'' }}&amp;kind={{ filter_form.kind.value|default:'' }}">Previous</a>{% endif %}
-{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&amp;subject={{ filter_form.subject.value|default:'' }}&amp;kind={{ filter_form.kind.value|default:'' }}">Next</a>{% endif %}
+<form class="card" method="get">{{ filter_form.as_p }}<button>Apply</button></form>
+{% for resource in page_obj %}
+<article class="card">
+    <h2><a href="{% url 'library:detail' resource.pk %}">{{ resource.title }}</a></h2>
+    <p><span class="badge">{{ resource.get_kind_display }}</span> · {{ resource.subject.name }} · {{ resource.trainer.get_full_name|default:resource.trainer.username }}</p>
+    <p>{{ resource.description|truncatechars:160 }}</p>
+    {% if not resource.is_published %}<p class="badge">Unpublished</p>{% endif %}
+</article>
+{% empty %}<p class="empty-state">No visible resources.</p>{% endfor %}
+{% include "components/library_pagination.html" %}
 {% endblock %}
