@@ -185,6 +185,13 @@ def test_other_trainer_cannot_manage_shared_published_objects(client: object) ->
         ("library:detail", resource, "Edit resource"),
     ):
         assert edit not in learning_html(client, path, (row.pk,))
+    _assert_shared_editor_access(client, course, module, resource)
+
+
+def _assert_shared_editor_access(
+    client: object, course: object, module: object, resource: object
+) -> None:
+    """Check the same object URLs as other trainer and as administrator."""
     for path, row in (
         ("courses:edit", course),
         ("courses:participants", course),
@@ -192,4 +199,9 @@ def test_other_trainer_cannot_manage_shared_published_objects(client: object) ->
         ("courses:module_edit", module),
         ("library:edit", resource),
     ):
-        assert client.get(reverse(path, args=[row.pk])).status_code == 404
+        url = reverse(path, args=[row.pk])
+        assert client.get(url).status_code == 404
+        other = client.session["_auth_user_id"]
+        client.force_login(UserFactory(active_admin=True))
+        assert client.get(url).status_code == 200
+        client.force_login(type(course.trainer).objects.get(pk=other))

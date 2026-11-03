@@ -359,7 +359,7 @@ The populated landing and course detail fixtures each use five additional querie
 
 Course detail retains the existing station-map selector. No existing course-scoped selector returns ordered station state and interchange. The completion summary contains aggregate counts and the existing module query does not include per-trainee progress. The populated detail fixture takes 14 queries with one module and with ten. Reusing the map keeps state definitions shared and query count independent of data size, with extra map rows read for trainees enrolled in several courses.
 
-Proposed by agent: a later backend mini-phase could add a visibility-filtered course resource selector and paginate the course list. Course detail currently has no linked resource panel, and the course list is unpaginated. Library videos currently have no captions or transcript field.
+Proposed by agent: a later backend mini-phase could add a visibility-filtered course resource selector and paginate the course list. Course detail currently has no linked resource panel, and the course list is unpaginated. Library videos currently have no captions or transcript field. Proposed by agent: include a read-only module-order freeze flag in the same mini-phase. Course detail currently has no pre-emptive flag, so trainers learn of the freeze after a rejected reorder.
 
 
 ## ADR 081: Assessment display context
