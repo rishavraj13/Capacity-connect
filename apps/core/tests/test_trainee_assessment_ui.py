@@ -12,7 +12,7 @@ from apps.assessments.models import Option
 from apps.assessments.tests.factories import AttemptFactory, QuestionFactory, ready_quiz
 from apps.core import clock
 from apps.core.tests.test_trainee_learning import learning_html
-from apps.courses.models import Enrollment
+from apps.courses.models import Course, Enrollment
 
 pytestmark = pytest.mark.django_db
 
@@ -162,8 +162,7 @@ def _start_fixture(instant: object, state: str) -> tuple:
             status="DROPPED"
         )
     if state == "unpublished":
-        quiz.course.is_published = False
-        quiz.course.save(update_fields=["is_published"])
+        Course.objects.filter(pk=quiz.course_id).update(is_published=False)
     return quiz, trainee
 
 
