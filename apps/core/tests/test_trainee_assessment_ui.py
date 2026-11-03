@@ -1,10 +1,14 @@
 """Verify assessment presentation against the server-owned state and disclosure."""
 
+import re
 from datetime import timedelta
 
 import pytest
+from django.urls import reverse
 
 from apps.assessments import services
+from apps.assessments.exceptions import AssessmentRuleError
+from apps.assessments.models import Option
 from apps.assessments.tests.factories import AttemptFactory, QuestionFactory, ready_quiz
 from apps.core import clock
 from apps.core.tests.test_trainee_learning import learning_html
@@ -17,8 +21,8 @@ pytestmark = pytest.mark.django_db
     ("state", "expected"),
     (
         ("open", "Start attempt"),
-        ("upcoming", "The start window has not opened yet."),
-        ("closed", "The start window has ended."),
+        ("upcoming", "Upcoming. Questionnaire is outside its start window."),
+        ("closed", "Closed. Questionnaire is outside its start window."),
         ("exhausted", "Maximum attempts reached."),
         ("unready", "Questionnaire is not ready."),
         ("completed", "An active enrollment is required."),
@@ -93,3 +97,96 @@ def test_result_text_and_disclosure(client: object, outcome: str) -> None:
     assert ("Correct option: Choice Alpha" in html) == (outcome == "passed")
     assert ("late and discarded" in html) == (outcome == "timed_out")
     assert '<th scope="col">Status</th>' in learning_html(client, "assessments:history")
+
+
+@pytest.mark.parametrize(
+    "state",
+    (
+        "before_open",
+        "at_open",
+        "before_close",
+        "at_close",
+        "exhausted",
+        "resumable",
+        "expired",
+        "unready",
+        "dropped",
+        "unpublished",
+    ),
+)
+def test_assessment_start_matches_service_at_fixed_instant(
+    client: object, state: str
+) -> None:
+    """Compare page and service on the same rows before the write changes them."""
+    instant = clock.now()
+    quiz, trainee = _start_fixture(instant, state)
+    client.force_login(trainee)
+    with clock.at(instant):
+        response = client.get(reverse("assessments:detail", args=[quiz.pk]))
+        html = response.content.decode()
+        try:
+            services.start_attempt(trainee, quiz)
+        except AssessmentRuleError as error:
+            assert "Start attempt" not in html and "Resume attempt" not in html
+            if state == "dropped":
+                assert response.status_code == 404
+            else:
+                assert error.message in html
+        else:
+            assert response.status_code == 200
+            assert (
+                "Resume attempt" if state == "resumable" else "Start attempt"
+            ) in html
+
+
+def _start_fixture(instant: object, state: str) -> tuple:
+    """Set up time edges and persisted attempt states independently of the page."""
+    tick = timedelta(microseconds=1)
+    hour = timedelta(hours=1)
+    opens_at = {"before_open": instant + tick, "at_open": instant}.get(
+        state, instant - hour
+    )
+    deadline = {"before_close": instant + tick, "at_close": instant}.get(
+        state, instant + hour
+    )
+    quiz, question, trainee = ready_quiz(
+        opens_at=opens_at,
+        deadline=deadline,
+        max_attempts=1 if state == "exhausted" else 2,
+    )
+    if state in ("resumable", "expired", "exhausted"):
+        AttemptFactory(
+            questionnaire=quiz,
+            trainee=trainee,
+            started_at=instant - hour if state == "expired" else instant,
+            status="TIMED_OUT" if state == "exhausted" else "IN_PROGRESS",
+        )
+    if state == "unready":
+        question.options.all().delete()
+    if state == "dropped":
+        Enrollment.objects.filter(course=quiz.course, trainee=trainee).update(
+            status="DROPPED"
+        )
+    if state == "unpublished":
+        quiz.course.is_published = False
+        quiz.course.save(update_fields=["is_published"])
+    return quiz, trainee
+
+
+def test_quiz_paper_html_unchanged_when_correct_option_changes(client: object) -> None:
+    """Detect markers, value changes and reordering by flipping correctness in place."""
+    quiz, question, trainee = ready_quiz()
+    attempt = AttemptFactory(questionnaire=quiz, trainee=trainee)
+    client.force_login(trainee)
+    url = reverse("assessments:take", args=[attempt.pk])
+    with clock.at(attempt.started_at):
+        first = client.get(url).content.decode()
+        right = question.options.get(is_correct=True)
+        wrong = question.options.get(is_correct=False)
+        Option.objects.filter(pk=right.pk).update(is_correct=False)
+        Option.objects.filter(pk=wrong.pk).update(is_correct=True)
+        second = client.get(url).content.decode()
+
+    token = r'(name="csrfmiddlewaretoken" value=")[^"]+'
+    assert 'type="radio"' in first
+    assert re.sub(token, r"\1MASK", first) == re.sub(token, r"\1MASK", second)

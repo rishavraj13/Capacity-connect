@@ -365,3 +365,10 @@ Proposed by agent: a later backend mini-phase could add a visibility-filtered co
 ## ADR 081: Assessment display context
 
 Assessment detail reuses the existing SQL readiness predicate in an EXISTS annotation on the existing enrollment-scoped query. Timing and quota annotations produce display-only explanations. The start service remains authoritative, and the existing out-of-scope 404 stays. The paper adds display metadata and pairs already-safe question rows with bound form fields without adding queries. The server supplies the time-left text. Proposed by agent: omit the optional client countdown.
+
+
+## ADR 082: Shared assessment start eligibility
+
+The start service and assessment detail use the same start-window and quota predicates, the grace-inclusive attempt deadline and the same readiness SQL. Detail annotates the open attempt's start time in the existing read query. A resumable attempt has a Resume link. An expired attempt is evaluated as a fresh start on the page, while the service retains responsibility for persisting expiry. The existing dropped-enrollment 404 is preserved.
+
+Proposed by agent: omit the optional countdown. The paper displays server-computed time-left text only.

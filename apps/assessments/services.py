@@ -28,11 +28,15 @@ from apps.assessments.exceptions import AssessmentRuleError
 from apps.assessments.grading import GradePlan, grade_plan
 from apps.assessments.models import Attempt, AttemptAnswer, Questionnaire
 from apps.assessments.rules import (
+    QUOTA_ERROR,
+    START_WINDOW_ERROR,
     finalize_timeout,
     is_expired,
     owned_attempt,
+    quota_exhausted,
     require_enrollment,
     require_ready,
+    start_window_state,
 )
 from apps.core import clock
 
@@ -70,13 +74,12 @@ def _new_start(
     trainee: User, questionnaire: Questionnaire, instant: datetime
 ) -> Attempt | AssessmentRuleError:
     """Apply new-row eligibility without rolling back an earlier timeout."""
-    if not questionnaire.opens_at <= instant < questionnaire.deadline:
-        return AssessmentRuleError("Questionnaire is outside its start window.")
-    if (
-        questionnaire.attempts.filter(trainee=trainee).count()
-        >= questionnaire.max_attempts
+    if start_window_state(questionnaire, instant):
+        return AssessmentRuleError(START_WINDOW_ERROR)
+    if quota_exhausted(
+        questionnaire, questionnaire.attempts.filter(trainee=trainee).count()
     ):
-        return AssessmentRuleError("Maximum attempts reached.")
+        return AssessmentRuleError(QUOTA_ERROR)
     try:
         require_ready(questionnaire)
     except AssessmentRuleError as exc:

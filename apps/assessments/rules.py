@@ -15,6 +15,11 @@ from apps.assessments.models import Attempt, Questionnaire
 from apps.courses.constants import EnrollmentStatus
 from apps.courses.models import Enrollment
 
+START_WINDOW_ERROR = "Questionnaire is outside its start window."
+QUOTA_ERROR = "Maximum attempts reached."
+ENROLLMENT_ERROR = "An active enrollment is required."
+READINESS_ERROR = "Questionnaire is not ready."
+
 
 def managed_questionnaire(actor: User, questionnaire: Questionnaire) -> Questionnaire:
     """Lock authoring against starts and authorize the persisted course owner."""
@@ -39,7 +44,7 @@ def require_enrollment(trainee: User, questionnaire: Questionnaire) -> User:
     if not Enrollment.objects.filter(
         trainee=current, course=questionnaire.course, status=EnrollmentStatus.ACTIVE
     ).exists():
-        raise AssessmentRuleError("An active enrollment is required.")
+        raise AssessmentRuleError(ENROLLMENT_ERROR)
     return current
 
 
@@ -52,14 +57,33 @@ def require_ready(questionnaire: Questionnaire) -> None:
         .filter(pk=questionnaire.pk)
         .exists()
     ):
-        raise AssessmentRuleError("Questionnaire is not ready.")
+        raise AssessmentRuleError(READINESS_ERROR)
+
+
+def start_window_state(questionnaire: Questionnaire, instant: datetime) -> str:
+    """Use the same half-open start window in the service and presentation."""
+    if instant < questionnaire.opens_at:
+        return "Upcoming"
+    if instant >= questionnaire.deadline:
+        return "Closed"
+    return ""
+
+
+def quota_exhausted(questionnaire: Questionnaire, attempts_used: int) -> bool:
+    """Count all persisted attempts toward the configured limit."""
+    return attempts_used >= questionnaire.max_attempts
+
+
+def attempt_deadline(started_at: datetime, duration_minutes: int) -> datetime:
+    """Share the grace-inclusive deadline with the read-only attempt preview."""
+    return started_at + timedelta(
+        minutes=duration_minutes, seconds=ATTEMPT_GRACE_SECONDS
+    )
 
 
 def expires_at(attempt: Attempt) -> datetime:
     """Make the grace-inclusive submission limit identical across all callers."""
-    return attempt.started_at + timedelta(
-        minutes=attempt.questionnaire.duration_minutes, seconds=ATTEMPT_GRACE_SECONDS
-    )
+    return attempt_deadline(attempt.started_at, attempt.questionnaire.duration_minutes)
 
 
 def is_expired(attempt: Attempt, instant: datetime) -> bool:

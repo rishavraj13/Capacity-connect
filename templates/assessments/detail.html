@@ -14,7 +14,7 @@
         <dt>Attempts used</dt><dd>{{ questionnaire.attempts_used }}</dd>
         <dt>Attempts left</dt><dd>{{ questionnaire.attempts_left }}</dd>
     </dl>
-    {% if questionnaire.open_attempt_id %}
+    {% if resumable %}
         <a class="button" href="{% url 'assessments:take' questionnaire.open_attempt_id %}">Resume attempt</a>
     {% elif start_reason %}
         <p class="alert">{{ start_reason }}</p>

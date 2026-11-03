@@ -1,6 +1,8 @@
 """Keep trainee assessment metadata, paper and results in distinct safe contexts."""
 
-from django.db.models import Exists, OuterRef
+from datetime import datetime
+
+from django.db.models import Exists, OuterRef, Subquery
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import (
@@ -18,9 +20,19 @@ from apps.assessments.forms import AnswerForm
 from apps.assessments.models import Attempt
 from apps.assessments.paper_selectors import seconds_left
 from apps.assessments.readiness import ready_questionnaires
-from apps.assessments.rules import expires_at
+from apps.assessments.rules import (
+    ENROLLMENT_ERROR,
+    QUOTA_ERROR,
+    READINESS_ERROR,
+    START_WINDOW_ERROR,
+    attempt_deadline,
+    expires_at,
+    quota_exhausted,
+    start_window_state,
+)
 from apps.core import clock
 from apps.core.exceptions import CapacityConnectError
+from apps.courses.constants import EnrollmentStatus
 
 
 @role_required(UserRole.TRAINEE)
@@ -54,31 +66,46 @@ def _listing_context(user: object, form: AssessmentFilterForm) -> dict:
 def detail(request: HttpRequest, pk: int) -> HttpResponse:
     """Show timing/quota only, with no question or option context."""
     ready = ready_questionnaires(OuterRef("course_id")).filter(pk=OuterRef("pk"))
+    open_started = selectors.owned_attempts(request.user).filter(
+        pk=OuterRef("open_attempt_id")
+    )
     quizzes = selectors.trainee_questionnaires(request.user).annotate(
-        ready=Exists(ready)
+        ready=Exists(ready),
+        open_started_at=Subquery(open_started.values("started_at")[:1]),
     )
     quiz = get_object_or_404(quizzes, pk=pk)
+    instant = clock.now()
+    resumable = _can_resume(quiz, instant)
     return render(
         request,
         "assessments/detail.html",
-        {"questionnaire": quiz, "start_reason": _start_reason(quiz)},
+        {
+            "questionnaire": quiz,
+            "resumable": resumable,
+            "start_reason": "" if resumable else _start_reason(quiz, instant),
+        },
     )
 
 
-def _start_reason(quiz: object) -> str:
-    """Explain the current start state while the service remains authoritative."""
-    instant = clock.now()
-    if quiz.enrollment_status != "ACTIVE":
-        return "An active enrollment is required."
-    if instant < quiz.opens_at:
-        return "Upcoming. The start window has not opened yet."
-    if instant >= quiz.deadline:
-        return "Closed. The start window has ended."
-    if not quiz.attempts_left:
-        return "Maximum attempts reached."
-    if not quiz.ready:
-        return "Questionnaire is not ready."
-    return ""
+def _can_resume(quiz: object, instant: datetime) -> bool:
+    """Match the persisted open attempt's service deadline without expiring it."""
+    return (
+        quiz.enrollment_status == EnrollmentStatus.ACTIVE
+        and quiz.open_started_at is not None
+        and instant <= attempt_deadline(quiz.open_started_at, quiz.duration_minutes)
+    )
+
+
+def _start_reason(quiz: object, instant: datetime) -> str:
+    """Display the same eligibility predicates and messages as a fresh start."""
+    if quiz.enrollment_status != EnrollmentStatus.ACTIVE:
+        return ENROLLMENT_ERROR
+    window = start_window_state(quiz, instant)
+    if window:
+        return f"{window}. {START_WINDOW_ERROR}"
+    if quota_exhausted(quiz, quiz.attempts_used):
+        return QUOTA_ERROR
+    return "" if quiz.ready else READINESS_ERROR
 
 
 @role_required(UserRole.TRAINEE)
