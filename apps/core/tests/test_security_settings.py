@@ -2,7 +2,7 @@
 
 import os
 import subprocess
-from pathlib import Path
+import sys
 
 from django.conf import settings
 
@@ -30,7 +30,7 @@ def test_admin_path_is_environment_configurable() -> None:
         DJANGO_SETTINGS_MODULE="config.settings.test",
     )
     result = subprocess.run(
-        [str(Path("venv/Scripts/python.exe").resolve()), "-c", code],
+        [sys.executable, "-c", code],
         env=env,
         capture_output=True,
         text=True,

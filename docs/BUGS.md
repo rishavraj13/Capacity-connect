@@ -171,3 +171,11 @@
 - Fix: Render Django's escaped non-field error list in both login and signup forms, leaving validation and disclosure rules unchanged.
 - Tests: test_fresh_login_client_renders_form_level_error (two cases) and test_signup_renders_password_mismatch all failed first; isolated-client J2 exposed the issue without a signup flash message masking it.
 - Commit: fix: render authentication form errors for fresh clients.
+
+## BUG 025: Admin path test depended on a virtualenv folder name
+
+- Symptom: A fresh clone using `review-env` raised FileNotFoundError (WinError 2).
+- Root cause: The test resolved a hard-coded repository-relative Python path.
+- Fix: Launch the child with sys.executable and the current environment, overriding the admin URL and Django settings for the assertion.
+- Test: test_admin_path_is_environment_configurable failed before the fix and passed afterward in the same clone. Full suite: 1984 passed. Coverage: 100%. Ruff and Django checks passed.
+- Commit: fix(test): launch admin path check with current Python.
