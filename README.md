@@ -60,3 +60,5 @@ See [deployment and environment catalogue](docs/DEPLOYMENT.md), [decisions](docs
 Run `python manage.py runserver` and open `/styleguide/` with `DEBUG=True` to review the components. Use the Theme control to choose Day, Night or Signage. The browser remembers the choice locally. On first visit the theme follows the system dark preference and otherwise starts in Day. Forms and the collapsible navigation work without JavaScript.
 
 Django serves `static/` during development. For deployment, run `python manage.py collectstatic --noinput` and serve the collected directory at `/static/`. See [deployment instructions](docs/DEPLOYMENT.md) and [font sources](static/fonts/SOURCES.md).
+
+See the [frontend report](docs/FRONTEND_REPORT.md) and [accessibility checklist](docs/ACCESSIBILITY.md). For local visual evidence, open \`.local/screenshots/INDEX.html\` when the ignored screenshots are available. The seed command prints the demo logins. Use the theme control for Day, Night or Signage.
