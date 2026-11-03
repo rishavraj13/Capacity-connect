@@ -391,3 +391,15 @@ Proposed by agent: show six optional numbered rows with server-side validation o
 The Control room landing links to the aggregate dashboard. The dashboard renders counts and rates from its existing context. Proposed by agent: derive the line-load scale from the existing tuple and use a valid range of one when all counts are zero. Pending approvals remain an unfiltered queue with the existing actions. Invalid role submissions retain the existing redirect. No Admin context or permission changes were required.
 
 Admin announcement previews reuse the public board row's truncation, line breaks and escaping. The heat strip now uses a hollow dashed square, a diagonal stroke and a check shape, with the same text legend and accessible table.
+
+
+## ADR 086: Deferred backend mini-phase
+
+Each item needs the user's explicit approval before any backend change. Proposed by agent:
+
+- Linked library resources on course detail. Add a read-only, visibility-filtered selector and test that private resources stay hidden.
+- Course-list pagination. Add pagination to the existing visibility-scoped list and test access, order and page boundaries.
+- Module-order freeze flag on course detail. Expose the existing rule through a read-only flag and test its query budget and accuracy.
+- Silent redirect on invalid role changes. Render existing validation errors through the shared alert and test that invalid input leaves the role intact.
+- Unpaginated, unfiltered pending approvals. Add thin filtering and pagination over the existing approval scope and test that the queue contains only eligible applicants.
+- Library video captions and transcripts. Add private caption delivery and transcript text with validation and access tests.
