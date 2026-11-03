@@ -2,10 +2,10 @@
 
 ## Automated checks
 
-- \`test_seeded_named_html_routes\` renders seeded pages through Django clients and checks the portal shell, heading order, labels, asset restrictions, ID references, link and button names, and table captions and scopes.
-- \`test_theme_contrast\` checks declared token pairs in three themes.
-- \`test_all_motion_is_inside_no_preference_blocks\` checks shipped motion declarations.
-- \`test_templates_have_no_inline_styles_scripts_or_handlers\` and \`test_static_file_budgets_and_local_css\` check static policy and budgets.
+- `test_seeded_named_html_routes` renders seeded pages through Django clients and checks the portal shell, heading order, labels, asset restrictions, ID references, link and button names, and table captions and scopes.
+- `test_theme_contrast` checks declared token pairs in three themes.
+- `test_all_motion_is_inside_no_preference_blocks` checks shipped motion declarations.
+- `test_templates_have_no_inline_styles_scripts_or_handlers` and `test_static_file_budgets_and_local_css` check static policy and budgets.
 
 ## Browser evidence
 

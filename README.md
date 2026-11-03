@@ -61,4 +61,4 @@ Run `python manage.py runserver` and open `/styleguide/` with `DEBUG=True` to re
 
 Django serves `static/` during development. For deployment, run `python manage.py collectstatic --noinput` and serve the collected directory at `/static/`. See [deployment instructions](docs/DEPLOYMENT.md) and [font sources](static/fonts/SOURCES.md).
 
-See the [frontend report](docs/FRONTEND_REPORT.md) and [accessibility checklist](docs/ACCESSIBILITY.md). For local visual evidence, open \`.local/screenshots/INDEX.html\` when the ignored screenshots are available. The seed command prints the demo logins. Use the theme control for Day, Night or Signage.
+See the [frontend report](docs/FRONTEND_REPORT.md) and [accessibility checklist](docs/ACCESSIBILITY.md). For local visual evidence, open `.local/screenshots/INDEX.html` when the ignored screenshots are available. The seed command prints the demo logins. Use the theme control for Day, Night or Signage.
