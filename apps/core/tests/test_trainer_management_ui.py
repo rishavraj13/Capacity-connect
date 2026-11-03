@@ -205,3 +205,35 @@ def _assert_shared_editor_access(
         client.force_login(UserFactory(active_admin=True))
         assert client.get(url).status_code == 200
         client.force_login(type(course.trainer).objects.get(pk=other))
+
+
+@pytest.mark.parametrize(
+    "route", ("courses:module_delete", "library:delete", "library:publish")
+)
+def test_shared_post_action_ownership_and_method(client: object, route: str) -> None:
+    """Hide another trainer's object on POST and allow the admin action."""
+    module = ModuleFactory()
+    resource = ResourceFactory(trainer=module.course.trainer)
+    row = module if route.startswith("courses:") else resource
+    url = reverse(route, args=[row.pk])
+    client.force_login(UserFactory(approved_trainer=True))
+    assert client.post(url).status_code == 404
+    client.force_login(UserFactory(active_admin=True))
+    assert client.get(url).status_code == 405
+    assert client.post(url).status_code == 302
+    if route.endswith(":publish"):
+        resource.refresh_from_db()
+        assert resource.is_published
+    else:
+        assert not type(row).objects.filter(pk=row.pk).exists()
+
+
+def test_competency_editor_rejects_other_trainer_and_admin(client: object) -> None:
+    """Retain Trainer-only access and object ownership on competency routes."""
+    row = CompetencyFactory()
+    edit = reverse("competency:edit", args=[row.pk])
+    remove = reverse("competency:remove", args=[row.pk])
+    client.force_login(UserFactory(approved_trainer=True))
+    assert client.get(edit).status_code == client.post(remove).status_code == 404
+    client.force_login(UserFactory(active_admin=True))
+    assert client.get(edit).status_code == client.post(remove).status_code == 403
