@@ -1,6 +1,7 @@
 <nav aria-label="Main Navigation" class="nav-menu">
-<details>
-<summary>Navigation</summary>
+<input class="nav-toggle" id="main-nav-toggle" type="checkbox">
+<label for="main-nav-toggle">Navigation</label>
+<div class="nav-links">
             <ul>
                 {% if user.is_authenticated %}
                     {% if user.is_approved and user.is_active %}
@@ -44,5 +45,5 @@
 <a href="{% url 'announcements:home' %}">Home</a>
 {% endif %}
 {% if user.is_approved and user.is_active %}{% if user.role == "TRAINER" %}<a href="{% url 'competency:mine' %}">My competencies</a> <a href="{% url 'dashboards:trainer' %}">My trainer statistics</a>{% elif user.role == "ADMIN" %}<a href="{% url 'competency:ranking' %}">Find trainers</a> <a href="{% url 'announcements:manage' %}">Manage announcements</a> <a href="{% url 'dashboards:admin' %}">Admin statistics</a>{% endif %}{% endif %}
-</details>
+</div>
 </nav>

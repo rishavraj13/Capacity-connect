@@ -342,3 +342,7 @@ The shared HTML starts without a theme attribute. A CSS dark-preference rule app
 The public templates use existing form fields, messages, context values and selector order. Board category aliases and body shortening are display formatting.
 
 Proposed by agent: retain the native navigation disclosure at all widths and omit username autofocus so the skip link is the first tab stop. Browser evidence uses a temporary database and temporary storage.
+
+## ADR 078: Responsive navigation without JavaScript
+
+Proposed by agent: use a labelled native checkbox below 768 px with a focus outline on its label. At desktop widths CSS hides the toggle and displays the same role-aware links. This keeps navigation operable without scripting and avoids duplicate links.

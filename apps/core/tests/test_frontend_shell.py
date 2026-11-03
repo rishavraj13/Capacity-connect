@@ -99,3 +99,15 @@ def test_head_preloads_two_local_fonts(client: object) -> None:
             in head
         )
         assert finders.find(f"fonts/{name}")
+
+
+def test_main_navigation_has_keyboard_toggle_and_desktop_override(
+    client: object,
+) -> None:
+    """Keep one set of links visible on desktop without scripting."""
+    html = client.get(reverse("login")).content.decode()
+    assert 'id="main-nav-toggle" type="checkbox"' in html
+    assert '<label for="main-nav-toggle">' in html
+    css = (settings.BASE_DIR / "static/css/components.css").read_text(encoding="utf-8")
+    assert "@media (min-width: 768px)" in css
+    assert ".nav-toggle:not(:checked) ~ .nav-links { display: none; }" in css

@@ -153,3 +153,13 @@ progress::-moz-progress-bar, meter::-moz-meter-bar { background: var(--accent); 
 .certificate-card { border-inline-start: var(--space-2) solid var(--gold); }
 .error-layout { max-width: 40rem; padding-block-start: var(--space-7); }
 .inline-action { display: inline; }
+
+.nav-menu { max-width: 100%; }
+.nav-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.nav-toggle + label { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; }
+.nav-toggle:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 3px; }
+.nav-toggle:not(:checked) ~ .nav-links { display: none; }
+@media (min-width: 768px) {
+  .nav-toggle, .nav-toggle + label { display: none; }
+  .nav-toggle:not(:checked) ~ .nav-links { display: block; }
+}
