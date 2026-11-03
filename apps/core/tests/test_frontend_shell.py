@@ -107,7 +107,9 @@ def test_main_navigation_has_keyboard_toggle_and_desktop_override(
     """Keep one set of links visible on desktop without scripting."""
     html = client.get(reverse("login")).content.decode()
     assert 'id="main-nav-toggle" type="checkbox"' in html
-    assert '<label for="main-nav-toggle">' in html
+    assert '<label for="main-nav-toggle">Navigation</label>' in html
+    assert_accessible_shell(html)
     css = (settings.BASE_DIR / "static/css/components.css").read_text(encoding="utf-8")
+    assert ".nav-toggle:focus-visible + label { outline:" in css
     assert "@media (min-width: 768px)" in css
     assert ".nav-toggle:not(:checked) ~ .nav-links { display: none; }" in css

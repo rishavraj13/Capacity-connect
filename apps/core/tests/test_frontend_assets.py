@@ -125,3 +125,16 @@ def test_static_file_budgets_and_local_css() -> None:
             assert not re.search(r"https?://|url\(\s*['\"]?//", source), path
             assert "!important" not in source, path
             assert path == TOKENS or not HEX_COLOR.search(source), path
+
+
+def test_station_pulse_only_runs_when_motion_is_allowed() -> None:
+    """Require every pulse declaration to be inside the motion opt-in."""
+    css = (ROOT / "static/css/components.css").read_text(encoding="utf-8")
+    allowed = re.compile(
+        r"@media\s*\(prefers-reduced-motion:\s*no-preference\)\s*\{\s*"
+        r"\.station-halo\s*\{[^}]*animation:\s*station-pulse[^}]*\}\s*\}"
+    )
+    assert allowed.search(css)
+    assert not re.search(
+        r"animation(?:-name)?:[^;{}]*station-pulse", allowed.sub("", css)
+    )

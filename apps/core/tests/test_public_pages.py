@@ -185,3 +185,15 @@ def test_verify_not_found_is_identical_for_invalid_and_unknown(client: object) -
     assert first == second and "Certificate not found" in first
     assert all(response["X-Robots-Tag"] == "noindex" for response in responses)
     assert all(response["Referrer-Policy"] == "no-referrer" for response in responses)
+
+
+def test_public_home_omits_statistics(client: object) -> None:
+    """Keep populated portal data out of the public landing page."""
+    from apps.courses.tests.factories import CourseFactory
+
+    CourseFactory(title="Internal course statistics fixture")
+    response = client.get(reverse("announcements:home"))
+    html = public_html(response)
+    assert "Internal course statistics fixture" not in html
+    assert all(key not in response.context for key in ("stats", "totals", "counts"))
+    assert 'class="stat-tile"' not in html
