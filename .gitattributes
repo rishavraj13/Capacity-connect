@@ -1,0 +1,2 @@
+# Preserve the vendored license bytes recorded in the font manifest.
+static/fonts/*-OFL.txt -text
