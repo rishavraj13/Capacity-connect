@@ -14,13 +14,13 @@
 <h2>Participation at a glance</h2>
 <ul class="heat-strip" aria-hidden="true">
     {% for row in rows %}
-    <li><span role="img" class="heat-cell {% if row.passed %}heat-passed{% elif row.attempts_used %}heat-attempted{% else %}heat-none{% endif %}" aria-label="{% if row.passed %}Passed{% elif row.attempts_used %}Attempted, not passed{% else %}Not attempted{% endif %}"></span></li>
+    <li><span role="img" class="heat-cell {% if row.passed %}heat-passed cue-check{% elif row.attempts_used %}heat-attempted cue-diagonal{% else %}heat-none cue-hollow{% endif %}" aria-label="{% if row.passed %}Passed{% elif row.attempts_used %}Attempted, not passed{% else %}Not attempted{% endif %}"></span></li>
     {% endfor %}
 </ul>
 <ul class="heat-legend" aria-label="Participation legend">
-    <li><span class="heat-cell heat-none" aria-hidden="true"></span> Not attempted</li>
-    <li><span class="heat-cell heat-attempted" aria-hidden="true"></span> Attempted, not passed</li>
-    <li><span class="heat-cell heat-passed" aria-hidden="true"></span> Passed</li>
+    <li><span class="heat-cell heat-none cue-hollow" aria-hidden="true"></span> Not attempted</li>
+    <li><span class="heat-cell heat-attempted cue-diagonal" aria-hidden="true"></span> Attempted, not passed</li>
+    <li><span class="heat-cell heat-passed cue-check" aria-hidden="true"></span> Passed</li>
 </ul>
 {% endif %}
 <div class="table-scroll" tabindex="0" role="region" aria-label="Participation">

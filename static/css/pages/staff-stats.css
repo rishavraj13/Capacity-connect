@@ -21,3 +21,20 @@
 .heat-attempted { background: var(--line-2); }
 .heat-none { background: var(--card); border-style: dashed; }
 .rating-meter { min-inline-size: 5rem; }
+.heat-cell { position: relative; }
+.cue-diagonal::after, .cue-check::after {
+  position: absolute;
+  content: "";
+  border-color: var(--card);
+  border-style: solid;
+}
+.cue-diagonal::after {
+  inset: 42% 0 auto;
+  border-width: 2px 0 0;
+  transform: rotate(-45deg);
+}
+.cue-check::after {
+  inset: 5% 25% 25% 35%;
+  border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}

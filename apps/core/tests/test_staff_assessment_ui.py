@@ -122,6 +122,7 @@ def _assert_staff_correctness_and_freeze(
     client.force_login(enrollment.trainee)
     paper = learning_html(client, "assessments:take", (attempt.pk,))
     assert "Correct option" not in paper and "is_correct" not in paper
+    assert 'name="correct_option"' not in paper
 
 
 @pytest.mark.parametrize("attempted", (0, 2, 3))
@@ -148,7 +149,13 @@ def test_participation_heat_strip_and_table(
     assert ('aria-label="Attempted, not passed"' in html) == bool(attempted)
     assert ("No trainees have attempted" in html) == (attempted == 0)
     assert "0.00%" in html or attempted == 3
-    assert "Participation legend" in html
+    legend = html.split('aria-label="Participation legend">', 1)[1].split("</ul>", 1)[0]
+    for cue, label in (
+        ("cue-hollow", "Not attempted"),
+        ("cue-diagonal", "Attempted, not passed"),
+        ("cue-check", "Passed"),
+    ):
+        assert cue in legend and label in legend
 
 
 def test_staff_result_discloses_correct_answer_only_to_authorized_staff(
