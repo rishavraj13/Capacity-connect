@@ -119,3 +119,56 @@ def test_library_uses_native_video_or_attachment(client: object, kind: str) -> N
 def test_trainee_home_query_count_is_constant(client: object) -> None:
     """Compare populated trainee landing responses at one and ten courses."""
     assert_stable_page(client, "trainee learning home", course_list("trainee_home"))
+
+
+@pytest.mark.parametrize(
+    ("status", "buttons"),
+    (
+        (None, {"enroll": "Enroll"}),
+        ("DROPPED", {"enroll": "Resume"}),
+        ("ACTIVE", {"drop": "Drop course", "complete_module": "Mark complete"}),
+    ),
+)
+def test_enrollment_actions_are_csrf_protected_post_forms(
+    client: object, status: str | None, buttons: dict
+) -> None:
+    """Expose only the actor's permitted POST controls in the course detail."""
+    user = UserFactory(approved_trainee=True)
+    course = CourseFactory(is_published=True)
+    module = ModuleFactory(course=course)
+    enrollment = (
+        EnrollmentFactory(trainee=user, course=course, status=status)
+        if status
+        else None
+    )
+    client.force_login(user)
+    html = learning_html(client, "courses:detail", (course.pk,))
+    urls = {"enroll": reverse("courses:enroll", args=[course.pk])}
+    if enrollment:
+        urls["drop"] = reverse("courses:drop", args=[enrollment.pk])
+        urls["complete_module"] = reverse(
+            "courses:complete_module", args=[enrollment.pk, module.pk]
+        )
+    for name, url in urls.items():
+        assert f'href="{url}"' not in html
+        forms = re.findall(
+            r'<form method="post" action="' + re.escape(url) + r'">(.*?)</form>',
+            html,
+            re.S,
+        )
+        assert client.get(url).status_code == 405
+        assert len(forms) == (name in buttons)
+        if forms:
+            assert 'name="csrfmiddlewaretoken"' in forms[0]
+            assert f">{buttons[name]}</button>" in forms[0]
+
+
+def test_course_enrollment_controls_are_trainee_only(client: object) -> None:
+    """Keep participation actions out of staff and anonymous responses."""
+    course = CourseFactory(is_published=True)
+    for actor in (None, course.trainer, UserFactory(active_admin=True)):
+        if actor:
+            client.force_login(actor)
+        response = client.get(reverse("courses:detail", args=[course.pk]))
+        for label in (b"Enroll", b"Resume", b"Drop course", b"Mark complete"):
+            assert b">" + label + b"</button>" not in response.content

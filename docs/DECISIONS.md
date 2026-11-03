@@ -353,3 +353,10 @@ Proposed by agent: use a labelled native checkbox below 768 px with a focus outl
 Trainee home calls the existing deadline and station-map selectors. Course detail reuses station-map state, ready-questionnaire annotations and the trainee certificate selector for links. The existing completion summary still supplies module counts. The library keeps the existing subject and kind filters. Course detail has no linked resource list in its context.
 
 The populated landing and course detail fixtures each use five additional queries. Four fetch the station map. The remaining query fetches departures on the landing or linkable quiz rows on course detail. Completed detail also fetches the certificate. Counts stay constant as fixtures grow.
+
+
+## ADR 080: Course detail query cost and deferred learning gaps
+
+Course detail retains the existing station-map selector. No existing course-scoped selector returns ordered station state and interchange. The completion summary contains aggregate counts and the existing module query does not include per-trainee progress. The populated detail fixture takes 14 queries with one module and with ten. Reusing the map keeps state definitions shared and query count independent of data size, with extra map rows read for trainees enrolled in several courses.
+
+Proposed by agent: a later backend mini-phase could add a visibility-filtered course resource selector and paginate the course list. Course detail currently has no linked resource panel, and the course list is unpaginated. Library videos currently have no captions or transcript field.
