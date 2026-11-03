@@ -1,5 +1,6 @@
 """Collect the structural facts needed by the frontend accessibility checks."""
 
+from collections import Counter
 from html.parser import HTMLParser
 
 CONTROLS = {"input", "select", "textarea", "progress", "meter"}
@@ -92,3 +93,69 @@ def assert_accessible_shell(html: str) -> None:
     assert page.first_body_tag and page.first_body_tag[0] == "a"
     assert page.first_body_tag[1]["href"] == "#main"
     assert set(page.controls) <= page.labels, set(page.controls) - page.labels
+
+
+class AuditMarkup(Markup):
+    """Check references whose targets may occur later in the document."""
+
+    def __init__(self) -> None:
+        """Store ID counts and accessibility references in document order."""
+        super().__init__()
+        self.ids = Counter()
+        self.references = set()
+        self.tables = []
+        self.fieldsets = []
+        self.grouped = []
+        self.controls_with_text = []
+
+    def handle_starttag(self, tag: str, attrs: list) -> None:
+        """Collect unique IDs and local ARIA relationships."""
+        super().handle_starttag(tag, attrs)
+        values = dict(attrs)
+        if values.get("id"):
+            self.ids[values["id"]] += 1
+        for key in ("aria-labelledby", "aria-describedby"):
+            self.references.update((values.get(key) or "").split())
+        self._structure_checks(tag, values)
+
+    def _structure_checks(self, tag: str, values: dict) -> None:
+        """Record captions, grouped controls and readable control names."""
+        self._record_group(tag, values)
+        if tag == "table":
+            self.tables.append(False)
+        if tag == "caption" and self.tables:
+            self.tables[-1] = True
+        if tag == "th":
+            assert values.get("scope") in {"row", "col", "rowgroup", "colgroup"}
+        if tag in {"a", "button"}:
+            self.controls_with_text.append((tag, values.get("aria-label", "")))
+        if tag == "img" and self.controls_with_text:
+            self.handle_data(values.get("alt") or "")
+
+    def _record_group(self, tag: str, values: dict) -> None:
+        """Track whether grouped controls have an enclosing legend."""
+        if tag == "fieldset":
+            self.fieldsets.append(False)
+        if tag == "legend" and self.fieldsets:
+            self.fieldsets[-1] = True
+        if tag == "input" and values.get("type") in {"radio", "checkbox"}:
+            self.grouped.append(
+                (values["type"], values.get("name"), any(self.fieldsets))
+            )
+
+    def handle_endtag(self, tag: str) -> None:
+        """Require captions and names before closing their elements."""
+        super().handle_endtag(tag)
+        if tag == "table":
+            assert self.tables.pop(), "Missing table caption"
+        if tag == "fieldset":
+            self.fieldsets.pop()
+        if self.controls_with_text and tag == self.controls_with_text[-1][0]:
+            assert self.controls_with_text.pop()[1].strip(), f"Unnamed {tag}"
+
+    def handle_data(self, data: str) -> None:
+        """Collect visible control text across nested inline tags."""
+        super().handle_data(data)
+        if self.controls_with_text:
+            tag, label = self.controls_with_text[-1]
+            self.controls_with_text[-1] = (tag, label + data)

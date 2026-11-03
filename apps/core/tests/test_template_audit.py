@@ -14,7 +14,7 @@ from apps.accounts.models import User
 from apps.assessments.tests.factories import AttemptFactory
 from apps.competency.models import TrainerCompetency
 from apps.core import clock
-from apps.core.tests.frontend_markup import Markup, assert_accessible_shell
+from apps.core.tests.frontend_markup import AuditMarkup, assert_accessible_shell
 from apps.core.tests.journeys.isolation_routes import (
     BINDINGS,
     identifier_routes,
@@ -53,52 +53,6 @@ MODELS = {
 }
 
 
-class AuditMarkup(Markup):
-    """Check references whose targets may occur later in the document."""
-
-    def __init__(self) -> None:
-        """Store ID counts and accessibility references in document order."""
-        super().__init__()
-        self.ids = Counter()
-        self.references = set()
-        self.tables = []
-        self.controls_with_text = []
-
-    def handle_starttag(self, tag: str, attrs: list) -> None:
-        """Collect unique IDs and local ARIA relationships."""
-        super().handle_starttag(tag, attrs)
-        values = dict(attrs)
-        if values.get("id"):
-            self.ids[values["id"]] += 1
-        for key in ("aria-labelledby", "aria-describedby"):
-            self.references.update((values.get(key) or "").split())
-        if tag == "table":
-            self.tables.append(False)
-        if tag == "caption" and self.tables:
-            self.tables[-1] = True
-        if tag == "th":
-            assert values.get("scope") in {"row", "col", "rowgroup", "colgroup"}
-        if tag in {"a", "button"}:
-            self.controls_with_text.append((tag, values.get("aria-label", "")))
-        if tag == "img" and self.controls_with_text:
-            self.handle_data(values.get("alt") or "")
-
-    def handle_endtag(self, tag: str) -> None:
-        """Require captions and names before closing their elements."""
-        super().handle_endtag(tag)
-        if tag == "table":
-            assert self.tables.pop(), "Missing table caption"
-        if self.controls_with_text and tag == self.controls_with_text[-1][0]:
-            assert self.controls_with_text.pop()[1].strip(), f"Unnamed {tag}"
-
-    def handle_data(self, data: str) -> None:
-        """Collect visible control text across nested inline tags."""
-        super().handle_data(data)
-        if self.controls_with_text:
-            tag, label = self.controls_with_text[-1]
-            self.controls_with_text[-1] = (tag, label + data)
-
-
 def _seed(settings: object) -> None:
     """Run the production seed command inside pytest's disposable database."""
     settings.DEBUG = True
@@ -128,13 +82,18 @@ def _bundle() -> dict:
         trainer_profile=course.trainer.trainer_profile,
         competency=TrainerCompetency.objects.filter(trainer=course.trainer).first(),
     )
+    _profile_targets(bundle)
+    return bundle
+
+
+def _profile_targets(bundle: dict) -> None:
+    """Match real child IDs to the seeded trainee who can edit them."""
     profile = bundle["trainee_profile"]
     bundle.update(
         qualification=QualificationFactory(profile=profile),
         experience=WorkExperienceFactory(profile=profile),
         certificate=ExternalCertificateFactory(profile=profile),
     )
-    return bundle
 
 
 def _clients(bundle: dict) -> dict:
@@ -164,11 +123,9 @@ def _url(route: object, bundle: dict, keys: dict) -> str:
 
 def _roles(route: object) -> tuple:
     """Use route metadata while keeping the anonymous authentication forms distinct."""
-    if route.name in PUBLIC:
+    if route.name in PUBLIC or route.name == "styleguide":
         return ("ANONYMOUS", "TRAINEE", "TRAINER", "ADMIN")
     if route.name in {"login", "signup"}:
-        return ("ANONYMOUS",)
-    if route.name == "styleguide":
         return ("ANONYMOUS",)
     roles = getattr(route.callback, "allowed_roles", ())
     return tuple(
@@ -200,12 +157,17 @@ def test_seeded_named_html_routes(client: object, settings: object) -> None:
     for route in inventory:
         if route.name not in STATE_NAMES | FILES:
             _audit_route(route, bundle, clients, (failures, rendered))
+    _record_rendered(rendered)
+    assert not failures, "\n".join(failures)
+
+
+def _record_rendered(rendered: list) -> None:
+    """Store the rendered inventory outside tracked files."""
     path = Path(".local/reports/F5_TEMPLATE_AUDIT.txt")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         "\n".join(f"{name} [{role}]" for name, role in rendered), encoding="utf-8"
     )
-    assert not failures, "\n".join(failures)
 
 
 def _audit_route(route: object, bundle: dict, clients: dict, evidence: tuple) -> None:
@@ -217,21 +179,33 @@ def _audit_route(route: object, bundle: dict, clients: dict, evidence: tuple) ->
             response = clients[role].get(url)
         try:
             assert response.status_code == 200, response.status_code
-            html = response.content.decode("utf-8")
-            assert_accessible_shell(html)
-            if route.name in {
-                "certificates:mine",
-                "certificates:verify",
-                "assessments:result",
-            }:
-                assert 'href="/static/css/print.css" media="print"' in html
-            markup = AuditMarkup()
-            markup.feed(html)
-            assert all(count == 1 for count in markup.ids.values()), markup.ids
-            assert markup.references <= markup.ids.keys(), (
-                markup.references - markup.ids.keys()
-            )
+            _assert_html(response.content.decode("utf-8"), route.name)
         except AssertionError as exc:
             failures.append(f"{route.name} [{role}]: {exc}")
         else:
             rendered.append((route.name, role))
+
+
+def _assert_html(html: str, route_name: str) -> None:
+    """Validate the actual response rather than checking source strings alone."""
+    assert_accessible_shell(html)
+    if route_name in {
+        "certificates:mine",
+        "certificates:verify",
+        "assessments:result",
+    }:
+        assert 'href="/static/css/print.css" media="print"' in html
+    markup = AuditMarkup()
+    markup.feed(html)
+    assert "nav" in markup.landmarks
+    _assert_group_names(markup.grouped)
+    assert all(count == 1 for count in markup.ids.values()), markup.ids
+    assert markup.references <= markup.ids.keys(), markup.references - markup.ids.keys()
+
+
+def _assert_group_names(inputs: list) -> None:
+    """Require a legend for radio and same-name checkbox groups."""
+    groups = Counter((kind, name) for kind, name, _ in inputs)
+    for kind, name, labelled_group in inputs:
+        if kind == "radio" or (name and groups[kind, name] > 1):
+            assert labelled_group, f"Missing fieldset legend for {name}"

@@ -203,3 +203,16 @@
 - Failing test first: the seeded template audit found no print stylesheet on eight route-role responses.
 - Root cause: record templates inherited the screen shell without print overrides.
 - Fix: load a shared print stylesheet for those three templates with monochrome tokens, hidden portal chrome and card break protection.
+
+
+## BUG 029: Narrow module skill labels clipped
+
+- Failing browser check first: the module-add multiselect clipped text at 320 and 375 px in all three themes.
+- Root cause: native option rows retained unbroken labels despite the select width cap.
+- Fix: allow text wrapping inside multi-select options. The repeated Edge measurements passed at both widths.
+
+## BUG 030: Station map labels faded in forced colours
+
+- Failing browser evidence first: the forced-colours station map rendered dark SVG labels on a black canvas.
+- Root cause: SVG paint tokens did not follow the forced-colours palette.
+- Fix: use system colours for track, fill, text and focus inside the forced-colours media query. Keep native meter marks visible using the same palette.

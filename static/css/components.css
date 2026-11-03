@@ -163,3 +163,12 @@ progress::-moz-progress-bar, meter::-moz-meter-bar { background: var(--accent); 
   .nav-toggle, .nav-toggle + label { display: none; }
   .nav-toggle:not(:checked) ~ .nav-links { display: block; }
 }
+
+select[multiple] option { white-space: normal; overflow-wrap: anywhere; }
+
+@media (forced-colors: active) {
+  meter { forced-color-adjust: none; background: Canvas; border-color: CanvasText; }
+  meter::-webkit-meter-bar { background: Canvas; }
+  meter::-webkit-meter-optimum-value { background: CanvasText; }
+  meter::-moz-meter-bar { background: CanvasText; }
+}
