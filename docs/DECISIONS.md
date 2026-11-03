@@ -330,3 +330,9 @@ The CSP explicitly permits same-origin styles, scripts and fonts, and allows sam
 ## ADR 075: Theme selection and development preview
 
 The blocking local head script sets the theme before CSS paints. A valid stored choice takes priority over the system preference. If storage is unavailable, the page keeps the selection in memory. The development gallery uses sample data and is explicitly classified in the route audit. The view returns 404 when DEBUG is disabled.
+
+## ADR 076: F0.1 contrast and CSS theme fallback
+
+The F0.1 review requested contrast checks for station graphics, borders, focus outlines, buttons, board labels, badges and certificate text. Day and Signage now use darker coral and green line tokens. Night retains the original fills. Gold decoration retains its original color and certificate text has a separate high-contrast token.
+
+The shared HTML starts without a theme attribute. A CSS dark-preference rule applies the night palette only to that attribute-free root. A valid stored selection still takes priority when the local theme script runs.

@@ -56,6 +56,10 @@
   --accent: #254e9d;
   --alert: #9c3029;
   --success: #17614a;
+  --line-1: #cd563d;
+  --line-2: #2a6fdb;
+  --line-3: #16815d;
+  --gold-text: #77550d;
 }
 
 [data-theme="night"] {
@@ -67,6 +71,10 @@
   --accent: #b1ccff;
   --alert: #ffafa0;
   --success: #8af0bd;
+  --line-1: #e76f51;
+  --line-2: #2a6fdb;
+  --line-3: #1fa97a;
+  --gold-text: #ffda8a;
 }
 
 [data-theme="sign"] {
@@ -78,15 +86,24 @@
   --accent: #162d67;
   --alert: #7b2019;
   --success: #134d38;
+  --line-1: #bd4c34;
+  --line-2: #2a6fdb;
+  --line-3: #127b55;
+  --gold-text: #77550d;
 }
 
 :root {
-  --line-1: #e76f51;
-  --line-2: #2a6fdb;
-  --line-3: #1fa97a;
   --board: #0b0d10;
   --board-text: #ffd24a;
-  --certificate: #b8892b;
+  --gold: #b8892b;
+  --focus: var(--ink);
+  --primary-text: var(--card);
+  --primary-fill: var(--ink);
+  --secondary-text: var(--ink);
+  --secondary-fill: var(--card);
+  --board-label: var(--board-text);
+  --badge-text: var(--ink);
+  --badge-fill: var(--card);
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -100,4 +117,21 @@
   --font-title: "Bricolage Grotesque", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
   --font-label: "Space Mono", ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --paper: #0f1730;
+    --ink: #eef1ff;
+    --card: #18234a;
+    --muted: #9aa6d6;
+    --accent: #b1ccff;
+    --alert: #ffafa0;
+    --success: #8af0bd;
+    --line-1: #e76f51;
+    --line-2: #2a6fdb;
+    --line-3: #1fa97a;
+    --gold-text: #ffda8a;
+  }
 }

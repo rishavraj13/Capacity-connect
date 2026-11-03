@@ -179,3 +179,19 @@
 - Fix: Launch the child with sys.executable and the current environment, overriding the admin URL and Django settings for the assertion.
 - Test: test_admin_path_is_environment_configurable failed before the fix and passed afterward in the same clone. Full suite: 1984 passed. Coverage: 100%. Ruff and Django checks passed.
 - Commit: fix(test): launch admin path check with current Python.
+
+## BUG 026: Line fills fell below graphical contrast
+
+- Symptom: Day and Signage coral and green fell below 3:1 on some surfaces.
+- Root cause: The same bright line colors were used against all three palettes.
+- Fix: Use theme-specific coral and green variants and test the actual token pairs.
+- Test: test_theme_contrast recorded six line-fill failures before the fix. All expanded cases passed afterward.
+- Commit: fix(frontend): close F0 contrast and theme gaps.
+
+## BUG 027: No-JavaScript pages forced the Day theme
+
+- Symptom: Dark-preferring visitors saw Day when JavaScript was unavailable.
+- Root cause: The HTML hard-coded data-theme and CSS lacked an attribute-free media rule.
+- Fix: Leave the attribute unset and apply the night palette only to the unset root under the dark media preference.
+- Tests: test_no_js_dark_fallback_preserves_explicit_themes and test_theme_controls_bootstrap_from_local_assets failed first and passed after the fix.
+- Commit: fix(frontend): close F0 contrast and theme gaps.

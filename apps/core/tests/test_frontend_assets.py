@@ -22,9 +22,26 @@ PAIRS = (
     ("success", "paper", 4.5),
     ("success", "card", 4.5),
     ("board-text", "board", 4.5),
-    ("certificate", "card", 3),
+    ("gold", "card", 3),
+    ("gold-text", "card", 4.5),
+    ("line-1", "paper", 3),
+    ("line-1", "card", 3),
+    ("line-2", "paper", 3),
+    ("line-2", "card", 3),
+    ("line-3", "paper", 3),
+    ("line-3", "card", 3),
+    ("focus", "paper", 3),
+    ("focus", "card", 3),
+    ("ink", "paper", 3),
+    ("primary-text", "primary-fill", 4.5),
+    ("secondary-text", "secondary-fill", 4.5),
+    ("board-label", "board", 4.5),
+    ("badge-text", "badge-fill", 4.5),
+    ("success", "badge-fill", 4.5),
+    ("accent", "badge-fill", 4.5),
 )
 HEX_COLOR = re.compile(r"#(?:[a-f0-9]{3,8})\b|\b(?:rgb|hsl)a?\(", re.I)
+COLOR_TOKEN = re.compile(r"--([\w-]+):\s*(#[a-f0-9]{6}|var\(--[\w-]+\));")
 
 
 def theme_colors(theme: str) -> dict:
@@ -32,7 +49,13 @@ def theme_colors(theme: str) -> dict:
     css = TOKENS.read_text(encoding="utf-8")
     common = re.search(r":root\s*\{([^}]+)\}", css)[1]
     block = re.search(rf'\[data-theme="{theme}"\]\s*\{{([^}}]+)\}}', css)[1]
-    return dict(re.findall(r"--([\w-]+):\s*(#[a-f0-9]{6});", common + block))
+    return dict(COLOR_TOKEN.findall(common + block))
+
+
+def color_value(colors: dict, token: str) -> str:
+    """Resolve a semantic color alias against the active theme."""
+    value = colors[token]
+    return color_value(colors, value[6:-1]) if value.startswith("var(--") else value
 
 
 def luminance(color: str) -> float:
@@ -50,7 +73,9 @@ def luminance(color: str) -> float:
 
 def contrast(colors: dict, first: str, second: str) -> float:
     """Return the brighter-to-darker contrast ratio for a token pair."""
-    dark, light = sorted((luminance(colors[first]), luminance(colors[second])))
+    dark, light = sorted(
+        luminance(color_value(colors, token)) for token in (first, second)
+    )
     return (light + 0.05) / (dark + 0.05)
 
 
@@ -60,6 +85,22 @@ def test_theme_contrast(theme: str, first: str, second: str, threshold: float) -
     """Require the minimum ratio for each theme's text and graphical accents."""
     ratio = contrast(theme_colors(theme), first, second)
     assert ratio >= threshold, (theme, first, second, ratio)
+
+
+def test_no_js_dark_fallback_preserves_explicit_themes() -> None:
+    """Match night colors for unset themes while excluding all explicit selections."""
+    css = TOKENS.read_text(encoding="utf-8")
+    fallback = re.search(
+        r"@media\s*\(prefers-color-scheme:\s*dark\)\s*\{\s*"
+        r":root:not\(\[data-theme\]\)\s*\{([^}]+)\}",
+        css,
+    )
+    assert fallback, "missing attribute-free dark fallback"
+    night = re.search(r'\[data-theme="night"\]\s*\{([^}]+)\}', css)[1]
+    assert dict(COLOR_TOKEN.findall(fallback[1])) == dict(COLOR_TOKEN.findall(night))
+    assert "color-scheme: dark;" in fallback[1]
+    for theme in THEMES:
+        assert f'[data-theme="{theme}"]' in css
 
 
 def test_templates_have_no_inline_styles_scripts_or_handlers() -> None:

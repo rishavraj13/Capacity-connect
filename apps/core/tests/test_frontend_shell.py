@@ -43,8 +43,11 @@ def test_styleguide_requires_debug(client: object, settings: object) -> None:
 
 
 @pytest.mark.parametrize("status", [403, 404, 429, 500])
-def test_error_pages_render_without_request_or_database(status: int) -> None:
-    """Retain a readable standalone heading and route home on service errors."""
+def test_error_pages_render_without_request_database_or_assets(
+    status: int, settings: object
+) -> None:
+    """Retain readable error markup with unavailable static assets."""
+    settings.STATIC_URL = "/unavailable-static/"
     html = render_to_string(f"{status}.html")
     assert f"<h1>{status} " in html and 'href="/"' in html
     assert_accessible_shell(html)
@@ -53,7 +56,7 @@ def test_error_pages_render_without_request_or_database(status: int) -> None:
 def test_theme_controls_bootstrap_from_local_assets(client: object) -> None:
     """Require default markup and a blocking head script for first-paint selection."""
     html = client.get("/login/").content.decode("utf-8")
-    assert 'data-theme="day"' in html
+    assert '<html lang="en">' in html
     assert "data-theme-control hidden" in html
     assert all(f'value="{theme}"' in html for theme in ("day", "night", "sign"))
     assert '<script src="/static/js/theme.js"></script>' in html.split("</head>")[0]
@@ -66,15 +69,11 @@ def test_local_assets_csp_and_private_path(client: object) -> None:
     """Keep the policy strict and decline guessed private upload URLs."""
     response = client.get("/login/")
     directives = response["Content-Security-Policy"]
-    for directive in (
-        "style-src 'self'",
-        "script-src 'self'",
-        "font-src 'self'",
-        "img-src 'self' data:",
-        "frame-ancestors 'none'",
-    ):
-        assert directive in directives
-    assert "unsafe-inline" not in directives
+    assert directives == (
+        "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; "
+        "form-action 'self'; style-src 'self'; script-src 'self'; "
+        "font-src 'self'; img-src 'self' data:"
+    )
     assert client.get("/private_uploads/f0-probe.pdf").status_code == 404
 
 
@@ -83,3 +82,20 @@ def test_debug_off_does_not_route_static_files(client: object) -> None:
     assert finders.find("css/tokens.css")
     assert not settings.STATIC_ROOT.is_relative_to(settings.BASE_DIR)
     assert client.get("/static/css/tokens.css").status_code == 404
+
+
+def test_head_preloads_two_local_fonts(client: object) -> None:
+    """Keep the regular body and bold heading font preloads same-origin."""
+    html = client.get("/login/").content.decode("utf-8")
+    head = html.split("</head>", 1)[0]
+    names = (
+        "inter-latin-400-normal.woff2",
+        "bricolage-grotesque-latin-800-normal.woff2",
+    )
+    assert head.count('rel="preload"') == len(names)
+    for name in names:
+        assert (
+            f'href="/static/fonts/{name}" as="font" type="font/woff2" crossorigin'
+            in head
+        )
+        assert finders.find(f"fonts/{name}")

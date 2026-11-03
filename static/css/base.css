@@ -21,7 +21,7 @@ button, input, select, textarea { font: inherit; }
 input:not([type=radio], [type=checkbox]), textarea, select { max-inline-size: 100%; }
 fieldset { min-inline-size: 0; border: var(--stroke); }
 label, summary { cursor: pointer; }
-:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 .shell {
   width: min(100% - 2 * var(--space-4), 76rem);
   margin-inline: auto;
