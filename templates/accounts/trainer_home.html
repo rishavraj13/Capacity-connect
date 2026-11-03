@@ -1,15 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Trainer Dashboard - Capacity Connect<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
-<p><a href="{% url 'courses:list' %}">Choose a course to manage assessments</a></p>
-<p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
-<p><a href="{% url 'competency:mine' %}">My competencies</a></p>
-<p><a href="{% url 'dashboards:trainer' %}">My statistics</a></p>
-{% endblock %}
+{% block title %}Trainer Dashboard - Capacity Connect{% endblock %}
 
 {% block content %}
 <section>
-    <h2>Trainer Dashboard</h2>
+    <h1>Trainer Dashboard</h1>
     <p>Welcome, {{ user.first_name|default:user.username }}. Your trainer account is active and approved.</p>
 </section>
 <p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>

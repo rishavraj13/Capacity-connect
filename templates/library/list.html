@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% block content %}<h2>Library</h2>
+{% extends "base.html" %}{% block content %}<h1>Library</h1>
 {% if user.role == "TRAINER" or user.role == "ADMIN" %}<p><a href="{% url 'library:create' %}">Create resource</a></p>{% endif %}
 <form method="get">{{ filter_form.as_p }}<button>Filter</button></form>
 <ul>{% for resource in page_obj %}<li><a href="{% url 'library:detail' resource.pk %}">{{ resource.title }}</a> - {{ resource.kind }} - {{ resource.subject.name }} - {{ resource.trainer.username }}{% if not resource.is_published %} (unpublished){% endif %}</li>{% empty %}<li>No visible resources.</li>{% endfor %}</ul>

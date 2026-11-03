@@ -4,7 +4,7 @@
 
 {% block content %}
 <section>
-    <h2>User Management</h2>
+    <h1>User Management</h1>
 
     <form method="get" action="{% url 'admin_user_list' %}">
         <label for="filter-role">Role:</label>
@@ -26,7 +26,7 @@
         <button type="submit" id="filter-submit">Apply Filters</button>
     </form>
 
-    <table border="1" cellpadding="5" cellspacing="0">
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Admin user list"><table><caption>Admin user list</caption>
         <thead>
             <tr>
                 <th scope="col">Username</th>
@@ -47,7 +47,7 @@
                     <td>{{ target_user.is_active|yesno:"Active,Disabled" }}</td>
                     <td>
                         {% if not target_user.is_approved and target_user.is_active %}
-                            <form method="post" action="{% url 'admin_approve_user' target_user.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'admin_approve_user' target_user.id %}" class="inline-action">
                                 {% csrf_token %}
                                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                                 <button type="submit" id="approve-btn-{{ target_user.id }}">Approve</button>
@@ -55,14 +55,14 @@
                         {% endif %}
 
                         {% if target_user.is_active %}
-                            <form method="post" action="{% url 'admin_reject_user' target_user.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'admin_reject_user' target_user.id %}" class="inline-action">
                                 {% csrf_token %}
                                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                                 <button type="submit" id="reject-btn-{{ target_user.id }}">Reject / Disable</button>
                             </form>
                         {% endif %}
 
-                        <form method="post" action="{% url 'admin_change_role' target_user.id %}" style="display:inline;">
+                        <form method="post" action="{% url 'admin_change_role' target_user.id %}" class="inline-action">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{{ request.get_full_path }}">
                             <label for="change-role-{{ target_user.id }}">Role:</label>
@@ -81,7 +81,7 @@
                 </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 
     <nav aria-label="Pagination Navigation">
         {% if page_obj.has_previous %}

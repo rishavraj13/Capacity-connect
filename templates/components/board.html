@@ -1,0 +1,16 @@
+<section class="board">
+    <h2>Departure board</h2>
+    <div class="table-scroll" role="region" aria-label="Departure board table" tabindex="0">
+        <table>
+            <caption>Upcoming notices</caption>
+            <thead><tr><th scope="col">Type</th><th scope="col">Message</th><th scope="col">When</th></tr></thead>
+            <tbody>
+                {% for kind, message, when in departures %}
+                    <tr><td>{{ kind }}</td><td>{{ message }}</td><td>{{ when }}</td></tr>
+                {% empty %}
+                    <tr><td colspan="3">No departures scheduled.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>

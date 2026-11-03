@@ -1,2 +1,2 @@
-{% extends "base.html" %}{% block content %}<h2>Assessment paper</h2><p>Time remaining at page load: {{ seconds_left }} seconds.</p>
-<form method="post">{% csrf_token %}{{ form.as_p }}<button>Submit attempt</button></form>{% endblock %}
+{% extends "base.html" %}{% block content %}<h1>Assessment paper</h1><p>Time remaining at page load: {{ seconds_left }} seconds.</p>
+<form method="post">{% csrf_token %}{% include "components/form_fields.html" %}<button>Submit attempt</button></form>{% endblock %}

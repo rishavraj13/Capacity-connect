@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}<h2>Profiles</h2>
-<h3>Trainees</h3><ul>{% for profile in trainees %}<li><a href="{% url 'profiles:trainee_detail' profile.pk %}">{{ profile.user.username }}</a></li>{% empty %}<li>No visible trainee profiles.</li>{% endfor %}</ul>
-<h3>Trainers</h3><ul>{% for profile in trainers %}<li><a href="{% url 'profiles:trainer_detail' profile.pk %}">{{ profile.user.username }}</a></li>{% empty %}<li>No trainer profiles.</li>{% endfor %}</ul>
+{% block content %}<h1>Profiles</h1>
+<h2>Trainees</h2><ul>{% for profile in trainees %}<li><a href="{% url 'profiles:trainee_detail' profile.pk %}">{{ profile.user.username }}</a></li>{% empty %}<li>No visible trainee profiles.</li>{% endfor %}</ul>
+<h2>Trainers</h2><ul>{% for profile in trainers %}<li><a href="{% url 'profiles:trainer_detail' profile.pk %}">{{ profile.user.username }}</a></li>{% empty %}<li>No trainer profiles.</li>{% endfor %}</ul>
 {% endblock %}

@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block content %}<h2>{{ profile.user.username }}</h2><p>{{ profile.bio }}</p><p>{{ profile.interests }}</p>
+{% block content %}<h1>{{ profile.user.username }}</h1><p>{{ profile.bio }}</p><p>{{ profile.interests }}</p>
 {% if profile.photo %}<a href="{% url 'profiles:private_file' 'trainee' profile.pk %}">Download photo</a>{% endif %}
 <ul>{% for skill in profile.skills.all %}<li>{{ skill.name }} — {{ skill.subject.name }}</li>{% endfor %}</ul>
 {% if user.pk == profile.user_id and user.role == "TRAINEE" %}<p><a href="{% url 'profiles:trainee_edit' %}">Edit profile</a> <a href="{% url 'profiles:qualification_create' %}">Add qualification</a> <a href="{% url 'profiles:experience_create' %}">Add experience</a> <a href="{% url 'profiles:certificate_create' %}">Add certificate</a></p>{% endif %}
-<h3>Qualifications</h3><ul>{% for record in profile.qualifications.all %}<li>{{ record.degree }}
+<h2>Qualifications</h2><ul>{% for record in profile.qualifications.all %}<li>{{ record.degree }}
 {% if user.pk == profile.user_id and user.role == "TRAINEE" %}<a href="{% url 'profiles:qualification_edit' record.pk %}">Edit</a><form method="post" action="{% url 'profiles:qualification_delete' record.pk %}">{% csrf_token %}<button>Delete</button></form>{% endif %}
 </li>{% empty %}<li>No records yet.</li>{% endfor %}</ul>
-<h3>Work Experiences</h3><ul>{% for record in profile.work_experiences.all %}<li>{{ record.organisation }}
+<h2>Work Experiences</h2><ul>{% for record in profile.work_experiences.all %}<li>{{ record.organisation }}
 {% if user.pk == profile.user_id and user.role == "TRAINEE" %}<a href="{% url 'profiles:experience_edit' record.pk %}">Edit</a><form method="post" action="{% url 'profiles:experience_delete' record.pk %}">{% csrf_token %}<button>Delete</button></form>{% endif %}
 </li>{% empty %}<li>No records yet.</li>{% endfor %}</ul>
-<h3>External Certificates</h3><ul>{% for record in profile.external_certificates.all %}<li>{{ record.title }}
+<h2>External Certificates</h2><ul>{% for record in profile.external_certificates.all %}<li>{{ record.title }}
 <a href="{% url 'profiles:private_file' 'certificate' record.pk %}">Download evidence</a>
 {% if user.pk == profile.user_id and user.role == "TRAINEE" %}<a href="{% url 'profiles:certificate_edit' record.pk %}">Edit</a><form method="post" action="{% url 'profiles:certificate_delete' record.pk %}">{% csrf_token %}<button>Delete</button></form>{% endif %}
 </li>{% empty %}<li>No records yet.</li>{% endfor %}</ul>

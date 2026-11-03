@@ -3,17 +3,14 @@
 {% block title %}Login - Capacity Connect{% endblock %}
 
 {% block content %}
-<section>
-    <h2>Portal Login</h2>
+<section class="card auth-card">
+    <h1>Portal Login</h1>
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        {{ form.non_field_errors }}
         {% if request.GET.next %}
             <input type="hidden" name="next" value="{{ request.GET.next }}">
         {% endif %}
-        {% for field in form %}
-            {% include "includes/form_field.html" with field=field %}
-        {% endfor %}
+        {% include "components/form_fields.html" %}
         <div>
             <button type="submit" id="submit-login">Log In</button>
         </div>

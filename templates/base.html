@@ -1,24 +1,21 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="day">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Capacity Connect{% endblock %}</title>
+    {% include "components/assets.html" %}
+    {% block page_styles %}{% endblock %}
+    <script src="{% static 'js/app.js' %}" defer></script>
 </head>
 <body>
-    <header>
-        <h1>Capacity Connect</h1>
-        {% include "includes/nav.html" %}
-    </header>
-
-    {% include "includes/messages.html" %}
-
-    <main id="main-content">
+    <a class="skip-link" href="#main">Skip to main content</a>
+    {% include "components/header.html" %}
+    <main class="shell" id="main" tabindex="-1">
+        {% include "components/messages.html" %}
         {% block content %}{% endblock %}
     </main>
-
-    <footer>
-        <p>&copy; Capacity Connect</p>
-    </footer>
+    <footer><div class="shell">&copy; Capacity Connect</div></footer>
 </body>
 </html>

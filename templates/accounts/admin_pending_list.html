@@ -4,9 +4,9 @@
 
 {% block content %}
 <section>
-    <h2>Pending User Approvals</h2>
+    <h1>Pending User Approvals</h1>
 
-    <table border="1" cellpadding="5" cellspacing="0">
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Admin pending list"><table><caption>Admin pending list</caption>
         <thead>
             <tr>
                 <th scope="col">Username</th>
@@ -26,12 +26,12 @@
                     <td>{{ pending_user.role }}</td>
                     <td>{{ pending_user.date_joined|date:"Y-m-d H:i" }}</td>
                     <td>
-                        <form method="post" action="{% url 'admin_approve_user' pending_user.id %}" style="display:inline;">
+                        <form method="post" action="{% url 'admin_approve_user' pending_user.id %}" class="inline-action">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{% url 'admin_pending_list' %}">
                             <button type="submit" id="pending-approve-{{ pending_user.id }}">Approve</button>
                         </form>
-                        <form method="post" action="{% url 'admin_reject_user' pending_user.id %}" style="display:inline;">
+                        <form method="post" action="{% url 'admin_reject_user' pending_user.id %}" class="inline-action">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{% url 'admin_pending_list' %}">
                             <button type="submit" id="pending-reject-{{ pending_user.id }}">Reject</button>
@@ -44,6 +44,6 @@
                 </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 </section>
 {% endblock %}

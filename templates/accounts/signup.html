@@ -3,14 +3,11 @@
 {% block title %}Sign Up - Capacity Connect{% endblock %}
 
 {% block content %}
-<section>
-    <h2>Sign Up for Capacity Connect</h2>
+<section class="card auth-card">
+    <h1>Sign Up for Capacity Connect</h1>
     <form method="post" action="{% url 'signup' %}">
         {% csrf_token %}
-        {{ form.non_field_errors }}
-        {% for field in form %}
-            {% include "includes/form_field.html" with field=field %}
-        {% endfor %}
+        {% include "components/form_fields.html" %}
         <div>
             <button type="submit" id="submit-signup">Register Account</button>
         </div>

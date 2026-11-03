@@ -2,9 +2,13 @@
 
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 
+from apps.core.styleguide import styleguide
+
 urlpatterns: list = [
+    path("styleguide/", styleguide, name="styleguide"),
     path("", include("apps.announcements.urls")),
     path("competency/", include("apps.competency.urls")),
     path("dashboards/", include("apps.dashboards.urls")),
@@ -18,3 +22,6 @@ urlpatterns: list = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("", include("apps.accounts.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += staticfiles_urlpatterns()

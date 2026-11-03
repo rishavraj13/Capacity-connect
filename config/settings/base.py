@@ -106,8 +106,9 @@ TIME_ZONE: str = "Asia/Kolkata"
 USE_I18N: bool = True
 USE_TZ: bool = True
 
-STATIC_URL: str = "static/"
-STATIC_ROOT: Path = BASE_DIR / "staticfiles"
+STATIC_URL: str = "/static/"
+STATICFILES_DIRS: list[Path] = [BASE_DIR / "static"]
+STATIC_ROOT: Path = BASE_DIR.parent / "capacity-connect-staticfiles"
 
 MEDIA_URL: str = "media/"
 MEDIA_ROOT: Path = BASE_DIR / "media"

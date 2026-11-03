@@ -1,0 +1,103 @@
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/bricolage-grotesque-latin-600-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../fonts/bricolage-grotesque-latin-800-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-latin-600-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/space-mono-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/space-mono-latin-700-normal.woff2") format("woff2");
+}
+
+:root,
+[data-theme="day"] {
+  color-scheme: light;
+  --paper: #f2efe6;
+  --ink: #14213d;
+  --card: #fffdf7;
+  --muted: #6b6a65;
+  --accent: #254e9d;
+  --alert: #9c3029;
+  --success: #17614a;
+}
+
+[data-theme="night"] {
+  color-scheme: dark;
+  --paper: #0f1730;
+  --ink: #eef1ff;
+  --card: #18234a;
+  --muted: #9aa6d6;
+  --accent: #b1ccff;
+  --alert: #ffafa0;
+  --success: #8af0bd;
+}
+
+[data-theme="sign"] {
+  color-scheme: light;
+  --paper: #ffd93d;
+  --ink: #111111;
+  --card: #ffffff;
+  --muted: #444444;
+  --accent: #162d67;
+  --alert: #7b2019;
+  --success: #134d38;
+}
+
+:root {
+  --line-1: #e76f51;
+  --line-2: #2a6fdb;
+  --line-3: #1fa97a;
+  --board: #0b0d10;
+  --board-text: #ffd24a;
+  --certificate: #b8892b;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --card-radius: 14px;
+  --pill-radius: 99px;
+  --stroke: 2px solid var(--ink);
+  --font-title: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-label: "Space Mono", ui-monospace, monospace;
+}

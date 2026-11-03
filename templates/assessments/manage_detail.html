@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% block content %}<h2>{{ questionnaire.title }}</h2>
+{% extends "base.html" %}{% block content %}<h1>{{ questionnaire.title }}</h1>
 <p>{{ questionnaire.opens_at }} to {{ questionnaire.deadline }}; {{ questionnaire.duration_minutes }} minutes; pass {{ questionnaire.pass_percent }}%; maximum {{ questionnaire.max_attempts }} attempts.</p>
 <p><a href="{% url 'assessments:edit' questionnaire.pk %}">Edit questionnaire</a> <a href="{% url 'assessments:question_add' questionnaire.pk %}">Add question</a> <a href="{% url 'assessments:participation' questionnaire.pk %}">Participation and results</a></p>
 <form method="post" action="{% url 'assessments:delete' questionnaire.pk %}">{% csrf_token %}<button>Delete questionnaire</button></form>

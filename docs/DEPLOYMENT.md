@@ -19,7 +19,7 @@ The table below lists every environment variable read by our settings. `.env.exa
 | `CERTIFICATE_MAX_BYTES` | no | `5 * 1024 * 1024` | certificate max bytes |
 | `CERTIFICATE_SIGNATORY_NAME` | no | `'Capacity Connect Administrator'` | certificate signatory name |
 | `CERTIFICATE_SIGNATORY_TITLE` | no | `'Programme Director'` | certificate signatory title |
-| `CONTENT_SECURITY_POLICY` | no | `"default-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"` | content security policy |
+| `CONTENT_SECURITY_POLICY` | no | `"default-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; style-src 'self'; script-src 'self'; font-src 'self'; img-src 'self' data:"` | content security policy |
 | `CSRF_COOKIE_SAMESITE` | no | `'Lax'` | csrf cookie samesite |
 | `CSRF_COOKIE_SECURE` | no | `True` | csrf cookie secure |
 | `DATABASE_URL` | no | `f"sqlite:///{BASE_DIR / 'db.sqlite3'}"` | database url |
@@ -91,7 +91,7 @@ python manage.py collectstatic --noinput
 python manage.py check --deploy --settings=config.settings.prod
 ```
 
-Start the hosting platform's WSGI process with `config.wsgi:application`. PythonAnywhere can load that module in its WSGI entrypoint; Render can use its Python WSGI service. Linux gunicorn + nginx is an operator option requiring separately approved gunicorn installation; it is not a project dependency. Serve STATIC_ROOT through static hosting. Never alias MEDIA_ROOT or PRIVATE_MEDIA_ROOT. Private files use authorised Django attachment views; no urls.py exposes either root. Keep private uploads outside all document roots and static aliases in dev and prod.
+Start the hosting platform's WSGI process with `config.wsgi:application`. PythonAnywhere can load that module in its WSGI entrypoint; Render can use its Python WSGI service. Linux gunicorn + nginx is an operator option requiring separately approved gunicorn installation; it is not a project dependency. Serve STATIC_ROOT at /static/ through the web server or platform static hosting. STATIC_ROOT is the capacity-connect-staticfiles directory beside the repository. Django collects assets there from static/ and app static directories. Never alias MEDIA_ROOT or PRIVATE_MEDIA_ROOT. Private files use authorised Django attachment views; no urls.py exposes either root. Keep private uploads outside all document roots and static aliases in dev and prod.
 
 Large-video HTTP Range or nginx internal X-Accel-Redirect support is documented as a future approved change, not implemented. Current downloads stream through Django.
 
@@ -116,4 +116,4 @@ Cleanup is dry-run by default. Inspect output before adding --delete. It checks 
 
 Not run against PostgreSQL. Runtime application queries use the ORM; SQLite EXPLAIN QUERY PLAN is confined to local evidence scripts. PostgreSQL supports the existing Decimal fields, Lower-based constraints and partial unique/index conditions. SQLite select_for_update is a no-op, so these tests do not prove concurrent row locking. Case matching/collation and transaction races need PostgreSQL execution after driver approval. DatabaseCache increments are best-effort and non-atomic; throttling is anti-abuse, not a security boundary.
 
-Signup intentionally reports unique username/email conflicts; login reports awaiting approval as specified. Those disclosures remain. The CSP permits self only; the later frontend phase must review font/style requirements in CONTENT_SECURITY_POLICY. Certificate name help requests Latin letters without rejecting other scripts; current PDF font glyph coverage remains limited.
+Signup intentionally reports unique username/email conflicts; login reports awaiting approval as specified. Those disclosures remain. The CSP permits same-origin scripts, styles and fonts. Images allow same-origin and data URLs. If an existing environment defines CONTENT_SECURITY_POLICY, use the policy shown above for F0. The /styleguide/ preview returns 404 with DEBUG disabled. Certificate name help requests Latin letters without rejecting other scripts; current PDF font glyph coverage remains limited.

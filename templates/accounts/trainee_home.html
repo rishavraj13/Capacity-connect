@@ -1,15 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Trainee Dashboard - Capacity Connect<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
-<p><a href="{% url 'assessments:mine' %}">My assessments</a></p>
-<p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
-<p><a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a></p>
-<p><a href="{% url 'announcements:home' %}">Public announcements</a></p>
-{% endblock %}
+{% block title %}Trainee Dashboard - Capacity Connect{% endblock %}
 
 {% block content %}
 <section>
-    <h2>Trainee Dashboard</h2>
+    <h1>Trainee Dashboard</h1>
     <p>Welcome, {{ user.first_name|default:user.username }}. Your trainee account is active and approved.</p>
 </section>
 <p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>

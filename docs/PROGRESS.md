@@ -13,7 +13,7 @@
 | **B6 Competency, Announcements, Dashboards** | Ranking selector, announcement CRUD and publish flow, admin analytics selectors | Ranking matches the formula in tests; unpublished items never appear |
 | **B7 Hardening** | Security pass, query optimisation, settings review, seed command, README | Section 11 checklist fully ticked |
 
-Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 approved and merged/tagged; B7 approved and merged/tagged; T1–T7 verification complete and backend handoff awaiting approval. Historical fix rounds remain below.
+Status: B0, B1 and B2/B2.1 approved; B3 approved; B4 approved and merged/tagged; B5 approved and merged/tagged; B6 approved and merged/tagged; B7 approved and merged/tagged; T1–T7 verification complete and backend handoff accepted at backend-complete. F0 awaits review. Historical fix rounds remain below.
 
 ## Phase B1.1 Fix Round Changelog
 
@@ -183,9 +183,28 @@ Testing stage is active; frontend has not started.
 - [x] J3 complete with real target IDs, both actor roles/directions and no protected-request domain writes.
 - [x] Final verification: 1984 passed in 31.10s; coverage run 1984 passed in 31.55s; 3817 statements / 522 branches, zero misses, 100%; standard checks and fresh migrations pass, go-live deploy zero issues, no size/encoding violations.
 - [x] Final fresh clone: 1984 tests and 100% coverage; reverse/normal/normal each 1984; per-app counts sum to 1984.
-- [ ] Reviewer approval of backend handoff; no testing-branch merge/tag or frontend work before instruction.
+- [x] Reviewer approved the backend handoff. Main was fast-forwarded and tagged backend-complete.
 
 ## T1 reproducible install review follow-up
 - [x] Stay on phase/t1-testing; no merge/tag. Exact constraints generated from all 20 distributions in the verified environment; README/deployment install commands updated (ADR 072).
 - [x] Fresh clone of d0483b7: all 20 installed distributions exactly match constraints; pytest 1984 passed in 28.53s; coverage run 1984 passed in 29.00s, TOTAL 3817 / 0 missed / 522 branches / 0 partial / 100%; Ruff, fresh migrate, migration check, Django check and pip check pass. See TEST_REPORT.md follow-up and ignored T1_CONSTRAINED_CLONE_OUTPUT.txt.
-- [ ] Reviewer approval; remain on phase/t1-testing without merge/tag.
+- [x] Reviewer accepted the reproducibility follow-up and authorized the backend closeout.
+
+## Frontend phase tracking
+
+| Phase | Scope | Status |
+|---|---|---|
+| F0 | Design foundations | Gate passed. Awaiting review. |
+| F1 | Public pages | Awaiting approval to begin. |
+| F2 | Trainee pages | Pending. |
+| F3 | Trainer pages | Pending. |
+| F4 | Admin pages | Pending. |
+| F5 | Responsive and accessibility sweep | Pending. |
+
+- [x] Backend closeout and ownership mutations accepted. Re-verification on backend-complete recorded 1984 passes and 100% coverage.
+- [x] BUG 025 fixed in a fresh clone using review-env.
+- [x] Font intake moved 534 files into ignored storage. Verified and shipped six Latin WOFF2 files (125,660 bytes) and their three SIL OFL 1.1 licenses.
+- [x] Shared shell, components, themes, strict CSP and development gallery. Route audit explicitly classifies the gallery.
+- [x] F0 gate recorded 2068 passes and TOTAL 3831 statements, 524 branches, 100% coverage. Ruff, migration, Django and pip checks passed. Static collection copied 143 files.
+- [x] Edge captured 18 screenshots across the requested widths and themes. Dev served the stylesheet and returned 404 for an existing private-file probe at each guessed URL.
+- [ ] Reviewer approval for F0.

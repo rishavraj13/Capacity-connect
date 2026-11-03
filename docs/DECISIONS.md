@@ -318,3 +318,15 @@
 - **Decision:** Proposed by agent, implementing the reviewer's reproducible-install request: requirements/constraints.txt is the UTF-8/no-BOM output of `python -m pip freeze --all` from the verified local Python 3.14.6 Windows virtualenv. It contains every installed distribution, including pip, and pins sqlparse 0.6.0. No dependency is added or upgraded. Install development requirements with `python -m pip install -r requirements/dev.txt -c requirements/constraints.txt`; production uses base.txt with the same constraints.
 - **Refresh procedure:** After approval for a dependency upgrade, update its direct requirement and resolve the intended compatible transitive versions in a clean virtualenv on the supported Python/platform. During this controlled refresh, resolve the updated direct requirements without the old constraints; after the refresh all normal installs use the new constraints. Run the complete verification gate there, inspect the package/version diff, then regenerate all constraints from that verified environment. Use `python -c "import pathlib,subprocess,sys; pathlib.Path('requirements/constraints.txt').write_text(subprocess.check_output([sys.executable,'-m','pip','freeze','--all'],text=True,encoding='utf-8'),encoding='utf-8')"` to avoid PowerShell redirection encoding defaults. Commit direct pins and refreshed constraints together, then prove a fresh clone using the documented constrained command and compare the complete freeze output with the constraints.
 - **Consequences:** Constraints only limit dependencies that an installation requests; they do not themselves install the dev toolchain or change pip. The fresh-clone proof checks all installed distributions, including bootstrap pip. This pins package versions for the verified environment, not wheel hashes or an untested OS/Python combination. Earlier unconstrained clone results remain accurate historical evidence; new installations must use constraints.
+
+## ADR 073: Plain assets and local font sources
+
+F0 uses plain CSS, native HTML controls and small browser scripts. The reviewed Latin WOFF2 files and SIL OFL 1.1 licenses ship with the app. Font hashes and sizes are recorded in [SOURCES.md](../static/fonts/SOURCES.md). Django serves static assets in development. The production web server serves the collected assets from the directory beside the repository.
+
+## ADR 074: Content Security Policy for F0
+
+The CSP explicitly permits same-origin styles, scripts and fonts, and allows same-origin and data images. The existing frame, base and form restrictions remain. Source and rendered markup tests enforce the local assets policy. The private upload roots stay separate from static collection and URL routing.
+
+## ADR 075: Theme selection and development preview
+
+The blocking local head script sets the theme before CSS paints. A valid stored choice takes priority over the system preference. If storage is unavailable, the page keeps the selection in memory. The development gallery uses sample data and is explicitly classified in the route audit. The view returns 404 when DEBUG is disabled.

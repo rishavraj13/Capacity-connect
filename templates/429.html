@@ -1,2 +1,4 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>429 Too many requests</title></head><body><h1>429 Too many requests</h1><p>Please try again later or return to the home page.</p></body></html>
+{% extends "components/error_shell.html" %}
+{% block error_title %}429 Too many requests{% endblock %}
+{% block error_heading %}429 Too many requests{% endblock %}
+{% block error_message %}Wait before trying again.{% endblock %}

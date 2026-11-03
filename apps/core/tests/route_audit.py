@@ -17,6 +17,7 @@ PUBLIC_NAMES = frozenset(
         "admin:login",
     }
 )
+DEV_ONLY_NAMES = frozenset({"styleguide"})
 STATE_NAMES = frozenset(
     {
         "logout",
@@ -110,7 +111,7 @@ def _route(pattern: object, namespaces: tuple, prefix: str) -> Route:
 
 def assert_declared(route: Route) -> None:
     """Require public names or role guards, retaining POST-only logout."""
-    if route.name in PUBLIC_NAMES or route.name == "logout":
+    if route.name in PUBLIC_NAMES | DEV_ONLY_NAMES or route.name == "logout":
         return
     if route.admin:
         assert _admin_guarded(route.callback), route.name

@@ -1,4 +1,6 @@
-        <nav aria-label="Main Navigation">
+<nav aria-label="Main Navigation" class="nav-menu">
+<details>
+<summary>Navigation</summary>
             <ul>
                 {% if user.is_authenticated %}
                     {% if user.is_approved and user.is_active %}
@@ -18,7 +20,6 @@
                     {% elif user.role == "TRAINER" %}<li><a href="{% url 'profiles:trainer_edit' %}">My trainer profile</a></li>
                     {% elif user.role == "ADMIN" %}<li><a href="{% url 'catalog:subject_create' %}">Create subject</a></li><li><a href="{% url 'catalog:skill_create' %}">Create skill</a></li>{% endif %}
                     {% endif %}
-                    <li>Logged in as: {{ user.username }} ({{ user.role }})</li>
                     {% if user.role == "TRAINEE" %}
                         <li><a href="{% url 'trainee_home' %}">Trainee Dashboard</a></li>
                     {% elif user.role == "TRAINER" %}
@@ -28,21 +29,17 @@
                         <li><a href="{% url 'admin_user_list' %}">User Management</a></li>
                         <li><a href="{% url 'admin_pending_list' %}">Pending Approvals</a></li>
                     {% endif %}
-                    <li>
-                        <form method="post" action="{% url 'logout' %}" >
-                            {% csrf_token %}
-                            <button type="submit" id="logout-button">Logout</button>
-                        </form>
-                    </li>
                 {% else %}
                     <li><a href="{% url 'login' %}">Login</a></li>
                     <li><a href="{% url 'signup' %}">Sign Up</a></li>
                 {% endif %}
             </ul>
-        </nav>
+
 
 {% if user.is_authenticated and user.role == "TRAINEE" %}<a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a>{% endif %}
 <a href="{% url 'certificates:verify_form' %}">Verify certificate</a>
 
 <a href="{% url 'announcements:home' %}">Public announcements</a>
 {% if user.is_approved and user.is_active %}{% if user.role == "TRAINER" %}<a href="{% url 'competency:mine' %}">My competencies</a> <a href="{% url 'dashboards:trainer' %}">My trainer statistics</a>{% elif user.role == "ADMIN" %}<a href="{% url 'competency:ranking' %}">Find trainers</a> <a href="{% url 'announcements:manage' %}">Manage announcements</a> <a href="{% url 'dashboards:admin' %}">Admin statistics</a>{% endif %}{% endif %}
+</details>
+</nav>

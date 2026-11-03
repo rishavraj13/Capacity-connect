@@ -54,3 +54,9 @@ Python 3.14, Django 5.x and requirements/dev.txt. Core supplies clock, storage, 
 Demo password: `Demo-Connect-2026!` (DEMO_PASSWORD override). The seed prints all login names and statuses. Use `python manage.py cleanup_orphan_files` for a dry run; add --delete only after reviewing candidates. `python manage.py evaluate_completions` retries completion/certificates.
 
 See [deployment and environment catalogue](docs/DEPLOYMENT.md), [decisions](docs/DECISIONS.md), [progress](docs/PROGRESS.md) and [binding brief](docs/IMPLEMENTATION_BRIEF.md).
+
+## Line design foundations
+
+Run `python manage.py runserver` and open `/styleguide/` with `DEBUG=True` to review the components. Use the Theme control to choose Day, Night or Signage. The browser remembers the choice locally. On first visit the theme follows the system dark preference and otherwise starts in Day. Forms and the collapsible navigation work without JavaScript.
+
+Django serves `static/` during development. For deployment, run `python manage.py collectstatic --noinput` and serve the collected directory at `/static/`. See [deployment instructions](docs/DEPLOYMENT.md) and [font sources](static/fonts/SOURCES.md).

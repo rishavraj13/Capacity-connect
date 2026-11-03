@@ -20,7 +20,8 @@ CONTENT_SECURITY_POLICY = env(
     "CONTENT_SECURITY_POLICY",
     default=(
         "default-src 'self'; frame-ancestors 'none'; "
-        "base-uri 'self'; form-action 'self'"
+        "base-uri 'self'; form-action 'self'; style-src 'self'; "
+        "script-src 'self'; font-src 'self'; img-src 'self' data:"
     ),
 )
 ADMIN_URL = env("ADMIN_URL", default="django-admin/").strip("/") + "/"

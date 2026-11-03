@@ -1,0 +1,25 @@
+<section class="card">
+    <h2>Station map</h2>
+    <p class="muted">Training line 01 · three stops</p>
+    <svg viewBox="0 0 400 100" aria-label="Sample station map">
+        <path class="station-line" d="M55 35H345"/>
+        <a href="#sample-central" aria-label="Central, done">
+            <circle class="station station-done" cx="55" cy="35" r="12"/>
+            <text class="station-label" x="55" y="78" text-anchor="middle">Central</text>
+        </a>
+        <a href="#sample-signal" aria-label="Signal Works, current interchange">
+            <circle class="station-halo" cx="200" cy="35" r="22"/>
+            <circle class="station" cx="200" cy="35" r="15"/>
+            <text class="station-label" x="200" y="78" text-anchor="middle">Signal Works</text>
+        </a>
+        <a href="#sample-terminal" aria-label="Terminal, locked">
+            <circle class="station station-locked" cx="345" cy="35" r="12"/>
+            <text class="station-label" x="345" y="78" text-anchor="middle">Terminal</text>
+        </a>
+    </svg>
+    <ol>
+        <li id="sample-central">Central <span class="badge badge-done">Done</span></li>
+        <li id="sample-signal">Signal Works <span class="badge badge-current">Current · Interchange</span></li>
+        <li id="sample-terminal">Terminal <span class="badge badge-locked">Locked</span></li>
+    </ol>
+</section>

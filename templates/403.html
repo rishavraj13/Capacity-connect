@@ -1,2 +1,4 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>403 Forbidden</title></head><body><h1>403 Forbidden</h1><p>Please try again later or return to the home page.</p></body></html>
+{% extends "components/error_shell.html" %}
+{% block error_title %}403 Forbidden{% endblock %}
+{% block error_heading %}403 Forbidden{% endblock %}
+{% block error_message %}Access to this page is restricted.{% endblock %}

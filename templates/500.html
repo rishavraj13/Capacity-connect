@@ -1,2 +1,4 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>500 Server error</title></head><body><h1>500 Server error</h1><p>Please try again later or return to the home page.</p></body></html>
+{% extends "components/error_shell.html" %}
+{% block error_title %}500 Server error{% endblock %}
+{% block error_heading %}500 Server error{% endblock %}
+{% block error_message %}The service could not complete the request. Please try again later.{% endblock %}

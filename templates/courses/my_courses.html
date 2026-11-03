@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% block content %}<h2>My courses</h2>
+{% extends "base.html" %}{% block content %}<h1>My courses</h1>
 <p><a href="{% url 'courses:station_map' %}">Station map</a></p>
 <ul>{% for enrollment in enrollments %}<li><a href="{% url 'courses:detail' enrollment.course_id %}">{{ enrollment.course.title }}</a> - {{ enrollment.status }} - {{ enrollment.modules_done }} / {{ enrollment.modules_total }} modules done.
 {% if enrollment.status == "ACTIVE" %}<form method="post" action="{% url 'courses:drop' enrollment.pk %}">{% csrf_token %}<button>Drop</button></form>{% endif %}</li>{% empty %}<li>No enrollments.</li>{% endfor %}</ul>{% endblock %}

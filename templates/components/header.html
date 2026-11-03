@@ -1,0 +1,18 @@
+<header class="site-header">
+    <div class="shell header-bar">
+        <a class="wordmark" href="{% url 'announcements:home' %}">
+            <span class="roundel" aria-hidden="true">CC</span> Capacity Connect
+        </a>
+        {% include "components/theme_control.html" %}
+        {% if user.is_authenticated %}
+            <details class="user-menu">
+                <summary>{{ user.username }} · {{ user.role }}</summary>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" id="logout-button">Logout</button>
+                </form>
+            </details>
+        {% endif %}
+        {% include "components/nav.html" %}
+    </div>
+</header>

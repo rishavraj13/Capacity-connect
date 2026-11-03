@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Line design system | Capacity Connect{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{% static 'css/pages/styleguide.css' %}">{% endblock %}
+{% block content %}
+    {% include "components/page_header.html" with eyebrow="Line · F0 Design foundations" heading="Component gallery" description="Shared controls and learning components in Day, Night and Signage." %}
+    <div class="gallery-grid">
+        {% include "components/board.html" %}
+        {% include "components/sample_station_map.html" %}
+        {% include "components/sample_ticket.html" %}
+        <section class="card">
+            <h2>Forms and actions</h2>
+            {% include "components/form_fields.html" with form=sample_form %}
+            <div class="actions">
+                <button type="button">Primary action</button>
+                <a class="button button-secondary" href="#sample-pagination">Secondary action</a>
+                <button type="button" disabled>Unavailable</button>
+            </div>
+        </section>
+        <section class="card">
+            <h2>Notices</h2>
+            <p class="alert alert-info">Information · The board updates when notices are published.</p>
+            <p class="alert alert-success">Success · Your module is complete.</p>
+            <p class="alert alert-error">Error · Review the highlighted field.</p>
+            {% include "components/empty_state.html" with text="No additional notices." %}
+        </section>
+        <section class="card" id="sample-pagination">
+            <h2>Progress and pagination</h2>
+            {% include "components/stat_tile.html" with label="Enrolled learners" value="24" %}
+            <p><label for="sample-load">Line load · 24 of 32</label></p>
+            <meter id="sample-load" value="24" max="32">24 of 32</meter>
+            {% include "components/pagination.html" with previous="?page=1" next="?page=3" page_label="Page 2 of 3" %}
+        </section>
+        <section class="card certificate-card">
+            <h2>Certificate of completion</h2>
+            <p>Sample learner · Signal safety</p>
+            <p class="eyebrow">Issued · CC-00001</p>
+        </section>
+    </div>
+{% endblock %}

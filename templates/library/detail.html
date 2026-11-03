@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% block content %}<h2>{{ resource.title }}</h2>
+{% extends "base.html" %}{% block content %}<h1>{{ resource.title }}</h1>
 <p>{{ resource.description }}</p><p>{{ resource.kind }} - {{ resource.subject.name }} - {{ resource.trainer.username }}</p>
 {% if course_visible %}<p><a href="{% url 'courses:detail' resource.course_id %}">{{ resource.course.title }}</a></p>{% endif %}
 <a href="{% url 'library:download' resource.pk %}">Open or download file</a>
