@@ -29,39 +29,24 @@
     <div class="table-scroll" tabindex="0" role="region" aria-label="Admin user list"><table><caption>Admin user list</caption>
         <thead>
             <tr>
+                <th scope="col">Name</th>
                 <th scope="col">Username</th>
                 <th scope="col">Email</th>
                 <th scope="col">Role</th>
-                <th scope="col">Approved</th>
-                <th scope="col">Active</th>
+                <th scope="col">Status</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for target_user in page_obj %}
                 <tr>
-                    <td>{{ target_user.username }}</td>
+                    <td>{{ target_user.get_full_name|default:"—" }}</td>
+                    <th scope="row">{{ target_user.username }}</th>
                     <td>{{ target_user.email }}</td>
-                    <td>{{ target_user.role }}</td>
-                    <td>{{ target_user.is_approved|yesno:"Yes,No" }}</td>
-                    <td>{{ target_user.is_active|yesno:"Active,Disabled" }}</td>
+                    <td><span class="badge">{{ target_user.get_role_display }}</span></td>
+                    <td>{% include "components/admin_account_status.html" with account=target_user %}</td>
                     <td>
-                        {% if not target_user.is_approved and target_user.is_active %}
-                            <form method="post" action="{% url 'admin_approve_user' target_user.id %}" class="inline-action">
-                                {% csrf_token %}
-                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                <button type="submit" id="approve-btn-{{ target_user.id }}">Approve</button>
-                            </form>
-                        {% endif %}
-
-                        {% if target_user.is_active %}
-                            <form method="post" action="{% url 'admin_reject_user' target_user.id %}" class="inline-action">
-                                {% csrf_token %}
-                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                                <button type="submit" id="reject-btn-{{ target_user.id }}">Reject / Disable</button>
-                            </form>
-                        {% endif %}
-
+                        {% include "components/admin_approval_actions.html" with account=target_user return_url=request.get_full_path approve_prefix="approve-btn" reject_prefix="reject-btn" %}
                         <form method="post" action="{% url 'admin_change_role' target_user.id %}" class="inline-action">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -85,11 +70,11 @@
 
     <nav aria-label="Pagination Navigation">
         {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}&role={{ selected_role }}&status={{ selected_status }}" id="pagination-prev">Previous</a>
+            <a href="?page={{ page_obj.previous_page_number }}&amp;role={{ selected_role|urlencode }}&amp;status={{ selected_status|urlencode }}" id="pagination-prev">Previous</a>
         {% endif %}
         <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}&role={{ selected_role }}&status={{ selected_status }}" id="pagination-next">Next</a>
+            <a href="?page={{ page_obj.next_page_number }}&amp;role={{ selected_role|urlencode }}&amp;status={{ selected_status|urlencode }}" id="pagination-next">Next</a>
         {% endif %}
     </nav>
 </section>

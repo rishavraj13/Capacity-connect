@@ -1,1 +1,53 @@
-{% extends "base.html" %}{% block content %}<h1>Manage announcements</h1><p><a href="{% url 'announcements:create' %}">Create announcement</a></p><form method="get"><label>Category <select name="category"><option value="">All</option>{% for value,label in categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label><label>Status <select name="status"><option value="all">All</option><option value="draft">Draft</option><option value="published">Published</option></select></label><button>Filter</button></form><ul>{% for row in page %}<li>{{ row.title }} - {{ row.category }} - {% if row.is_published %}published{% else %}draft{% endif %} <a href="{% url 'announcements:edit' row.pk %}">Edit</a>{% if row.is_published %}<form method="post" action="{% url 'announcements:unpublish' row.pk %}">{% csrf_token %}<button>Unpublish</button></form>{% else %}<form method="post" action="{% url 'announcements:publish' row.pk %}">{% csrf_token %}<button>Publish</button></form>{% endif %}<form method="post" action="{% url 'announcements:delete' row.pk %}">{% csrf_token %}<button>Delete</button></form></li>{% empty %}<li>No matching announcements.</li>{% endfor %}</ul>{% if page.has_previous %}<a href="?page={{ page.previous_page_number }}&amp;category={{ request.GET.category|urlencode }}&amp;status={{ request.GET.status|urlencode }}">Previous</a>{% endif %}{% if page.has_next %}<a href="?page={{ page.next_page_number }}&amp;category={{ request.GET.category|urlencode }}&amp;status={{ request.GET.status|urlencode }}">Next</a>{% endif %}{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h1>Manage announcements</h1>
+<p><a class="button" href="{% url 'announcements:create' %}">Create announcement</a></p>
+<form method="get" class="card">
+    <label for="announcement-category">Category</label>
+    <select id="announcement-category" name="category">
+        <option value="">All categories</option>
+        {% for value,label in categories %}<option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <label for="announcement-status">Status</label>
+    <select id="announcement-status" name="status">
+        <option value="all">All statuses</option>
+        <option value="draft" {% if request.GET.status == "draft" %}selected{% endif %}>Draft</option>
+        <option value="published" {% if request.GET.status == "published" %}selected{% endif %}>Published</option>
+    </select>
+    <button type="submit">Apply filters</button>
+</form>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Announcement management">
+<table>
+    <caption>Announcements and departure-board previews</caption>
+    <thead><tr><th scope="col">Title</th><th scope="col">Category</th><th scope="col">Status</th><th scope="col">Published date</th><th scope="col">Preview</th><th scope="col">Actions</th></tr></thead>
+    <tbody>
+    {% for row in page %}
+    <tr>
+        <th scope="row">{{ row.title }}</th>
+        <td><span class="badge">{% include "components/board_category.html" with category=row.category only %}</span></td>
+        <td>{% include "components/publication_badge.html" with published=row.is_published %}</td>
+        <td>{{ row.published_at|date:"j M Y H:i"|default:"Not published" }}</td>
+        <td>{% include "components/board_row.html" with item=row preview=True %}</td>
+        <td>
+            <a href="{% url 'announcements:edit' row.pk %}">Edit announcement</a>
+            {% if row.is_published %}
+                <form method="post" action="{% url 'announcements:unpublish' row.pk %}">{% csrf_token %}<button type="submit">Unpublish</button></form>
+            {% else %}
+                <form method="post" action="{% url 'announcements:publish' row.pk %}">{% csrf_token %}<button type="submit">Publish</button></form>
+            {% endif %}
+            {% url 'announcements:delete' row.pk as delete_url %}
+            {% include "components/confirm_delete.html" with prompt="Delete announcement" %}
+        </td>
+    </tr>
+    {% empty %}<tr><td colspan="6">No matching announcements.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+{% if page.has_other_pages %}
+<nav class="actions" aria-label="Announcement pages">
+    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}&amp;category={{ request.GET.category|urlencode }}&amp;status={{ request.GET.status|urlencode }}">Previous</a>{% endif %}
+    <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a href="?page={{ page.next_page_number }}&amp;category={{ request.GET.category|urlencode }}&amp;status={{ request.GET.status|urlencode }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

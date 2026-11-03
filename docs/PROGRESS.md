@@ -199,8 +199,8 @@ Testing stage is active; frontend has not started.
 | F2a | Trainee learning pages | Engineering accepted and tagged f2a-approved. Visual review pending. |
 | F2b | Trainee assessments, certificates, feedback and profiles | Engineering accepted and tagged f2b-approved. Visual review pending. |
 | F3a | Trainer management pages | Engineering accepted and tagged f3a-approved. Visual review pending. |
-| F3b | Trainer assessments, dashboard and feedback | Implemented. Awaiting review. |
-| F4 | Admin pages | Pending. |
+| F3b | Trainer assessments, dashboard and feedback | Engineering accepted and tagged f3b-approved. Visual review pending. |
+| F4 | Admin pages | Implemented. Awaiting review. |
 | F5 | Responsive and accessibility sweep | Pending. |
 
 - [x] Backend closeout and ownership mutations accepted. Re-verification on backend-complete recorded 1984 passes and 100% coverage.
@@ -217,4 +217,5 @@ Testing stage is active; frontend has not started.
 - [x] F2a engineering accepted. Visual review pending.
 - [x] F2b engineering accepted. Visual review pending.
 - [x] F3a engineering accepted. Visual review pending.
-- [ ] Reviewer approval for F3b.
+- [x] F3b engineering accepted. Visual review pending.
+- [ ] Reviewer approval for F4.

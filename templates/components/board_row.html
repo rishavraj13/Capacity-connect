@@ -1,0 +1,11 @@
+{% if not preview %}
+<tr>
+    <td class="board-label">{% include "components/board_category.html" with category=category only %}</td>
+    <td>
+{% endif %}
+<strong>{{ item.title }}</strong><div>{{ item.body|truncatechars:160|linebreaksbr }}</div>
+{% if not preview %}
+    </td>
+    <td><time datetime="{{ item.published_at|date:'c' }}"><span>{{ item.published_at|date:"j M Y" }}</span><span>{{ item.published_at|date:"H:i" }}</span></time></td>
+</tr>
+{% endif %}

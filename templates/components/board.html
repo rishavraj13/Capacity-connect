@@ -13,11 +13,7 @@
                 {% else %}
                     {% for category, items in board.items %}
                         {% for item in items %}
-                            <tr>
-                                <td class="board-label">{% include "components/board_category.html" with category=category only %}</td>
-                                <td><strong>{{ item.title }}</strong><div>{{ item.body|truncatechars:160|linebreaksbr }}</div></td>
-                                <td><time datetime="{{ item.published_at|date:'c' }}"><span>{{ item.published_at|date:"j M Y" }}</span><span>{{ item.published_at|date:"H:i" }}</span></time></td>
-                            </tr>
+                            {% include "components/board_row.html" %}
                         {% endfor %}
                     {% endfor %}
                 {% endif %}

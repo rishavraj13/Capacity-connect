@@ -2,48 +2,52 @@
 <input class="nav-toggle" id="main-nav-toggle" type="checkbox">
 <label for="main-nav-toggle">Navigation</label>
 <div class="nav-links">
-            <ul>
-                {% if user.is_authenticated %}
-                    {% if user.is_approved and user.is_active %}
-                    {% if user.role == "TRAINEE" %}<li><a href="{% url 'assessments:mine' %}">My assessments</a></li><li><a href="{% url 'assessments:history' %}">Assessment history</a></li>{% endif %}
-                    {% if user.role == "TRAINER" or user.role == "ADMIN" %}<li><a href="{% url 'courses:list' %}">Course assessments</a></li>{% endif %}
-                    <li><a href="{% url 'courses:list' %}">Courses</a></li>
-                    <li><a href="{% url 'library:list' %}">Library</a></li>
-                    {% if user.role == "TRAINEE" %}<li><a href="{% url 'courses:my_courses' %}">My courses</a></li><li><a href="{% url 'courses:station_map' %}">Station map</a></li>{% endif %}
-                    {% if user.role == "TRAINER" or user.role == "ADMIN" %}<li><a href="{% url 'courses:create' %}">Create course</a></li><li><a href="{% url 'library:create' %}">Create resource</a></li>{% endif %}
-                    <li><a href="{% url 'catalog:subject_list' %}">Catalog</a></li>
-                    <li><a href="{% url 'profiles:profile_list' %}">Profiles</a></li>
-                    <li><a href="{% url 'profiles:account_edit' %}">Account details</a></li>
-                    {% if user.role == "TRAINEE" %}<li><a href="{% url 'profiles:trainee_edit' %}">My trainee profile</a></li>
-                    <li><a href="{% url 'profiles:qualification_create' %}">Add qualification</a></li>
-                    <li><a href="{% url 'profiles:experience_create' %}">Add experience</a></li>
-                    <li><a href="{% url 'profiles:certificate_create' %}">Add certificate</a></li>
-                    {% elif user.role == "TRAINER" %}<li><a href="{% url 'profiles:trainer_edit' %}">My trainer profile</a></li>
-                    {% elif user.role == "ADMIN" %}<li><a href="{% url 'catalog:subject_create' %}">Create subject</a></li><li><a href="{% url 'catalog:skill_create' %}">Create skill</a></li>{% endif %}
-                    {% endif %}
-                    {% if user.role == "TRAINEE" %}
-                        <li><a href="{% url 'trainee_home' %}">Trainee Dashboard</a></li>
-                    {% elif user.role == "TRAINER" %}
-                        <li><a href="{% url 'trainer_home' %}">Trainer Dashboard</a></li>
-                    {% elif user.role == "ADMIN" %}
-                        <li><a href="{% url 'admin_panel' %}">Admin Dashboard</a></li>
-                        <li><a href="{% url 'admin_user_list' %}">User Management</a></li>
-                        <li><a href="{% url 'admin_pending_list' %}">Pending Approvals</a></li>
-                    {% endif %}
-                {% else %}
-                    <li><a href="{% url 'announcements:home' %}">Home</a></li>
-                    <li><a href="{% url 'certificates:verify_form' %}">Verify certificate</a></li>
-                    <li><a href="{% url 'login' %}">Log in</a></li>
-                    <li><a href="{% url 'signup' %}">Sign up</a></li>
+    <ul>
+    {% if user.is_authenticated %}
+        {% if user.is_approved and user.is_active %}
+            {% if user.role == "ADMIN" %}
+                <li><a href="{% url 'admin_panel' %}">Control room</a></li>
+                <li><a href="{% url 'admin_user_list' %}">Users</a></li>
+                <li><a href="{% url 'admin_pending_list' %}">Approvals</a></li>
+                <li><a href="{% url 'catalog:subject_list' %}">Catalog</a></li>
+                <li><a href="{% url 'announcements:manage' %}">Announcements</a></li>
+                <li><a href="{% url 'competency:ranking' %}">Trainer ranking</a></li>
+                <li><a href="{% url 'courses:list' %}">Courses</a></li>
+                <li><a href="{% url 'library:list' %}">Library</a></li>
+                <li><a href="{% url 'dashboards:admin' %}">Control room statistics</a></li>
+            {% else %}
+                <li><a href="{% url 'courses:list' %}">Courses</a></li>
+                <li><a href="{% url 'library:list' %}">Library</a></li>
+                <li><a href="{% url 'catalog:subject_list' %}">Catalog</a></li>
+                {% if user.role == "TRAINEE" %}
+                    <li><a href="{% url 'trainee_home' %}">Trainee Dashboard</a></li>
+                    <li><a href="{% url 'courses:my_courses' %}">My courses</a></li>
+                    <li><a href="{% url 'courses:station_map' %}">Station map</a></li>
+                    <li><a href="{% url 'assessments:mine' %}">My assessments</a></li>
+                    <li><a href="{% url 'assessments:history' %}">Assessment history</a></li>
+                    <li><a href="{% url 'feedback:mine' %}">My feedback</a></li>
+                    <li><a href="{% url 'certificates:mine' %}">My certificates</a></li>
+                    <li><a href="{% url 'profiles:trainee_edit' %}">My trainee profile</a></li>
+                {% elif user.role == "TRAINER" %}
+                    <li><a href="{% url 'trainer_home' %}">Trainer Dashboard</a></li>
+                    <li><a href="{% url 'competency:mine' %}">My competencies</a></li>
+                    <li><a href="{% url 'dashboards:trainer' %}">My trainer statistics</a></li>
+                    <li><a href="{% url 'profiles:trainer_edit' %}">My trainer profile</a></li>
                 {% endif %}
-            </ul>
-
-
-{% if user.is_authenticated and user.role == "TRAINEE" %}<a href="{% url 'feedback:mine' %}">My feedback</a> <a href="{% url 'certificates:mine' %}">My certificates</a>{% endif %}
-{% if user.is_authenticated %}
-<a href="{% url 'certificates:verify_form' %}">Verify certificate</a>
-<a href="{% url 'announcements:home' %}">Home</a>
-{% endif %}
-{% if user.is_approved and user.is_active %}{% if user.role == "TRAINER" %}<a href="{% url 'competency:mine' %}">My competencies</a> <a href="{% url 'dashboards:trainer' %}">My trainer statistics</a>{% elif user.role == "ADMIN" %}<a href="{% url 'competency:ranking' %}">Find trainers</a> <a href="{% url 'announcements:manage' %}">Manage announcements</a> <a href="{% url 'dashboards:admin' %}">Admin statistics</a>{% endif %}{% endif %}
+            {% endif %}
+            <li><a href="{% url 'profiles:profile_list' %}">Profiles</a></li>
+            <li><a href="{% url 'profiles:account_edit' %}">Account details</a></li>
+        {% endif %}
+    {% else %}
+        <li><a href="{% url 'announcements:home' %}">Home</a></li>
+        <li><a href="{% url 'certificates:verify_form' %}">Verify certificate</a></li>
+        <li><a href="{% url 'login' %}">Log in</a></li>
+        <li><a href="{% url 'signup' %}">Sign up</a></li>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <li><a href="{% url 'certificates:verify_form' %}">Verify certificate</a></li>
+        <li><a href="{% url 'announcements:home' %}">Home</a></li>
+    {% endif %}
+    </ul>
 </div>
 </nav>

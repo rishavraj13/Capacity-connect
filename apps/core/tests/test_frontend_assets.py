@@ -148,3 +148,5 @@ def test_staff_chart_contrast(theme: str) -> None:
         for surface in ("paper", "card"):
             assert contrast(colors, token, surface) >= 3
     assert contrast(colors, "accent", "card") >= 3
+    assert contrast(colors, "card", "line-2") >= 3  # Diagonal cue.
+    assert contrast(colors, "card", "line-3") >= 3  # Check cue.

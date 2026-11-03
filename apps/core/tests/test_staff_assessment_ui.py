@@ -149,13 +149,20 @@ def test_participation_heat_strip_and_table(
     assert ('aria-label="Attempted, not passed"' in html) == bool(attempted)
     assert ("No trainees have attempted" in html) == (attempted == 0)
     assert "0.00%" in html or attempted == 3
+    _assert_distinct_heat_cues(html, attempted)
+
+
+def _assert_distinct_heat_cues(html: str, attempted: int) -> None:
+    """Check each state in both the strip and the visible legend."""
+    strip = html.split('class="heat-strip"', 1)[1].split("</ul>", 1)[0]
     legend = html.split('aria-label="Participation legend">', 1)[1].split("</ul>", 1)[0]
-    for cue, label in (
-        ("cue-hollow", "Not attempted"),
-        ("cue-diagonal", "Attempted, not passed"),
-        ("cue-check", "Passed"),
+    for cue, label, present in (
+        ("cue-hollow", "Not attempted", attempted < 3),
+        ("cue-diagonal", "Attempted, not passed", bool(attempted)),
+        ("cue-check", "Passed", bool(attempted)),
     ):
         assert cue in legend and label in legend
+        assert (cue in strip) == present
 
 
 def test_staff_result_discloses_correct_answer_only_to_authorized_staff(

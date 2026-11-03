@@ -3,14 +3,14 @@
 <h1>Subjects and skills</h1>
 {% if user.role == "ADMIN" %}<p><a href="{% url 'catalog:subject_create' %}">Create subject</a> <a href="{% url 'catalog:skill_create' %}">Create skill</a></p>{% endif %}
 {% for subject in subjects %}
-<section class="card"><h2>{{ subject.name }}</h2>{% if not subject.is_active %}<p class="badge">Inactive</p>{% endif %}<p>{{ subject.description }}</p>
+<section class="card"><h2>{{ subject.name }}</h2>{% if user.role == "ADMIN" %}<p class="badge">{{ subject.is_active|yesno:"Active,Inactive" }}</p>{% elif not subject.is_active %}<p class="badge">Inactive</p>{% endif %}<p>{{ subject.description }}</p>
 {% if user.role == "ADMIN" %}
 <a href="{% url 'catalog:subject_edit' subject.pk %}">Edit subject</a>
 {% if subject.is_active %}<form method="post" action="{% url 'catalog:subject_deactivate' subject.pk %}">{% csrf_token %}<button>Deactivate</button></form>
 {% else %}<form method="post" action="{% url 'catalog:subject_reactivate' subject.pk %}">{% csrf_token %}<button>Reactivate</button></form>{% endif %}
 {% endif %}
 <ul>{% for skill in subject.skills.all %}<li><span class="badge">{{ skill.name }}</span>
-{% if user.role == "ADMIN" %}<a href="{% url 'catalog:skill_edit' skill.pk %}">Edit skill</a><form method="post" action="{% url 'catalog:skill_delete' skill.pk %}">{% csrf_token %}<button>Delete skill</button></form>{% endif %}
+{% if user.role == "ADMIN" %}<a href="{% url 'catalog:skill_edit' skill.pk %}">Edit skill</a>{% url 'catalog:skill_delete' skill.pk as delete_url %}{% include "components/confirm_delete.html" with prompt="Delete skill" %}{% endif %}
 </li>{% empty %}<li>No skills yet.</li>{% endfor %}</ul></section>
 {% empty %}<p class="empty-state">No subjects yet.</p>{% endfor %}
 {% endblock %}

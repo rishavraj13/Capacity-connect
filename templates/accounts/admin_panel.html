@@ -1,22 +1,16 @@
 {% extends "base.html" %}
-
-{% block title %}Administrator Dashboard - Capacity Connect{% endblock %}
-
+{% block title %}Control room - Capacity Connect{% endblock %}
 {% block content %}
-<section>
-    <h1>Administrator Control Panel</h1>
-    <p>Welcome, {{ user.first_name|default:user.username }}.</p>
-    <nav aria-label="Administrator Sub Navigation">
-        <ul>
-            <li><a href="{% url 'admin_user_list' %}">Manage All Users</a></li>
-            <li><a href="{% url 'admin_pending_list' %}">Review Pending Approvals</a></li>
-        </ul>
-    </nav>
+<h1>Control room</h1>
+<p>Welcome, {{ user.first_name|default:user.username }}.</p>
+<section class="card">
+    <h2>Portal overview</h2>
+    <p><a class="button" href="{% url 'dashboards:admin' %}">View control room statistics</a></p>
+    <ul>
+        <li><a href="{% url 'admin_user_list' %}">Manage users</a></li>
+        <li><a href="{% url 'admin_pending_list' %}">Review pending approvals</a></li>
+        <li><a href="{% url 'catalog:subject_list' %}">Manage catalog</a></li>
+        <li><a href="{% url 'announcements:manage' %}">Manage announcements</a></li>
+    </ul>
 </section>
-<p><a href="{% url 'courses:list' %}">Browse courses</a> <a href="{% url 'library:list' %}">Browse library</a></p>
-<p><a href="{% url 'courses:list' %}">Choose a course to manage assessments</a></p>
-<p><a href="{% url 'certificates:verify_form' %}">Verify a certificate</a></p>
-<p><a href="{% url 'competency:ranking' %}">Find trainers</a></p>
-<p><a href="{% url 'announcements:manage' %}">Manage announcements</a></p>
-<p><a href="{% url 'dashboards:admin' %}">Admin statistics</a></p>
 {% endblock %}

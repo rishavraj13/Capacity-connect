@@ -2,6 +2,7 @@
 
 from django import forms
 
+from apps.announcements.constants import BODY_MAX_LENGTH
 from apps.announcements.models import Announcement
 
 
@@ -13,3 +14,4 @@ class AnnouncementForm(forms.ModelForm):
 
         model = Announcement
         fields = ("title", "body", "category")
+        help_texts = {"body": f"Maximum {BODY_MAX_LENGTH} characters."}

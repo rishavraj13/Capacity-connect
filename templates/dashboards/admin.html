@@ -1,1 +1,65 @@
-{% extends "base.html" %}{% block content %}<h1>Admin dashboard</h1><h2>Users</h2><ul>{% for role,count in dashboard.users_by_role.items %}<li>{{ role }} active users: {{ count }}</li>{% endfor %}</ul><p>Pending approvals: {{ dashboard.pending_approvals }}; courses: {{ dashboard.courses_total }} ({{ dashboard.courses_published }} published).</p><h2>Enrollments</h2><p>Total {{ dashboard.enrollments_total }}</p><ul>{% for status,count in dashboard.enrollments_by_status.items %}<li>{{ status }}: {{ count }}</li>{% endfor %}</ul><h2>Line load</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Dashboard figures"><table><caption>Dashboard figures</caption><thead><tr><th scope="col">Subject</th><th scope="col">Enrollments</th><th scope="col">Active</th></tr></thead><tbody>{% for row in dashboard.line_load %}<tr><td>{{ row.subject_name }}</td><td>{{ row.enrollments }}</td><td>{{ row.active_enrollments }}</td></tr>{% endfor %}</tbody></table></div><h2>Certificates</h2><p>Total {{ dashboard.certificates_total }}</p><ul>{% for grade,count in dashboard.certificates_by_grade.items %}<li>{{ grade }}: {{ count }}</li>{% endfor %}</ul><h2>Assessments</h2><p>Questionnaires {{ dashboard.assessments.questionnaires_total }}; submitted attempts {{ dashboard.assessments.submitted_attempts }}; average best {{ dashboard.assessments.average_best_percent }}%; pass rate {{ dashboard.assessments.pass_rate_percent }}%.</p><h2>Participation</h2><p>Enrolled trainees {{ dashboard.participation.enrolled_trainees }}; attempted trainees in cohort {{ dashboard.participation.attempted_trainees }}; participation {{ dashboard.participation.participation_rate_percent }}%.</p>{% endblock %}
+{% extends "base.html" %}
+{% load dashboard_display %}
+{% block title %}Control room - Capacity Connect{% endblock %}
+{% block page_styles %}{% include "components/staff_stats_styles.html" %}{% endblock %}
+{% block content %}
+<h1>Control room</h1>
+<h2>Users and courses</h2>
+<div class="staff-stats">
+    {% for role,count in dashboard.users_by_role.items %}
+        {% include "components/stat_tile.html" with label=role value=count %}
+    {% endfor %}
+    {% include "components/stat_tile.html" with label="Pending approvals" value=dashboard.pending_approvals %}
+    {% include "components/stat_tile.html" with label="Courses total" value=dashboard.courses_total %}
+    {% include "components/stat_tile.html" with label="Courses published" value=dashboard.courses_published %}
+</div>
+{% if dashboard.pending_approvals %}<p><a href="{% url 'admin_pending_list' %}">Review pending approvals</a></p>{% endif %}
+<h2>Enrollments</h2>
+<div class="staff-stats">
+    {% include "components/stat_tile.html" with label="Enrollments total" value=dashboard.enrollments_total %}
+    {% for status,count in dashboard.enrollments_by_status.items %}
+        {% include "components/stat_tile.html" with label=status value=count %}
+    {% endfor %}
+</div>
+<h2>Line load</h2>
+{% if dashboard.line_load %}
+{% with maximum=dashboard.line_load|line_meter_max %}
+<div class="table-scroll" tabindex="0" role="region" aria-label="Line load">
+<table>
+    <caption>Subject enrollment and active line load</caption>
+    <thead><tr><th scope="col">Subject</th><th scope="col">Enrollments</th><th scope="col">Active enrollments</th></tr></thead>
+    <tbody>
+    {% for row in dashboard.line_load %}
+    <tr>
+        <th scope="row">{{ row.subject_name }}</th><td>{{ row.enrollments }}</td>
+        <td><meter min="0" max="{{ maximum }}" value="{{ row.active_enrollments }}" aria-label="{{ row.subject_name }}: {{ row.active_enrollments }} active enrollments">{{ row.active_enrollments }}</meter> {{ row.active_enrollments }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endwith %}
+{% else %}<p class="empty-state">No active subjects yet.</p>{% endif %}
+<h2>Certificates</h2>
+<div class="staff-stats">
+    {% include "components/stat_tile.html" with label="Certificates total" value=dashboard.certificates_total %}
+    {% for grade,count in dashboard.certificates_by_grade.items %}
+        {% include "components/stat_tile.html" with label=grade value=count %}
+    {% endfor %}
+</div>
+<h2>Assessments</h2>
+<div class="staff-stats">
+    {% include "components/stat_tile.html" with label="Questionnaires" value=dashboard.assessments.questionnaires_total %}
+    {% include "components/stat_tile.html" with label="Submitted attempts" value=dashboard.assessments.submitted_attempts %}
+    {% include "components/stat_tile.html" with label="Average best percent" value=dashboard.assessments.average_best_percent|floatformat:"2u" suffix="%" %}
+    {% include "components/stat_tile.html" with label="Pass rate" value=dashboard.assessments.pass_rate_percent|floatformat:"2u" suffix="%" %}
+</div>
+{% if not dashboard.assessments.submitted_attempts %}<p>No submitted attempts yet.</p>{% endif %}
+<h2>Participation</h2>
+<div class="staff-stats">
+    {% include "components/stat_tile.html" with label="Enrolled trainees" value=dashboard.participation.enrolled_trainees %}
+    {% include "components/stat_tile.html" with label="Attempted trainees" value=dashboard.participation.attempted_trainees %}
+    {% include "components/stat_tile.html" with label="Participation rate" value=dashboard.participation.participation_rate_percent|floatformat:"2u" suffix="%" %}
+</div>
+{% if not dashboard.participation.attempted_trainees %}<p>No enrolled trainees have attempted an assessment yet.</p>{% endif %}
+{% endblock %}

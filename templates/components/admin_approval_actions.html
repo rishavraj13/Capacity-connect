@@ -1,0 +1,15 @@
+{% if not account.is_approved and account.is_active %}
+<form method="post" action="{% url 'admin_approve_user' account.pk %}" class="inline-action">
+    {% csrf_token %}<input type="hidden" name="next" value="{{ return_url }}">
+    <button type="submit" id="{{ approve_prefix }}-{{ account.pk }}">Approve</button>
+</form>
+{% endif %}
+{% if account.is_active %}
+<details>
+    <summary>Reject / Disable</summary>
+    <form method="post" action="{% url 'admin_reject_user' account.pk %}" class="inline-action">
+        {% csrf_token %}<input type="hidden" name="next" value="{{ return_url }}">
+        <button type="submit" id="{{ reject_prefix }}-{{ account.pk }}">Confirm reject</button>
+    </form>
+</details>
+{% endif %}
