@@ -9,7 +9,13 @@
 
 ## Browser evidence
 
-Earlier phase reports include headless Edge viewport and theme checks, and a no-JavaScript quiz submission. F5 layout, zoom, forced colours, print output, text spacing and keyboard journeys remain pending.
+- Headless Edge measured 23 pages at seven widths in Day, Night and Signage. A 640 px CSS viewport at device scale 2 modeled the reflow of a 1280 px layout at 200%. This is a reflow proxy rather than native browser zoom.
+- Forced-colours captures cover home, login, station map, quiz paper and both Control room pages. The station map reported zero animations with reduced motion enabled.
+- Browser PDF output covers the certificate list, assessment result and public verification result.
+- Test-only text spacing ran on home, login, station map, quiz paper and Admin dashboard. Scroll and overflow-hidden text checks passed.
+- With JavaScript disabled, Edge verified the system dark theme, narrow and wide navigation, the station text list, an actual quiz submission, and announcement creation and confirmed deletion. Tab sequences were captured for the four representative journeys.
+
+Screen readers, real devices, Firefox, Safari, Android and iOS were outside this run. The browser checks sampled form submissions and did not submit every portal form with scripting disabled.
 
 ## Manual checklist
 

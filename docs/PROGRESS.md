@@ -201,7 +201,7 @@ Testing stage is active; frontend has not started.
 | F3a | Trainer management pages | Engineering accepted and tagged f3a-approved. Visual review pending. |
 | F3b | Trainer assessments, dashboard and feedback | Engineering accepted and tagged f3b-approved. Visual review pending. |
 | F4 | Admin pages | Engineering accepted and tagged f4-approved. Visual review pending. |
-| F5 | Responsive and accessibility sweep | In progress. Seeded template audit and print styles added. |
+| F5 | Responsive and accessibility sweep | Verification evidence recorded. Awaiting review. |
 
 - [x] Backend closeout and ownership mutations accepted. Re-verification on backend-complete recorded 1984 passes and 100% coverage.
 - [x] BUG 025 fixed in a fresh clone using review-env.
@@ -219,4 +219,5 @@ Testing stage is active; frontend has not started.
 - [x] F3a engineering accepted. Visual review pending.
 - [x] F3b engineering accepted. Visual review pending.
 - [x] F4 engineering accepted. Visual review pending.
-- [ ] F5 browser and fresh-clone verification.
+- [x] F5 seeded route audit, layout measurements, print and representative keyboard checks.
+- [ ] F5 reviewer sign-off and manual screen reader review.

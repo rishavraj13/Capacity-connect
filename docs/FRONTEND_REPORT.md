@@ -56,8 +56,8 @@
 | Asset | Bytes |
 |---|---:|
 | `static/css/base.css` | 1,915 |
-| `static/css/components.css` | 6,523 |
-| `static/css/pages/learning.css` | 1,204 |
+| `static/css/components.css` | 6,896 |
+| `static/css/pages/learning.css` | 1,676 |
 | `static/css/pages/public.css` | 2,705 |
 | `static/css/pages/staff-stats.css` | 1,012 |
 | `static/css/pages/styleguide.css` | 237 |
@@ -154,4 +154,4 @@ See ADR 086 in [Decisions](DECISIONS.md). Each item requires explicit approval b
 - Pending approval filters and pagination.
 - Video captions and transcripts.
 
-F5 browser evidence and fresh-clone verification are pending. The local contact sheets are review evidence from earlier phases.
+F5 found and fixed missing record print styles, clipped module skill labels and low-visibility forced-colours SVG labels. Open the ignored screenshot index and final contact sheet in a local checkout with the evidence files.
