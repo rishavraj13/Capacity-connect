@@ -47,3 +47,8 @@ htmlcov/
 private_uploads/
 .local/
 docs/B2_GATE_OUTPUT.txt
+
+# Local database snapshots and backups
+*.sqlite3*
+*.old
+*.bak
