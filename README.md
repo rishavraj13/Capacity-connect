@@ -1,7 +1,15 @@
-# Capacity Connect - Backend Portal
+# Capacity Connect
 
-Capacity Connect is a Django learning-management portal for Trainees, Trainers, and Admins.
-Read docs/IMPLEMENTATION_BRIEF.md for binding scope and docs/PROGRESS.md for current status.
+Capacity Connect is a learning portal for trainees, trainers and administrators. It brings course enrollment, module progress, assessments, feedback and completion certificates into one application. Visitors can read public announcements and verify certificate IDs.
+
+## Stack and features
+
+Python 3.14, Django 5, SQLite for local development, server-rendered HTML, CSS, JavaScript and ReportLab for certificate PDFs.
+
+- **Trainees** manage professional profiles, enroll in courses, browse resources, take subject-based assessments, submit feedback and download certificates.
+- **Trainers** manage profiles, courses, modules and library resources, author timed questionnaires, review participation and declare subject competencies.
+- **Administrators** approve accounts, manage roles and the subject catalogue, publish announcements, rank trainers by subject and review portal activity.
+- **Visitors** can verify certificates and browse published announcements. Day, Night and Signage themes support the portal’s role-based pages.
 
 ## Local setup (Windows PowerShell)
 
@@ -51,7 +59,17 @@ Verification transcripts are local ignored evidence under .local/reports/.
 
 Python 3.14, Django 5.x and requirements/dev.txt. Core supplies clock, storage, throttles and operational commands; accounts manages approval and roles; catalog/profiles manage skills and people; courses/library manage learning; assessments grades attempts; feedback/certificates manage completion evidence; competency/announcements/dashboards provide ranking and reporting.
 
-Demo password: `Demo-Connect-2026!` (DEMO_PASSWORD override). The seed prints all login names and statuses. Use `python manage.py cleanup_orphan_files` for a dry run; add --delete only after reviewing candidates. `python manage.py evaluate_completions` retries completion/certificates.
+## Demo accounts
+
+Demo accounts are available only in development after running the seed command in the quick start. The command prints the demo login names and statuses. Its default password is for local development only. Use an unseeded database for live operation.
+
+## Project documentation
+
+- [Deployment and environment settings](docs/DEPLOYMENT.md)
+- [Test report](docs/TEST_REPORT.md)
+- [Frontend report](docs/FRONTEND_REPORT.md)
+- [Accessibility checklist](docs/ACCESSIBILITY.md)
+
 
 See [deployment and environment catalogue](docs/DEPLOYMENT.md), [decisions](docs/DECISIONS.md), [progress](docs/PROGRESS.md) and [binding brief](docs/IMPLEMENTATION_BRIEF.md).
 
@@ -62,3 +80,9 @@ Run `python manage.py runserver` and open `/styleguide/` with `DEBUG=True` to re
 Django serves `static/` during development. For deployment, run `python manage.py collectstatic --noinput` and serve the collected directory at `/static/`. See [deployment instructions](docs/DEPLOYMENT.md) and [font sources](static/fonts/SOURCES.md).
 
 See the [frontend report](docs/FRONTEND_REPORT.md) and [accessibility checklist](docs/ACCESSIBILITY.md). For local visual evidence, open `.local/screenshots/INDEX.html` when the ignored screenshots are available. The seed command prints the demo logins. Use the theme control for Day, Night or Signage.
+
+## Licence
+
+College project; no open-source licence has been granted.
+
+The bundled fonts use the SIL Open Font License. See the licence texts and source records in [static/fonts](static/fonts/).
